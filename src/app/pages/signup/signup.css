@@ -1,0 +1,223 @@
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Plus+Jakarta+Sans:wght@400;500;600&display=swap');
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+.signup-container {
+  display: flex;
+  height: 100vh;
+  width: 100%;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  overflow: hidden;
+}
+
+.image-side {
+  width: 55%;
+  position: relative;
+  overflow: hidden;
+  flex-shrink: 0;
+}
+
+.image-side img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+  display: block;
+}
+
+.image-overlay {
+  position: absolute;
+  bottom: 30px;
+  left: 24px;
+  right: 24px;
+}
+
+.quote-card {
+  background: rgba(253, 251, 247, 0.92);
+  padding: 20px 24px;
+  border-radius: 12px;
+  max-width: 280px;
+}
+
+.quote-card h3 {
+  color: #B54304;
+  font-family: 'Playfair Display', serif;
+  font-size: 15px;
+  margin-bottom: 8px;
+}
+
+.quote-card p {
+  color: #6B6B6B;
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+.form-side {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #FDFBF7;
+  padding: 40px 0;
+}
+
+.form-wrapper {
+  width: 80%;
+}
+
+.brand {
+  color: #B54304;
+  font-family: 'Playfair Display', serif;
+  font-size: 14px;
+  font-weight: bold;
+  margin-bottom: 28px;
+  letter-spacing: 0.5px;
+}
+
+h1 {
+  font-family: 'Playfair Display', serif;
+  font-size: 28px;
+  color: #3D2B2F;
+  margin-bottom: 6px;
+}
+
+.subtitle {
+  color: #6B6B6B;
+  font-size: 14px;
+  margin-bottom: 28px;
+}
+
+.form-group {
+  margin-bottom: 18px;
+}
+
+.form-group label {
+  display: block;
+  font-size: 13px;
+  font-weight: 500;
+  color: #3D2B2F;
+  margin-bottom: 6px;
+}
+
+.form-group input {
+  width: 100%;
+  padding: 10px 14px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  font-size: 14px;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  background: #fff;
+  color: #3D2B2F;
+  outline: none;
+  transition: border 0.2s;
+}
+
+.form-group input::placeholder {
+  color: #6B6B6B;
+}
+
+.form-group input:focus {
+  border-color: #B54304;
+}
+
+.password-wrapper {
+  position: relative;
+}
+
+.password-wrapper input {
+  width: 100%;
+  padding-right: 40px;
+}
+
+.eye-icon {
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  cursor: pointer;
+  font-size: 16px;
+  color: #6B6B6B;
+}
+
+.btn-primary {
+  width: 100%;
+  padding: 12px;
+  background: #B54304;
+  color: #FDFBF7;
+  border: none;
+  border-radius: 8px;
+  font-size: 15px;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-weight: 600;
+  cursor: pointer;
+  margin-top: 8px;
+  transition: background 0.2s;
+}
+
+.btn-primary:hover {
+  background: #3D2B2F;
+}
+
+.divider {
+  text-align: center;
+  margin: 18px 0;
+  position: relative;
+  color: #6B6B6B;
+  font-size: 13px;
+}
+
+.divider::before,
+.divider::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  width: 42%;
+  height: 1px;
+  background: #ddd;
+}
+
+.divider::before { left: 0; }
+.divider::after { right: 0; }
+
+.btn-google {
+  width: 100%;
+  padding: 11px;
+  background: white;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  font-size: 14px;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  color: #3D2B2F;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  transition: background 0.2s;
+}
+
+.btn-google:hover {
+  background: #FDFBF7;
+  border-color: #B54304;
+}
+
+.login-link {
+  text-align: center;
+  margin-top: 24px;
+  font-size: 13px;
+  color: #6B6B6B;
+}
+
+.login-link a {
+  color: #B54304;
+  text-decoration: none;
+  font-weight: 600;
+}
+
+.login-link a:hover {
+  color: #3D2B2F;
+}
