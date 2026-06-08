@@ -1,0 +1,41 @@
+<nav class="wandr-nav" [class.scrolled]="isScrolled">
+
+  <!-- Logo -->
+  <a class="wandr-logo" routerLink="/">WANDR</a>
+
+  <!-- Not User Links -->
+  <ul class="wandr-nav-links" *ngIf="!isLoggedIn">
+    <li><a routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{exact:true}">Home</a></li>
+    <li><a routerLink="/chat" routerLinkActive="active">Chat</a></li>
+    <li><a routerLink="/destinations" routerLinkActive="active">Destinations</a></li>
+    <li><a routerLink="/about" routerLinkActive="active">About Us</a></li>
+  </ul>
+
+  <!-- User Links -->
+  <ul class="wandr-nav-links" *ngIf="isLoggedIn">
+    <li><a routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{exact:true}">Home</a></li>
+    <li><a routerLink="/chat" routerLinkActive="active">Chat</a></li>
+    <li><a routerLink="/current-plan" routerLinkActive="active">Current Plan</a></li>
+    <li><a routerLink="/destinations" routerLinkActive="active">Destinations</a></li>
+    <li><a routerLink="/about" routerLinkActive="active">About Us</a></li>
+  </ul>
+
+  <!-- Not User Action -->
+  <a routerLink="/signup" class="btn-signup" *ngIf="!isLoggedIn">Sign Up</a>
+
+  <!-- User Action -->
+  <div class="user-menu" *ngIf="isLoggedIn">
+    <button class="user-icon-btn" (click)="toggleDropdown()">
+      <i class="fa fa-user-circle"></i>
+    </button>
+    <div class="user-dropdown" [class.open]="isDropdownOpen">
+      <a routerLink="/profile" class="dropdown-item">
+        <i class="fa fa-user"></i> My Profile
+      </a>
+      <a routerLink="/settings" class="dropdown-item">
+        <i class="fa fa-cog"></i> Settings
+      </a>
+    </div>
+  </div>
+
+</nav>
