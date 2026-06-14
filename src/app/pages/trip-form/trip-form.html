@@ -1,0 +1,220 @@
+<div class="hero-section">
+  </div>
+<div class="tripform">
+
+  <div class="title">
+    <p class="subtitle">Your next chapter awaits</p>
+    <h1>Plan your dream journey.</h1>
+  </div>
+
+  <div class="card">
+
+    <form class="form" [formGroup]="form" (ngSubmit)="submit()">
+
+      <!-- FROM / TO -->
+      <div class="from-to">
+        <div class="row g-3">
+
+          <div class="col-12 col-md-6">
+            <div class="form__group">
+              <label>From</label>
+              <div class="input-icon">
+                <i class="fa-solid fa-plane-departure icon"></i>
+                <input type="text" formControlName="from" placeholder="Cairo, Egypt">
+              </div>
+            </div>
+          </div>
+           @if (form.get('from')?.touched && form.get('from')?.invalid) {
+  <div class="text-danger">Please enter your departure city</div>
+}
+
+
+          <div class="col-12 col-md-6">
+            <div class="form__group">
+              <label>To</label>
+              <div class="input-icon">
+                <i class="fa-solid fa-plane-arrival icon"></i>
+                <input type="text" formControlName="to" placeholder="Paris, France">
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+     @if (form.get('to')?.touched && form.get('to')?.invalid) {
+  <div class="text-danger">Tell us your destination to plan your trip</div>
+}
+      <!-- DATES -->
+      <div class="dates mt-4">
+        <div class="row g-3">
+
+          <div class="col-12 col-md-6">
+            <div class="form__group">
+              <label>Departure</label>
+              <div class="input-icon">
+                <i class="fa-solid fa-calendar-days icon"></i>
+                <input type="date" formControlName="departureDate">
+              </div>
+            </div>
+          </div>
+
+          <div class="col-12 col-md-6">
+            <div class="form__group">
+              <label>Return</label>
+              <div class="input-icon">
+                <i class="fa-solid fa-calendar-check icon"></i>
+                <input type="date" formControlName="returnDate">
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+  @if (form.errors?.['dateInvalid']) {
+  <div class="text-danger mt-1">
+     Return date must be after departure date
+  </div>
+}
+      <!-- TRAVELERS -->
+      <div class="form__group mt-4">
+    
+        <label>Travelers & Rooms</label>
+
+        <div class="input-box travelers-box">
+
+          <div class="row-item">
+            <span>Adults</span>
+            <div class="controls">
+              <button type="button" (click)="decrease('adults')">-</button>
+              <span>{{ form.value.adults }}</span>
+              <button type="button" (click)="increase('adults')">+</button>
+            </div>
+          </div>
+
+          <div class="row-item">
+            <span>Children</span>
+            <div class="controls">
+              <button type="button" (click)="decrease('children')">-</button>
+              <span>{{ form.value.children }}</span>
+              <button type="button" (click)="increase('children')">+</button>
+            </div>
+          </div>
+
+          <div class="row-item">
+            <span>Rooms</span>
+            <div class="controls">
+              <button type="button" (click)="decrease('rooms')">-</button>
+              <span>{{ form.value.rooms }}</span>
+              <button type="button" (click)="increase('rooms')">+</button>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- TRAVEL STYLE -->
+      <div class="form__group mt-4">
+
+        <label>Travel Style</label>
+
+        <div class="travel-styles">
+
+          <button type="button"
+            class="style-chip"
+            [class.active]="form.value.travelStyle.includes('ADVENTURE')"
+            (click)="toggleStyle('ADVENTURE')">
+            ADVENTURE
+          </button>
+
+          <button type="button"
+            class="style-chip"
+            [class.active]="form.value.travelStyle.includes('RELAXATION')"
+            (click)="toggleStyle('RELAXATION')">
+            RELAXATION
+          </button>
+
+          <button type="button"
+            class="style-chip"
+            [class.active]="form.value.travelStyle.includes('CULTURAL')"
+            (click)="toggleStyle('CULTURAL')">
+            CULTURAL
+          </button>
+
+          <button type="button"
+            class="style-chip"
+            [class.active]="form.value.travelStyle.includes('FOODIE')"
+            (click)="toggleStyle('FOODIE')">
+            FOODIE
+          </button>
+
+          <button type="button"
+            class="style-chip"
+            [class.active]="form.value.travelStyle.includes('NATURE')"
+            (click)="toggleStyle('NATURE')">
+            NATURE
+          </button>
+
+          <button type="button"
+            class="style-chip"
+            [class.active]="form.value.travelStyle.includes('LUXURY')"
+            (click)="toggleStyle('LUXURY')">
+            LUXURY
+          </button>
+
+          <button type="button"
+            class="style-chip"
+            [class.active]="form.value.travelStyle.includes('NIGHTLIFE')"
+            (click)="toggleStyle('NIGHTLIFE')">
+            NIGHTLIFE
+          </button>
+
+          <button type="button"
+            class="style-chip"
+            [class.active]="form.value.travelStyle.includes('FAMILY')"
+            (click)="toggleStyle('FAMILY')">
+            FAMILY
+          </button>
+
+        </div>
+      </div>
+
+      <!-- BUDGET -->
+      <div class="form__group mt-4">
+        <label>Budget</label>
+        <div class="input-icon">
+          <i class="fa-solid fa-money-bill icon"></i>
+          <input type="text" formControlName="budget" placeholder="e.g. 5000 USD">
+        </div>
+      </div>
+      @if (form.get('budget')?.touched && form.get('budget')?.invalid) {
+  <div class="text-danger">
+     Please set a budget of 1000 or more to continue.
+  </div>
+}
+      <!-- SPECIAL REQUESTS -->
+      <div class="form__group mt-3">
+        <label>Special Requests</label>
+        <div class="input-icon">
+          <i class="fa-solid fa-pen-to-square icon"></i>
+          <input type="text" formControlName="specialRequests" placeholder="Any special notes...">
+        </div>
+      </div>
+
+      <!-- SUBMIT -->
+      <div class="generate-section mt-4 text-center">
+
+        <button type="submit" class="generate-btn w-100" [disabled]="form.invalid">
+          Generate My Trip
+        </button>
+
+        <p class="generate-subtitle mt-2">
+          Crafted by AI, curated for your comfort.
+        </p>
+
+      </div>
+       
+    </form>
+    
+  </div>
+
+</div>

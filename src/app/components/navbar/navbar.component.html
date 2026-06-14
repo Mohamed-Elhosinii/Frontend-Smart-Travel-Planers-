@@ -1,12 +1,11 @@
 <nav class="wandr-nav" [class.scrolled]="isScrolled">
 
-  <!-- Logo -->
-  <a class="wandr-logo" routerLink="/">WANDR</a>
+  <a class="wandr-logo" routerLink="/">TripMind</a>
 
   <!-- Not User Links -->
   <ul class="wandr-nav-links" *ngIf="!isLoggedIn">
     <li><a routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{exact:true}">Home</a></li>
-    <li><a routerLink="/chat" routerLinkActive="active">Chat</a></li>
+    <li><a routerLink="/plan" routerLinkActive="active">Plan Your Trip</a></li>
     <li><a routerLink="/destinations" routerLinkActive="active">Destinations</a></li>
     <li><a routerLink="/about" routerLinkActive="active">About Us</a></li>
   </ul>
@@ -14,8 +13,7 @@
   <!-- User Links -->
   <ul class="wandr-nav-links" *ngIf="isLoggedIn">
     <li><a routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{exact:true}">Home</a></li>
-    <li><a routerLink="/chat" routerLinkActive="active">Chat</a></li>
-    <li><a routerLink="/current-plan" routerLinkActive="active">Current Plan</a></li>
+    <li><a routerLink="/plan" routerLinkActive="active">Plan Your Trip</a></li>
     <li><a routerLink="/destinations" routerLinkActive="active">Destinations</a></li>
     <li><a routerLink="/about" routerLinkActive="active">About Us</a></li>
   </ul>
