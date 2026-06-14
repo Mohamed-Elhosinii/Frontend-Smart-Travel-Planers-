@@ -1,0 +1,18 @@
+<a class="card" [routerLink]="['/destination', destination.id]">
+
+  <div class="card-image">
+    <img [src]="destination.imageUrl" />
+  </div>
+
+  <div class="card-content">
+    <h3 class="card-title">
+      {{ destination.name }}, {{ destination.country }}
+      <span class="country-code">{{ destination.countryCode }}</span>
+    </h3>
+
+    <p class="card-description">
+      {{ destination.description }}
+    </p>
+  </div>
+
+</a>

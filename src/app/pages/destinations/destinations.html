@@ -1,0 +1,63 @@
+
+<div class="page">
+<div class="header ">
+  <h3>Explore Destinations</h3>
+  <p>Discover the most beautiful places around the world</p>
+</div>
+
+<!-- search section -->
+<div class="search-box">
+  <i class="fa fa-search search-icon"></i>
+   <input 
+    type="text"
+    placeholder="Search destinations..."
+    [(ngModel)]="searchText"
+    (input)="onSearch()" />
+
+</div>
+<div *ngIf="!isSearching">
+<!-- category section -->
+ <div class="categories">
+
+  @for (c of categories; track c.id) {
+    <div 
+      class="category"
+      [class.active]="selectedCategory === c.id"
+      (click)="selectCategory(c.id)">
+
+      <span>{{ c.label }}</span>
+
+    </div>
+  }
+
+</div>
+
+<!-- hero section -->
+<div class="card-featured">
+  <img src="/images/ross-parmly-rf6ywHVkrlY-unsplash.jpg" />
+
+  <div class="overlay">
+    <h3>Your Next Adventure Starts Here</h3>
+    <p>Plan your perfect trip in seconds with smart AI-powered travel suggestions tailored to your soul's desire.</p>
+   <a routerLink="/plan" class="btn-plan">
+  Plan Your Trip <i class="fa fa-arrow-right icon "></i>
+</a>
+  </div>
+</div>
+<div class="section-title mt-5 ">
+  <h5>{{ sectionTitle }}</h5>
+  
+
+</div>
+</div>
+<div class="cards-container">
+ 
+
+@for (d of filteredDestinations; track d.id) {
+  <app-destination-card
+    [destination]="d">
+  </app-destination-card>
+}
+</div>
+</div>
+
