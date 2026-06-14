@@ -18,6 +18,10 @@
   padding-top: 64px;        
 }
 
+.hero-title {
+  color: #ffffff !important;
+}
+
 .hero-bg {
   position: absolute;
   inset: 0;
