@@ -14,7 +14,6 @@
   overflow: hidden;
 }
 
-/* ===== LEFT - IMAGE SIDE ===== */
 .image-side {
   width: 50%;
   position: relative;
@@ -57,7 +56,6 @@
   content: '— ';
 }
 
-/* ===== RIGHT - FORM SIDE ===== */
 .form-side {
   flex: 1;
   display: flex;
@@ -71,7 +69,6 @@
   width: 70%;
 }
 
-/* ===== BRAND ===== */
 .brand {
   display: flex;
   align-items: center;
@@ -95,7 +92,6 @@
   font-size: 14px;
 }
 
-/* ===== HEADINGS ===== */
 h1 {
   font-family: 'Playfair Display', serif;
   font-size: 28px;
@@ -109,7 +105,6 @@ h1 {
   margin-bottom: 28px;
 }
 
-/* ===== FORM ===== */
 .form-group {
   margin-bottom: 18px;
 }
@@ -175,7 +170,6 @@ h1 {
   color: #6B6B6B;
 }
 
-/* ===== BUTTONS ===== */
 .btn-primary {
   width: 100%;
   padding: 12px;
@@ -193,6 +187,11 @@ h1 {
 
 .btn-primary:hover {
   background: #3D2B2F;
+}
+
+.btn-primary:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
 }
 
 .divider {
@@ -239,7 +238,6 @@ h1 {
   border-color: #B54304;
 }
 
-/* ===== FOOTER LINK ===== */
 .signup-link {
   text-align: center;
   margin-top: 24px;
@@ -255,4 +253,36 @@ h1 {
 
 .signup-link a:hover {
   color: #3D2B2F;
+}
+
+/* ===== Validation Styles ===== */
+.input-error {
+  border-color: #e53e3e !important;
+  background: #fff8f8 !important;
+}
+
+.field-error {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  color: #e53e3e;
+  font-size: 12px;
+  margin-top: 5px;
+}
+
+.field-error i {
+  font-size: 12px;
+}
+
+.error-message {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: #fff8f8;
+  border: 1px solid #feb2b2;
+  color: #e53e3e;
+  padding: 10px 14px;
+  border-radius: 8px;
+  font-size: 13px;
+  margin-bottom: 16px;
 }

@@ -162,6 +162,11 @@ h1 {
   background: #3D2B2F;
 }
 
+.btn-primary:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
 .divider {
   text-align: center;
   margin: 18px 0;
@@ -220,4 +225,49 @@ h1 {
 
 .login-link a:hover {
   color: #3D2B2F;
+}
+
+/* ===== Validation Styles ===== */
+.input-error {
+  border-color: #e53e3e !important;
+  background: #fff8f8 !important;
+}
+
+.field-error {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  color: #e53e3e;
+  font-size: 12px;
+  margin-top: 5px;
+}
+
+.field-error i {
+  font-size: 12px;
+}
+
+.success-message {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: #f0fff4;
+  border: 1px solid #9ae6b4;
+  color: #276749;
+  padding: 10px 14px;
+  border-radius: 8px;
+  font-size: 13px;
+  margin-bottom: 16px;
+}
+
+.error-message {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: #fff8f8;
+  border: 1px solid #feb2b2;
+  color: #e53e3e;
+  padding: 10px 14px;
+  border-radius: 8px;
+  font-size: 13px;
+  margin-bottom: 16px;
 }

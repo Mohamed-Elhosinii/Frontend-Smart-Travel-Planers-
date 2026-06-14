@@ -13,39 +13,125 @@
   <!-- Right Side - Form -->
   <div class="form-side">
     <div class="form-wrapper">
-      <p class="brand">TripMind</p>
-
+      <div class="brand">
+        <i class="bi bi-compass"></i>
+        <span>TripMind</span>
+      </div>
       <h1>Join TripMind</h1>
       <p class="subtitle">Start Your Journey.</p>
 
-      <div class="form-group">
-        <label>Full Name</label>
-        <input type="text" placeholder="Julianne Smith" />
+      <!-- Success Message -->
+      <div class="success-message" *ngIf="successMessage">
+        <i class="bi bi-check-circle"></i>
+        {{ successMessage }}
       </div>
 
-      <div class="form-group">
-        <label>Email</label>
-        <input type="email" placeholder="name@example.com" />
+      <!-- Error Message -->
+      <div class="error-message" *ngIf="errorMessage">
+        <i class="bi bi-exclamation-circle"></i>
+        {{ errorMessage }}
       </div>
 
-      <div class="form-group">
-        <label>Password</label>
-        <div class="password-wrapper">
-          <input type="password" placeholder="••••••••" />
-          <span class="eye-icon">👁</span>
+      <!-- Full Name -->
+      <div class="form-group" [class.has-error]="fullNameError">
+        <label>
+          <i class="bi bi-person"></i>
+          Full Name
+        </label>
+        <input
+          type="text"
+          placeholder="Julianne Smith"
+          [(ngModel)]="fullName"
+          name="fullName"
+          [class.input-error]="fullNameError"
+        />
+        <span class="field-error" *ngIf="fullNameError">
+          <i class="bi bi-exclamation-circle"></i>
+          {{ fullNameError }}
+        </span>
+      </div>
+
+      <!-- Email -->
+      <div class="form-group" [class.has-error]="emailError">
+        <label>
+          <i class="bi bi-envelope"></i>
+          Email
+        </label>
+        <input
+          type="email"
+          placeholder="name@example.com"
+          [(ngModel)]="email"
+          name="email"
+          [class.input-error]="emailError"
+        />
+        <span class="field-error" *ngIf="emailError">
+          <i class="bi bi-exclamation-circle"></i>
+          {{ emailError }}
+        </span>
+      </div>
+
+      <!-- Password -->
+      <div class="form-group" [class.has-error]="passwordError">
+        <label>
+          <i class="bi bi-lock"></i>
+          Password
+        </label>
+        <div class="password-wrapper" [class.input-error]="passwordError">
+          <input
+            [type]="showPassword ? 'text' : 'password'"
+            placeholder="••••••••"
+            [(ngModel)]="password"
+            name="password"
+          />
+          <span class="eye-icon" (click)="togglePassword()">
+            <i [class]="showPassword ? 'bi bi-eye-slash' : 'bi bi-eye'"></i>
+          </span>
         </div>
+        <span class="field-error" *ngIf="passwordError">
+          <i class="bi bi-exclamation-circle"></i>
+          {{ passwordError }}
+        </span>
       </div>
 
-      <button class="btn-primary">Create Account</button>
+      <!-- Confirm Password -->
+      <div class="form-group" [class.has-error]="confirmPasswordError">
+        <label>
+          <i class="bi bi-lock-fill"></i>
+          Confirm Password
+        </label>
+        <div class="password-wrapper" [class.input-error]="confirmPasswordError">
+          <input
+            [type]="showConfirmPassword ? 'text' : 'password'"
+            placeholder="••••••••"
+            [(ngModel)]="confirmPassword"
+            name="confirmPassword"
+          />
+          <span class="eye-icon" (click)="toggleConfirmPassword()">
+            <i [class]="showConfirmPassword ? 'bi bi-eye-slash' : 'bi bi-eye'"></i>
+          </span>
+        </div>
+        <span class="field-error" *ngIf="confirmPasswordError">
+          <i class="bi bi-exclamation-circle"></i>
+          {{ confirmPasswordError }}
+        </span>
+      </div>
+
+      <button class="btn-primary" (click)="onSignup()" [disabled]="isLoading">
+        <i class="bi bi-person-plus" *ngIf="!isLoading"></i>
+        <i class="bi bi-arrow-repeat" *ngIf="isLoading"></i>
+        {{ isLoading ? 'Creating Account...' : 'Create Account' }}
+      </button>
 
       <div class="divider"><span>OR</span></div>
 
       <button class="btn-google">
-        <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" width="18" />
+        <i class="bi bi-google"></i>
         Sign up with Google
       </button>
 
-      <p class="login-link">Already have an account? <a routerLink="/login">Log in</a></p>
+      <p class="login-link">
+        Already have an account? <a routerLink="/login">Log in</a>
+      </p>
     </div>
   </div>
 </div>

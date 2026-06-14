@@ -14,39 +14,75 @@
   <div class="form-side">
     <div class="form-wrapper">
       <div class="brand">
-        <span class="brand-icon">🧭</span>
+        <i class="bi bi-compass brand-icon"></i>
         <span>TripMind</span>
       </div>
-
       <h1>Welcome Back</h1>
       <p class="subtitle">Sign in to access Your AI-powered travel companion.</p>
 
-      <div class="form-group">
-        <label>Email Address</label>
-        <input type="email" placeholder="name@example.com" />
+      <!-- Error Message -->
+      <div class="error-message" *ngIf="errorMessage">
+        <i class="bi bi-exclamation-circle"></i>
+        {{ errorMessage }}
       </div>
 
+      <!-- Email -->
       <div class="form-group">
         <label>
-          Password
-          <a class="forgot" routerLink="/forgot">Forgot password?</a>
+          <span><i class="bi bi-envelope"></i> Email Address</span>
         </label>
-        <div class="password-wrapper">
-          <input type="password" placeholder="••••••••" />
-          <span class="eye-icon">👁</span>
-        </div>
+        <input
+          type="email"
+          placeholder="name@example.com"
+          [(ngModel)]="email"
+          name="email"
+          [class.input-error]="emailError"
+        />
+        <span class="field-error" *ngIf="emailError">
+          <i class="bi bi-exclamation-circle"></i>
+          {{ emailError }}
+        </span>
       </div>
 
-      <button class="btn-primary">Login</button>
+      <!-- Password -->
+      <div class="form-group">
+        <label>
+          <span><i class="bi bi-lock"></i> Password</span>
+          <a class="forgot" routerLink="/forgot">Forgot password?</a>
+        </label>
+        <div class="password-wrapper" [class.input-error]="passwordError">
+          <input
+            [type]="showPassword ? 'text' : 'password'"
+            placeholder="••••••••"
+            [(ngModel)]="password"
+            name="password"
+          />
+          <span class="eye-icon" (click)="togglePassword()">
+            <i [class]="showPassword ? 'bi bi-eye-slash' : 'bi bi-eye'"></i>
+          </span>
+        </div>
+        <span class="field-error" *ngIf="passwordError">
+          <i class="bi bi-exclamation-circle"></i>
+          {{ passwordError }}
+        </span>
+      </div>
+
+      <button class="btn-primary" (click)="onLogin()" [disabled]="isLoading">
+        <i class="bi bi-box-arrow-in-right" *ngIf="!isLoading"></i>
+        <i class="bi bi-arrow-repeat" *ngIf="isLoading"></i>
+        {{ isLoading ? 'Signing in...' : 'Login' }}
+      </button>
 
       <div class="divider"><span>OR CONTINUE WITH</span></div>
 
       <button class="btn-google">
-        <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" width="18" />
+        <i class="bi bi-google"></i>
         Sign in with Google
       </button>
 
-      <p class="signup-link">Don't have an account? <a routerLink="/signup">Sign up</a></p>
+      <p class="signup-link">
+        Don't have an account? <a routerLink="/signup">Sign up</a>
+      </p>
     </div>
   </div>
 </div>
