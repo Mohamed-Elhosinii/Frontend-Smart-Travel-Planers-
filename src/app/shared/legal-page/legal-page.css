@@ -1,0 +1,32 @@
+/* Shared layout for legal/policy pages. Tokens & typography utilities
+   (.text-deep, .font-serif, .leading-relaxed) come from global styles.css. */
+
+.legal-page-container {
+  min-height: calc(100vh - 280px);
+}
+
+.max-w-legal {
+  max-width: 820px;
+}
+
+.legal-card {
+  border-color: var(--border-color) !important;
+}
+
+.btn-back-home {
+  background-color: transparent;
+  border: 2px solid var(--primary-orange);
+  color: var(--primary-orange);
+  transition: var(--transition-fast);
+}
+
+.btn-back-home:hover {
+  background-color: var(--primary-orange);
+  color: #fff;
+  box-shadow: 0 4px 14px rgba(181, 67, 4, 0.15);
+  transform: translateY(-1px);
+}
+
+.btn-back-home:active {
+  transform: translateY(0);
+}

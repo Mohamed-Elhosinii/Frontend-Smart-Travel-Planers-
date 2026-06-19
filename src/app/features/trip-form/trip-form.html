@@ -1,0 +1,165 @@
+<app-navbar [lightBg]="true"></app-navbar>
+
+<div class="hero-section w-100 min-vh-100 d-flex flex-column align-items-center pb-5">
+  <div class="tripform container px-3">
+
+    <div class="title text-center mt-4 mb-4">
+      <p class="subtitle fw-bold text-uppercase mb-2">Your next chapter awaits</p>
+      <h1 class="display-6 fw-bold">Plan your dream journey.</h1>
+    </div>
+
+    <div class="card mx-auto p-4 p-md-5 rounded-4 shadow-sm border-0">
+
+      <form class="form" [formGroup]="form" (ngSubmit)="submit()">
+
+      <!-- FROM / TO -->
+      <div class="from-to">
+        <div class="row g-3">
+
+          <div class="col-12 col-md-6">
+            <div class="form__group d-flex flex-column gap-2">
+              <label class="fw-bold small">From</label>
+              <div class="input-icon position-relative">
+                <i class="fa-solid fa-plane-departure icon position-absolute"></i>
+                <input type="text" formControlName="from" placeholder="Cairo, Egypt" class="w-100 fw-medium">
+              </div>
+            </div>
+            @if (form.get('from')?.touched && form.get('from')?.invalid) {
+              <div class="text-danger small mt-1">Please enter your departure city</div>
+            }
+          </div>
+
+          <div class="col-12 col-md-6">
+            <div class="form__group d-flex flex-column gap-2">
+              <label class="fw-bold small">To</label>
+              <div class="input-icon position-relative">
+                <i class="fa-solid fa-plane-arrival icon position-absolute"></i>
+                <input type="text" formControlName="to" placeholder="Paris, France" class="w-100 fw-medium">
+              </div>
+            </div>
+            @if (form.get('to')?.touched && form.get('to')?.invalid) {
+              <div class="text-danger small mt-1">Tell us your destination to plan your trip</div>
+            }
+          </div>
+
+        </div>
+      </div>
+      
+      <!-- DATES -->
+      <div class="dates mt-4">
+        <div class="row g-3">
+
+          <div class="col-12 col-md-6">
+            <div class="form__group d-flex flex-column gap-2">
+              <label class="fw-bold small">Departure</label>
+              <div class="input-icon position-relative">
+                <i class="fa-solid fa-calendar-days icon position-absolute"></i>
+                <input type="date" formControlName="departureDate" class="w-100 fw-medium">
+              </div>
+            </div>
+          </div>
+
+          <div class="col-12 col-md-6">
+            <div class="form__group d-flex flex-column gap-2">
+              <label class="fw-bold small">Return</label>
+              <div class="input-icon position-relative">
+                <i class="fa-solid fa-calendar-check icon position-absolute"></i>
+                <input type="date" formControlName="returnDate" class="w-100 fw-medium">
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+      @if (form.errors?.['dateInvalid']) {
+        <div class="text-danger small mt-1">Return date must be after departure date</div>
+      }
+
+      <!-- TRAVELERS -->
+      <div class="form__group d-flex flex-column gap-2 mt-4">
+        <label class="fw-bold small">Travelers & Rooms</label>
+        <div class="input-box travelers-box p-3 rounded-4 d-flex flex-column flex-md-row justify-content-between gap-3">
+
+          <div class="row-item d-flex justify-content-between align-items-center flex-fill fw-semibold">
+            <span>Adults</span>
+            <div class="controls d-flex align-items-center gap-2">
+              <button class="rounded-circle d-flex justify-content-center align-items-center shadow-sm" type="button" (click)="decrease('adults')">-</button>
+              <span>{{ form.value.adults }}</span>
+              <button class="rounded-circle d-flex justify-content-center align-items-center shadow-sm" type="button" (click)="increase('adults')">+</button>
+            </div>
+          </div>
+
+          <div class="row-item d-flex justify-content-between align-items-center flex-fill fw-semibold">
+            <span>Children</span>
+            <div class="controls d-flex align-items-center gap-2">
+              <button class="rounded-circle d-flex justify-content-center align-items-center shadow-sm" type="button" (click)="decrease('children')">-</button>
+              <span>{{ form.value.children }}</span>
+              <button class="rounded-circle d-flex justify-content-center align-items-center shadow-sm" type="button" (click)="increase('children')">+</button>
+            </div>
+          </div>
+
+          <div class="row-item d-flex justify-content-between align-items-center flex-fill fw-semibold">
+            <span>Rooms</span>
+            <div class="controls d-flex align-items-center gap-2">
+              <button class="rounded-circle d-flex justify-content-center align-items-center shadow-sm" type="button" (click)="decrease('rooms')">-</button>
+              <span>{{ form.value.rooms }}</span>
+              <button class="rounded-circle d-flex justify-content-center align-items-center shadow-sm" type="button" (click)="increase('rooms')">+</button>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- TRAVEL STYLE -->
+      <div class="form__group d-flex flex-column gap-2 mt-4">
+        <label class="fw-bold small">Travel Style</label>
+        <div class="travel-styles d-flex flex-wrap gap-2" role="group" aria-label="Travel style">
+          @for (style of travelStyles; track style) {
+            <button
+              type="button"
+              class="style-chip px-4 py-2 rounded-pill small text-uppercase fw-semibold"
+              [class.active]="isStyleSelected(style)"
+              [attr.aria-pressed]="isStyleSelected(style)"
+              (click)="toggleStyle(style)"
+            >
+              {{ style }}
+            </button>
+          }
+        </div>
+      </div>
+
+      <!-- BUDGET -->
+      <div class="form__group d-flex flex-column gap-2 mt-4">
+        <label class="fw-bold small">Budget</label>
+        <div class="input-icon position-relative">
+          <i class="fa-solid fa-money-bill icon position-absolute"></i>
+          <input type="text" formControlName="budget" placeholder="e.g. 5000 USD" class="w-100 fw-medium">
+        </div>
+      </div>
+      @if (form.get('budget')?.touched && form.get('budget')?.invalid) {
+        <div class="text-danger small mt-1">Please set a budget of 1000 or more to continue.</div>
+      }
+
+      <!-- SPECIAL REQUESTS -->
+      <div class="form__group d-flex flex-column gap-2 mt-4">
+        <label class="fw-bold small">Special Requests</label>
+        <div class="input-icon position-relative">
+          <i class="fa-solid fa-pen-to-square icon position-absolute"></i>
+          <input type="text" formControlName="specialRequests" placeholder="Any special notes..." class="w-100 fw-medium">
+        </div>
+      </div>
+
+      <!-- SUBMIT -->
+      <div class="generate-section mt-5 text-center">
+        <button type="submit" class="generate-btn w-100 rounded-pill fw-bold fs-5 border-0 text-uppercase letter-spacing-1" [disabled]="form.invalid">
+          Generate My Trip
+        </button>
+        <p class="generate-subtitle mt-3 small fw-medium">
+          Crafted by AI, curated for your comfort.
+        </p>
+      </div>
+       
+      </form>
+    </div>
+  </div>
+</div>

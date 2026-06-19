@@ -1,0 +1,22 @@
+.container {
+  padding-top: 85px !important;
+}
+
+/* ── Left Sidebar navigation list ───────────────────────────────── */
+.list-group-profile .list-group-item {
+  background: transparent;
+  color: var(--secondary-dark);
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  border: none;
+}
+
+.list-group-profile .list-group-item:hover {
+  background-color: rgba(116, 52, 27, 0.05);
+  color: var(--primary-brand);
+}
+
+.list-group-profile .list-group-item.active {
+  background: var(--primary-gradient);
+  color: #ffffff !important;
+  box-shadow: 0 4px 12px rgba(116, 52, 27, 0.2);
+}

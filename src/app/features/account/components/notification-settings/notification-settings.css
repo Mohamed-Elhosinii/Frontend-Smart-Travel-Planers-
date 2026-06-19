@@ -1,0 +1,36 @@
+/* ── Switch Toggles & Switch Cards ────────────────────────────── */
+.custom-switch-card {
+  border-color: var(--border-color) !important;
+  transition: all 0.25s ease;
+}
+
+.custom-switch-card:hover {
+  border-color: var(--primary-brand) !important;
+  background-color: rgba(116, 52, 27, 0.01) !important;
+}
+
+.custom-switch-toggle:checked {
+  background-color: var(--primary-brand) !important;
+  border-color: var(--primary-brand) !important;
+}
+
+.custom-switch-toggle:focus {
+  box-shadow: 0 0 0 4px rgba(116, 52, 27, 0.12) !important;
+  border-color: var(--primary-brand) !important;
+}
+
+/* ── Action Save Buttons ────────────────────────────────────────── */
+.btn-save {
+  background: var(--primary-gradient);
+  box-shadow: 0 4px 15px rgba(116, 52, 27, 0.25);
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.btn-save:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(116, 52, 27, 0.35);
+}
+
+.btn-save:active {
+  transform: translateY(0);
+}

@@ -1,0 +1,30 @@
+@if (hotel) {
+  <div class="summary-card hotel-card d-flex align-items-start">
+    <div class="card-icon-wrap icon-secondary d-flex align-items-center justify-content-center flex-shrink-0">
+      <i class="fa-solid fa-hotel"></i>
+    </div>
+    <div class="card-body-wrap">
+      <div class="card-label fw-bold text-uppercase">Hotel</div>
+      <div class="card-main fw-bold text-nowrap overflow-hidden">{{ hotel.name }}</div>
+      <div class="card-sub fw-semibold">
+        @for (s of getStars(hotel.stars); track $index) {
+          <i class="fa-solid fa-star star-icon"></i>
+        }
+        <span class="ms-1">· {{ hotel.rating }}/10</span>
+      </div>
+      <div class="card-route">
+        <i class="fa-regular fa-calendar-check me-1" style="font-size:.6rem;"></i>
+        {{ hotel.checkIn }} – {{ hotel.checkOut }}
+      </div>
+    </div>
+  </div>
+} @else {
+  <div class="summary-card hotel-card loading-card d-flex align-items-start">
+    <div class="card-icon-wrap icon-secondary skeleton-pulse d-flex align-items-center justify-content-center flex-shrink-0"></div>
+    <div class="card-body-wrap w-100">
+      <div class="skeleton-line skeleton-short skeleton-pulse mb-2"></div>
+      <div class="skeleton-line skeleton-medium skeleton-pulse mb-2"></div>
+      <div class="skeleton-line skeleton-long skeleton-pulse"></div>
+    </div>
+  </div>
+}

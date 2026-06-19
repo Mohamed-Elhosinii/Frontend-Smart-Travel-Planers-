@@ -1,0 +1,24 @@
+<app-navbar [lightBg]="true"></app-navbar>
+
+<div class="container legal-page-container py-5 mt-4">
+  <div class="max-w-legal mx-auto w-100">
+
+    <header class="text-center mb-5">
+      <h1 class="font-serif fw-bold text-deep mb-2">{{ heading }}</h1>
+      <p class="text-muted leading-relaxed">Last Updated: {{ lastUpdated }}</p>
+    </header>
+
+    <div class="card legal-card border shadow-sm rounded-4 p-4 p-md-5 bg-white mb-5">
+      <ng-content></ng-content>
+    </div>
+
+    <div class="text-center mb-4">
+      <a routerLink="/" class="btn btn-back-home rounded-pill px-4 py-2 fw-bold shadow-sm text-decoration-none">
+        <i class="fa-solid fa-arrow-left me-2" aria-hidden="true"></i>Back to Home
+      </a>
+    </div>
+
+  </div>
+</div>
+
+<app-footer></app-footer>

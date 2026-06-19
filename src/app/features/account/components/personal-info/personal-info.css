@@ -1,0 +1,47 @@
+/* ── Avatar Profile Photo upload ────────────────────────────────── */
+.avatar-upload-container {
+  width: 100px;
+  height: 100px;
+}
+
+.avatar-upload-container:hover .avatar-overlay {
+  opacity: 1 !important;
+  background-color: rgba(61, 43, 47, 0.65);
+}
+
+/* ── Overhauled Form Controls ───────────────────────────────────── */
+.form-control,
+.form-select {
+  border: 1px solid var(--border-color);
+  color: var(--secondary-dark);
+  transition: border-color 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+}
+
+.form-control:focus,
+.form-select:focus {
+  border-color: var(--primary-brand) !important;
+  box-shadow: 0 0 0 4px rgba(116, 52, 27, 0.12) !important;
+  color: var(--secondary-dark);
+}
+
+.form-control:disabled {
+  background-color: #f7f3ef !important;
+  border-color: var(--border-color);
+  color: var(--text-muted);
+}
+
+/* ── Action Save Buttons ────────────────────────────────────────── */
+.btn-save {
+  background: var(--primary-gradient);
+  box-shadow: 0 4px 15px rgba(116, 52, 27, 0.25);
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.btn-save:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(116, 52, 27, 0.35);
+}
+
+.btn-save:active {
+  transform: translateY(0);
+}

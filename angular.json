@@ -17,6 +17,13 @@
             "polyfills": [
               "zone.js"
             ],
+            "allowedCommonJsDependencies": [
+              "leaflet",
+              "jspdf",
+              "html2canvas",
+              "canvg",
+              "core-js"
+            ],
             "tsConfig": "tsconfig.app.json",
             "assets": [
               {
@@ -35,8 +42,8 @@
               "budgets": [
                 {
                   "type": "initial",
-                  "maximumWarning": "500kB",
-                  "maximumError": "1MB"
+                  "maximumWarning": "700kB",
+                  "maximumError": "1.5MB"
                 },
                 {
                   "type": "anyComponentStyle",

@@ -1,0 +1,27 @@
+<div class="map-wrapper position-relative h-100 overflow-hidden">
+  <div #mapContainer id="itinerary-map" class="map-container w-100 h-100"></div>
+
+  <!-- Top Left Overlay Badge -->
+  <div class="map-overlay-badge position-absolute d-flex align-items-center gap-2 fw-semibold">
+    <span class="pulse-dot rounded-circle d-inline-block"></span>
+    <span class="badge-text">Day {{ dayNumber }} — {{ (activities || []).length }} Stops</span>
+  </div>
+
+  <!-- Top Right Custom Zoom Controls -->
+  <div class="map-zoom-controls position-absolute d-flex flex-column gap-2">
+    <button type="button" class="zoom-btn rounded-circle d-flex align-items-center justify-content-center p-0" (click)="zoomIn()" title="Zoom In">
+      <i class="fa-solid fa-plus"></i>
+    </button>
+    <button type="button" class="zoom-btn rounded-circle d-flex align-items-center justify-content-center p-0" (click)="zoomOut()" title="Zoom Out">
+      <i class="fa-solid fa-minus"></i>
+    </button>
+  </div>
+
+  <!-- Bottom Centered Horizontal Legend -->
+  <div class="map-legend position-absolute d-flex flex-row align-items-center gap-3 text-nowrap">
+    <div class="legend-item d-flex align-items-center fw-semibold"><span class="dot dot-food rounded-circle d-inline-block"></span> Food</div>
+    <div class="legend-item d-flex align-items-center fw-semibold"><span class="dot dot-attraction rounded-circle d-inline-block"></span> Attraction</div>
+    <div class="legend-item d-flex align-items-center fw-semibold"><span class="dot dot-leisure rounded-circle d-inline-block"></span> Leisure</div>
+    <div class="legend-item d-flex align-items-center fw-semibold"><span class="dot dot-hotel rounded-circle d-inline-block"></span> Hotel</div>
+  </div>
+</div>

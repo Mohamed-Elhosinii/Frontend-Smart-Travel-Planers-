@@ -1,0 +1,85 @@
+<nav class="navbar navbar-expand-lg wandr-nav fixed-top" [class.scrolled]="isScrolled || lightBg">
+  <div class="container-fluid px-3 px-lg-4">
+
+    <!-- LEFT: Brand Logo -->
+    <a class="navbar-brand wandr-logo me-0 text-decoration-none" routerLink="/">TripMind</a>
+
+    <!-- Mobile Toggler -->
+    <button
+      class="navbar-toggler border-0 shadow-none d-lg-none d-flex flex-column justify-content-between p-0"
+      [class.open]="isMenuOpen"
+      type="button"
+      (click)="isMenuOpen = !isMenuOpen"
+      [attr.aria-expanded]="isMenuOpen"
+      aria-controls="navbarNav"
+      aria-label="Toggle navigation"
+    >
+      <span class="toggler-bar d-block w-100"></span>
+      <span class="toggler-bar d-block w-100"></span>
+      <span class="toggler-bar d-block w-100"></span>
+    </button>
+
+    <!-- CENTER + RIGHT: Collapsible Content -->
+    <div class="collapse navbar-collapse" [class.show]="isMenuOpen" id="navbarNav">
+
+      <!-- CENTER: Navigation Links -->
+      <ul class="navbar-nav mx-auto gap-1 gap-lg-3 align-items-lg-center py-3 py-lg-0">
+        <li class="nav-item">
+          <a class="nav-link position-relative fw-semibold text-nowrap" routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{exact:true}">Home</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link position-relative fw-semibold text-nowrap" routerLink="/plan" routerLinkActive="active">Plan Your Trip</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link position-relative fw-semibold text-nowrap" routerLink="/chat" routerLinkActive="active">AI Chat</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link position-relative fw-semibold text-nowrap" routerLink="/my-trips" routerLinkActive="active">My Trips</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link position-relative fw-semibold text-nowrap" routerLink="/about" routerLinkActive="active">About Us</a>
+        </li>
+      </ul>
+
+      <!-- RIGHT: Auth Section -->
+      <div class="d-flex align-items-center gap-2 pb-3 pb-lg-0">
+        @if (!authService.isLoggedIn()) {
+          <a routerLink="/signup" class="btn-signup d-inline-flex align-items-center fw-bold text-decoration-none text-nowrap">Sign Up</a>
+        }
+
+        @if (authService.isLoggedIn()) {
+          <div class="user-menu position-relative">
+            <button
+              class="user-icon-btn d-flex align-items-center justify-content-center rounded-circle"
+              type="button"
+              (click)="toggleDropdown()"
+              aria-label="User menu"
+              aria-haspopup="true"
+              [attr.aria-expanded]="isDropdownOpen"
+            >
+              <i class="fa fa-user-circle" aria-hidden="true"></i>
+            </button>
+            @if (isDropdownOpen) {
+              <div class="user-dropdown open overflow-hidden" role="menu">
+                <a routerLink="/profile" class="dropdown-item d-flex align-items-center fw-medium text-decoration-none" role="menuitem">
+                  <i class="fa fa-user" aria-hidden="true"></i> My Profile
+                </a>
+                <a routerLink="/my-trips" class="dropdown-item d-flex align-items-center fw-medium text-decoration-none" role="menuitem">
+                  <i class="fa fa-suitcase" aria-hidden="true"></i> My Trips
+                </a>
+                <a routerLink="/settings" class="dropdown-item d-flex align-items-center fw-medium text-decoration-none" role="menuitem">
+                  <i class="fa fa-cog" aria-hidden="true"></i> Settings
+                </a>
+                <div class="dropdown-divider my-1"></div>
+                <button (click)="logout()" type="button" role="menuitem" class="dropdown-item text-danger border-0 bg-transparent w-100 text-start d-flex align-items-center gap-2 fw-medium text-decoration-none">
+                  <i class="fa-solid fa-right-from-bracket" aria-hidden="true"></i> Sign Out
+                </button>
+              </div>
+            }
+          </div>
+        }
+      </div>
+
+    </div>
+  </div>
+</nav>

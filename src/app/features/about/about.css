@@ -1,0 +1,167 @@
+.about-wrapper {
+  background: #FDFBF7;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  color: #261814;
+}
+
+/* Hero Section */
+.about-hero {
+  background-image: linear-gradient(to bottom, rgba(38, 24, 20, 0.55), rgba(38, 24, 20, 0.88)), url('https://images.unsplash.com/photo-1488646953014-85cb44e25828?w=1600&q=80');
+  background-size: cover;
+  background-position: center;
+  min-height: 360px;
+}
+
+.hero-overlay {
+  background: rgba(181, 67, 4, 0.08);
+  pointer-events: none;
+}
+
+.hero-badge {
+  background: rgba(255, 255, 255, 0.16);
+  border: 1px solid rgba(255, 255, 255, 0.28);
+  font-size: 0.72rem;
+  letter-spacing: 1.2px;
+}
+
+.hero-title {
+  font-family: 'Playfair Display', serif;
+  font-weight: 800;
+  font-size: 2.8rem;
+  color: #ffffff;
+  text-shadow: 0 4px 15px rgba(38, 24, 20, 0.3);
+}
+
+.hero-sub {
+  color: rgba(255, 255, 255, 0.9);
+  font-size: 1.1rem;
+  max-width: 600px;
+}
+
+/* Philosophy Section */
+.section-title {
+  font-family: 'Playfair Display', serif;
+  font-weight: 800;
+  color: #261814;
+  font-size: 1.95rem;
+}
+
+.leading-relaxed {
+  line-height: 1.7;
+}
+
+/* Feature Badge Card styling */
+.feature-badge-card {
+  background: #ffffff;
+  border: 1px solid #e8ddd6;
+  box-shadow: 0 4px 16px rgba(61, 43, 47, 0.03);
+  transition: all 0.2s ease;
+}
+
+.feature-badge-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 22px rgba(181, 67, 4, 0.07);
+  border-color: rgba(181, 67, 4, 0.25);
+}
+
+.badge-icon {
+  font-size: 1.35rem;
+  color: var(--primary, #B54304);
+  background: rgba(181, 67, 4, 0.08);
+  width: 44px;
+  height: 44px;
+}
+
+/* Mission Left Card */
+.mission-image-card {
+  background-image: linear-gradient(135deg, rgba(181, 67, 4, 0.75), rgba(61, 43, 47, 0.9)), url('https://images.unsplash.com/photo-1469854523086-cc02fe5d8800?w=800&q=80');
+  background-size: cover;
+  background-position: center;
+  min-height: 380px;
+  box-shadow: 0 12px 36px rgba(61, 43, 47, 0.08);
+}
+
+.mission-text-overlay {
+  color: #ffffff;
+}
+
+.brand-text {
+  font-size: 0.75rem;
+  letter-spacing: 1.5px;
+  color: #ffd4b3;
+}
+
+.mission-text-overlay h3 {
+  font-family: 'Playfair Display', serif;
+  font-size: 1.6rem;
+  line-height: 1.4;
+}
+
+/* Team Section */
+.bg-cream-base {
+  background: #fcf9f5;
+  border-top: 1px solid #e8ddd6;
+}
+
+.team-card {
+  background: #ffffff;
+  border: 1px solid #e8ddd6;
+  box-shadow: 0 4px 18px rgba(61, 43, 47, 0.03);
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.team-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 28px rgba(61, 43, 47, 0.08);
+  border-color: rgba(181, 67, 4, 0.3);
+}
+
+.avatar-circle {
+  width: 80px;
+  height: 80px;
+  background: rgba(181, 67, 4, 0.06);
+  border: 2px solid rgba(181, 67, 4, 0.15);
+  color: var(--primary, #B54304);
+  font-size: 2.2rem;
+  transition: all 0.25s ease;
+}
+
+.team-card:hover .avatar-circle {
+  background: var(--primary, #B54304);
+  color: #ffffff;
+  border-color: var(--primary, #B54304);
+  transform: scale(1.05);
+}
+
+.member-name {
+  font-size: 1.05rem;
+  color: #261814;
+}
+
+.member-role {
+  font-size: 0.78rem;
+  color: var(--primary, #B54304);
+  letter-spacing: 0.8px;
+}
+
+.social-icon {
+  width: 32px;
+  height: 32px;
+  background: #faf7f2;
+  border: 1px solid #e8ddd6;
+  color: #6B6B6B;
+  font-size: 0.85rem;
+  transition: all 0.2s ease;
+}
+
+.social-icon:hover {
+  background: var(--primary-dk, #3D2B2F);
+  color: #ffffff;
+  border-color: var(--primary-dk, #3D2B2F);
+}
+
+@media (max-width: 768px) {
+  .hero-title {
+    font-size: 2.2rem;
+  }
+}

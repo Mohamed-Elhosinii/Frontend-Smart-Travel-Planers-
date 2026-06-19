@@ -1,39 +1,46 @@
 import { Routes } from '@angular/router';
-import { LandingComponent } from './pages/landing/landing.component';
-import { Signup } from './pages/signup/signup';
-import { Login } from './pages/login/login';
-import { TripForm } from './pages/trip-form/trip-form';
-import { MyTripsPageComponent } from './pages/my-trips-page/my-trips-page.component';
-import { TravelPlanPage } from './pages/travel-plan-page/travel-plan-page';
-import { AboutPage } from './pages/about/about';
-import { MyTripsLayout } from './pages/my-trips-page/my-trips-layout';
-import { ChatPage } from './pages/chat/chat';
-import { PortfolioPage } from './pages/portfolio-page/portfolio-page';
-import { SettingsPage } from './pages/settings-page/settings-page';
-import { ForgotPasswordPage } from './pages/forgot-password/forgot-password';
-import { TermsPage } from './pages/terms/terms';
-import { PrivacyPage } from './pages/privacy/privacy';
 
+/**
+ * Application routes.
+ *
+ * Every page is lazily loaded via `loadComponent` so each feature ships in its
+ * own chunk and the initial bundle stays small (Leaflet, for example, only loads
+ * with the trip itinerary).
+ *
+ * Auth policy: all pages are publicly browsable. Authentication is enforced only
+ * at the point of *saving a plan* (see ChatPage.savePlan), not via route guards.
+ * The reusable `authGuard` (core/guards/auth-guard.ts) remains available if any
+ * route needs protecting again later.
+ */
 export const routes: Routes = [
-  { path: '', component: LandingComponent },
-  { path: 'signup', component: Signup },
-  { path: 'login', component: Login },
-  { path: 'plan', component: TripForm },
-  { path: 'about', component: AboutPage },
-  { path: 'chat', component: ChatPage },
-  { path: 'portfolio', component: PortfolioPage },
-  { path: 'forgot-password', component: ForgotPasswordPage },
-  { path: 'terms', component: TermsPage },
-  { path: 'privacy', component: PrivacyPage },
-  { path: 'settings', component: SettingsPage },
-  { path: 'profile', redirectTo: 'portfolio', pathMatch: 'full' },
+  // --- Public pages ---
+  { path: '', loadComponent: () => import('./features/landing/landing').then((m) => m.LandingPage) },
+  { path: 'login', loadComponent: () => import('./features/auth/login/login').then((m) => m.LoginPage) },
+  { path: 'signup', loadComponent: () => import('./features/auth/signup/signup').then((m) => m.SignupPage) },
+  {
+    path: 'forgot-password',
+    loadComponent: () => import('./features/auth/forgot-password/forgot-password').then((m) => m.ForgotPasswordPage),
+  },
+  { path: 'plan', loadComponent: () => import('./features/trip-form/trip-form').then((m) => m.TripFormPage) },
+  { path: 'about', loadComponent: () => import('./features/about/about').then((m) => m.AboutPage) },
+  { path: 'terms', loadComponent: () => import('./features/legal/terms/terms').then((m) => m.TermsPage) },
+  { path: 'privacy', loadComponent: () => import('./features/legal/privacy/privacy').then((m) => m.PrivacyPage) },
+  { path: 'chat', loadComponent: () => import('./features/chat/chat').then((m) => m.ChatPage) },
+  { path: 'profile', loadComponent: () => import('./features/account/profile/profile').then((m) => m.ProfilePage) },
+  { path: 'settings', loadComponent: () => import('./features/account/settings/settings').then((m) => m.SettingsPage) },
   {
     path: 'my-trips',
-    component: MyTripsLayout,
+    loadComponent: () => import('./features/my-trips/my-trips-layout').then((m) => m.MyTripsLayout),
     children: [
-      { path: '', component: MyTripsPageComponent },
-      { path: 'plan/:id', component: TravelPlanPage }
-    ]
+      { path: '', loadComponent: () => import('./features/my-trips/my-trips').then((m) => m.MyTripsPage) },
+      {
+        path: 'plan/:id',
+        loadComponent: () => import('./features/my-trips/travel-plan/travel-plan').then((m) => m.TravelPlanPage),
+      },
+    ],
   },
-  { path: '**', redirectTo: '' }
+
+  // --- Redirects & fallback ---
+  { path: 'portfolio', redirectTo: 'profile', pathMatch: 'full' },
+  { path: '**', redirectTo: '' },
 ];

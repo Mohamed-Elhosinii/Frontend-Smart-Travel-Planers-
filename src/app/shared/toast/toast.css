@@ -1,0 +1,6 @@
+/* Positioning, animation and color come from the global `.alert-toast`
+   rules in src/styles.css. Component-local tweaks only. */
+
+.alert-toast .btn-close {
+  font-size: 0.7rem;
+}

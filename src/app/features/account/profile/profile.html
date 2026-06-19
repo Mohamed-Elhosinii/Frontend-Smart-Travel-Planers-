@@ -1,0 +1,60 @@
+<app-navbar [lightBg]="true"></app-navbar>
+
+<div class="container py-5">
+  <div class="row g-4">
+    
+    <!-- Left Sidebar Menu (Navigation) -->
+    <div class="col-lg-3">
+      <!-- Quick User Card -->
+      <div class="card border-0 shadow-sm rounded-4 p-4 text-center mb-4 bg-white">
+        <div class="position-relative d-inline-block mx-auto mb-3">
+          <img [src]="userProfile.avatarUrl" alt="Profile avatar" class="rounded-circle object-fit-cover shadow-sm border border-3 border-white" style="width: 100px; height: 100px;">
+        </div>
+        <h5 class="fw-bold text-deep mb-1">{{ userProfile.firstName }} {{ userProfile.lastName }}</h5>
+        <p class="text-muted small mb-0"><i class="fa-solid fa-location-dot me-1"></i>{{ userProfile.country }}</p>
+      </div>
+
+      <!-- Navigation List -->
+      <div class="list-group list-group-profile gap-2 border-0 bg-transparent">
+        <button 
+          type="button" 
+          class="list-group-item list-group-item-action d-flex align-items-center gap-3 py-3 border-0 rounded-3 text-start" 
+          [class.active]="activeTab === 'personal'" 
+          (click)="setActiveTab('personal')"
+        >
+          <i class="fa-solid fa-id-card fs-5"></i>
+          <span class="fw-semibold">Personal Information</span>
+        </button>
+        <button 
+          type="button" 
+          class="list-group-item list-group-item-action d-flex align-items-center gap-3 py-3 border-0 rounded-3 text-start" 
+          [class.active]="activeTab === 'security'" 
+          (click)="setActiveTab('security')"
+        >
+          <i class="fa-solid fa-shield-halved fs-5"></i>
+          <span class="fw-semibold">Security & Password</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- Right Main Content Area (The Settings Cards) -->
+    <div class="col-lg-9">
+      
+      <!-- Settings Card -->
+      <div class="card shadow-sm border-0 rounded-4 p-4 bg-white">
+        @switch (activeTab) {
+          @case ('personal') {
+            <app-personal-info
+              [userProfile]="editableProfile"
+              (saveProfile)="onProfileSaved($event)"
+            ></app-personal-info>
+          }
+          @case ('security') {
+            <app-password-form></app-password-form>
+          }
+        }
+      </div>
+
+    </div>
+  </div>
+</div>
