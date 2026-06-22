@@ -19,6 +19,7 @@ export class SignupPage {
   private readonly router = inject(Router);
 
   submitted = false;
+  errorMessage = '';
 
   readonly form = this.fb.nonNullable.group(
     {
@@ -37,18 +38,23 @@ export class SignupPage {
 
   submit(): void {
     this.submitted = true;
+    this.errorMessage = '';
     if (this.form.invalid) {
       this.form.markAllAsTouched();
       return;
     }
-    const { fullName, email, password } = this.form.getRawValue();
-    this.auth.register({ fullName, email, password });
-    this.router.navigate(['/my-trips']);
+    const { fullName, email, password, confirmPassword } = this.form.getRawValue();
+    this.auth.register({ fullName, email, password, confirmPassword }).subscribe(success => {
+      if (success) {
+        this.router.navigate(['/my-trips']);
+      } else {
+        this.errorMessage = 'Registration failed. The email may already be in use.';
+      }
+    });
   }
 
-  /** Register via Google (mock OAuth — see {@link AuthService.signInWithGoogle}). */
+  /** Initiate real Google OAuth flow via the backend redirect. */
   continueWithGoogle(): void {
-    this.auth.signInWithGoogle();
-    this.router.navigate(['/my-trips']);
+    this.auth.initiateGoogleLogin();
   }
 }

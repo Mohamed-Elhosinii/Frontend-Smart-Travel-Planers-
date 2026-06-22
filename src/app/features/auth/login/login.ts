@@ -22,8 +22,10 @@ export class LoginPage implements OnInit {
   password = '';
   rememberMe = false;
   errorMessage = '';
+  returnUrl = '/my-trips';
 
   ngOnInit(): void {
+    this.returnUrl = this.route.snapshot.queryParams['returnUrl'] || '/my-trips';
     const saved = this.safeGet(REMEMBERED_EMAIL_KEY);
     if (saved) {
       this.email = saved;
@@ -38,19 +40,20 @@ export class LoginPage implements OnInit {
       return;
     }
 
-    if (!this.auth.login({ email: this.email, password: this.password })) {
-      this.errorMessage = 'We could not sign you in. Please check your details.';
-      return;
-    }
+    this.auth.login({ email: this.email, password: this.password }).subscribe(success => {
+      if (!success) {
+        this.errorMessage = 'We could not sign you in. Please check your details.';
+        return;
+      }
 
-    if (this.rememberMe) {
-      this.safeSet(REMEMBERED_EMAIL_KEY, this.email);
-    } else {
-      this.safeRemove(REMEMBERED_EMAIL_KEY);
-    }
+      if (this.rememberMe) {
+        this.safeSet(REMEMBERED_EMAIL_KEY, this.email);
+      } else {
+        this.safeRemove(REMEMBERED_EMAIL_KEY);
+      }
 
-    const returnUrl = this.route.snapshot.queryParamMap.get('returnUrl') ?? '/my-trips';
-    this.router.navigateByUrl(returnUrl);
+      this.router.navigateByUrl(this.returnUrl);
+    });
   }
 
   private safeGet(key: string): string | null {

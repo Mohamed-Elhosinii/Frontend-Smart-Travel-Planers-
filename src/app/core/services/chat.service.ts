@@ -1,38 +1,115 @@
-import { Injectable, signal } from '@angular/core';
+import { Injectable, signal, inject } from '@angular/core';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { ChatItinerary, ChatMessage, ChatSession } from '../models';
-
-/** Delay (ms) used by the UI to simulate the assistant "thinking". */
-export const ASSISTANT_REPLY_DELAY_MS = 1500;
+import { tap, catchError } from 'rxjs/operators';
+import { of, Observable } from 'rxjs';
+import { AuthService } from './auth.service';
 
 /**
- * Chat state and the demo itinerary planner.
- *
- * The "AI" here is a deterministic keyword matcher standing in for a real
- * planning backend. The message store is a signal so the conversation survives
- * navigation. Replace {@link generateAssistantReply} with a streaming API call
- * to make it real.
+ * Chat state and API integration for the AI itinerary planner.
  */
 @Injectable({ providedIn: 'root' })
 export class ChatService {
+  private readonly http = inject(HttpClient);
+  private readonly auth = inject(AuthService);
   private idCounter = 0;
 
-  private readonly _messages = signal<ChatMessage[]>([this.welcomeMessage()]);
+  private readonly _messages = signal<ChatMessage[]>([]);
   readonly messages = this._messages.asReadonly();
 
   readonly suggestions: string[] = [
-    'Plan a 3-day cultural tour in Rome',
-    'Suggest a budget-friendly week in Tokyo',
-    'Generate a luxury 5-day escape to Maldives',
-    'Recommend food spots and cafes in Paris',
+    'Plan a 5-day budget trip to Cairo, Egypt',
+    'Create a luxury honeymoon itinerary for Maldives',
+    'A 3-day adventure weekend getaway to Dahab',
+    'Plan a family summer vacation to Paris for 7 days',
   ];
 
-  readonly history: ChatSession[] = [
-    { id: 'h1', title: 'Summer in Paris Plan', date: 'June 15, 2026' },
-    { id: 'h2', title: 'Rome 4-Day History Tour', date: 'June 10, 2026' },
-    { id: 'h3', title: 'Maldives Beach Getaway', date: 'May 28, 2026' },
-  ];
+  history: ChatSession[] = [];
+  private currentSessionId: string | null = null;
 
-  /** Append a user message to the conversation. */
+  hasActiveSession(): boolean {
+    return this.currentSessionId !== null;
+  }
+
+  createSession(): Observable<any> {
+    const headers = this.getAuthHeaders();
+    // Use an empty body for POST as required by standard session creation
+    return this.http.post<any>('http://localhost:5000/api/Chat/session', {}, { headers }).pipe(
+      tap(session => {
+        this.currentSessionId = session.sessionId;
+        this._messages.set([this.welcomeMessage()]);
+      })
+    );
+  }
+
+  sendMessage(text: string): Observable<any> {
+    if (!this.currentSessionId) {
+      throw new Error('No active chat session. Please start a new journey.');
+    }
+
+    const headers = this.getAuthHeaders();
+    // Assuming backend takes the message in the body as a simple string or JSON
+    // Adjust payload structure if the backend expects a different model (e.g. { message: text })
+    return this.http.post<any>(
+      `http://localhost:5000/api/Chat/send`,
+      { sessionId: this.currentSessionId, message: text },
+      { headers }
+    ).pipe(
+      tap(response => {
+        this.addAssistantReply(response.message, response.plan);
+      })
+    );
+  }
+
+  loadUserSessions(): Observable<any> {
+    const headers = this.getAuthHeaders();
+    return this.http.get<any>('http://localhost:5000/api/Chat/sessions', { headers }).pipe(
+      tap(sessions => this.history = sessions),
+      catchError(err => { console.error('Failed to load sessions', err); return of([]); })
+    );
+  }
+
+  loadSessionChat(sessionId: string): Observable<any> {
+    const headers = this.getAuthHeaders();
+    return this.http.get<any>(`http://localhost:5000/api/Chat/history/${sessionId}`, { headers }).pipe(
+      tap(messages => {
+        this.currentSessionId = sessionId;
+        this._messages.set(messages);
+      })
+    );
+  }
+
+  reset(): void {
+    this.currentSessionId = null;
+    this._messages.set([]);
+    // Automatically create a new session
+    this.createSession().subscribe({
+      error: (err) => console.error('Failed to create session:', err)
+    });
+  }
+
+  private getAuthHeaders(): HttpHeaders {
+    // Dynamically and synchronously read the active token from localStorage
+    const token = localStorage.getItem('token');
+    
+    console.log('DEBUG: Token retrieved from storage is:', token);
+    
+    let headers = new HttpHeaders({
+      'Content-Type': 'application/json'
+    });
+    
+    if (token && token.trim() !== '') {
+      // Ensure strict Bearer schema prefix format
+      headers = headers.set('Authorization', `Bearer ${token.trim()}`);
+    } else {
+      console.warn('DEBUG: No valid token found in storage. Skipping Authorization header injection.');
+    }
+    
+    return headers;
+  }
+
+  // --- internals ---
+
   addUserMessage(text: string): void {
     this.append({
       id: this.nextId(),
@@ -42,27 +119,25 @@ export class ChatService {
     });
   }
 
-  /** Build (and append) the assistant's reply to the given user input. */
-  addAssistantReply(userText: string): void {
-    const itinerary = this.matchItinerary(userText);
+  addSystemErrorMessage(text: string): void {
     this.append({
       id: this.nextId(),
-      sender: 'assistant',
-      text: itinerary
-        ? "Here's a draft itinerary from the TripMind demo planner:"
-        : this.smallTalkReply(userText),
+      sender: 'system',
+      text,
       time: this.currentTime(),
-      isItinerary: !!itinerary,
-      itineraryData: itinerary,
     });
   }
 
-  /** Clear the conversation and start fresh. */
-  reset(): void {
-    this._messages.set([this.welcomeMessage()]);
+  private addAssistantReply(text: string, planData?: ChatItinerary): void {
+    this.append({
+      id: this.nextId(),
+      sender: 'assistant',
+      text,
+      time: this.currentTime(),
+      isItinerary: !!planData,
+      itineraryData: planData,
+    });
   }
-
-  // --- internals ---
 
   private append(message: ChatMessage): void {
     this._messages.update((list) => [...list, message]);
@@ -77,7 +152,7 @@ export class ChatService {
     return {
       id: this.nextId(),
       sender: 'assistant',
-      text: 'Hi, I am your TripMind AI co-pilot. Tell me where you want to go, how long you have, and the travel style you prefer.',
+      text: 'أهلاً بك! أنا مساعدك الذكي للسفر. لمساعدتك في التخطيط، يرجى تزويدي بالوجهة، تواريخ السفر، ميزانيتك، وعدد المسافرين.',
       time: this.currentTime(),
     };
   }
@@ -89,66 +164,5 @@ export class ChatService {
     const ampm = hours >= 12 ? 'PM' : 'AM';
     hours = hours % 12 || 12;
     return `${hours}:${minutes} ${ampm}`;
-  }
-
-  private smallTalkReply(userInput: string): string {
-    const input = userInput.toLowerCase();
-    if (input.includes('budget') || input.includes('cost')) {
-      return 'For a tighter budget I recommend public transport and local street food. Tell me the destination and trip length and I can draft a full breakdown.';
-    }
-    return 'Got it! To build a tailored plan, share your destination, travel dates, nightly budget, or any must-see sights.';
-  }
-
-  private matchItinerary(userInput: string): ChatItinerary | undefined {
-    const input = userInput.toLowerCase();
-    if (input.includes('rome') || input.includes('italy')) {
-      return {
-        destination: 'Rome, Italy',
-        duration: '3 Days',
-        budget: 'EUR 450 (Moderate)',
-        days: [
-          { dayNum: 1, title: 'Ancient Rome Explorations', activities: ['Visit Colosseum & Roman Forum', 'Gelato break near Piazza Navona', 'Walk up the Spanish Steps', 'Dinner in Trastevere district'] },
-          { dayNum: 2, title: 'Vatican City & Renaissance Art', activities: ['Guided tour of Vatican Museums & St. Peter\'s Basilica', 'Stroll along Castel Sant\'Angelo', 'Make a wish at Trevi Fountain'] },
-          { dayNum: 3, title: 'Scenic Views & Roman Culture', activities: ['Explore Villa Borghese Gardens & Galleria', 'Panoramic views from Janiculum Hill', 'Enjoy a traditional Pasta Carbonara class'] },
-        ],
-      };
-    }
-    if (input.includes('tokyo') || input.includes('japan')) {
-      return {
-        destination: 'Tokyo, Japan',
-        duration: '7 Days',
-        budget: 'JPY 120,000 (Budget-friendly)',
-        days: [
-          { dayNum: 1, title: 'Modern Marvels of Shinjuku', activities: ['Explore Shinjuku Golden Gai', 'Panoramic view from the Metropolitan Government Building'] },
-          { dayNum: 2, title: 'Tradition meets Pop Culture', activities: ['Visit Senso-ji Temple in Asakusa', 'Shopping in Akihabara Electric Town', 'Stroll through Ueno Park'] },
-          { dayNum: 3, title: 'Youth Culture & Trendy Districts', activities: ['Walk Shibuya Crossing', 'Visit Meiji Shrine & Harajuku', 'Dinner in Omotesando'] },
-        ],
-      };
-    }
-    if (input.includes('maldives')) {
-      return {
-        destination: 'Maldives Island Resort',
-        duration: '5 Days',
-        budget: '$2,800 (Premium Luxury)',
-        days: [
-          { dayNum: 1, title: 'Tropical Welcome', activities: ['Speedboat transfer to overwater villa', 'Welcome drinks & sunset beach walk', 'Private deck dining'] },
-          { dayNum: 2, title: 'Underwater Adventures', activities: ['Morning guided snorkeling safari', 'Relaxing Balinese spa treatment', 'Beachside cinema screening'] },
-          { dayNum: 3, title: 'Local Culture & Sailing', activities: ['Sunset catamaran cruise with dolphin watching', 'Traditional Maldivian night & buffet'] },
-        ],
-      };
-    }
-    if (input.includes('paris') || input.includes('france')) {
-      return {
-        destination: 'Paris, France',
-        duration: '4 Days',
-        budget: 'EUR 680 (Moderate)',
-        days: [
-          { dayNum: 1, title: 'Iconic Monuments', activities: ['Eiffel Tower summit access', 'Seine River sightseeing cruise', 'Stroll along the Champs-Élysées'] },
-          { dayNum: 2, title: 'Art & Bohemian Vibes', activities: ['Visit the Louvre Museum', 'Walk up Montmartre to Sacré-Cœur', 'Café dining in the Latin Quarter'] },
-          { dayNum: 3, title: 'Royal Gardens & Strolling', activities: ['Palace of Versailles day trip', 'Relax at Jardin du Luxembourg', 'Dinner at a traditional French bistro'] },
-        ],
-      };
-    }
-    return undefined;
   }
 }

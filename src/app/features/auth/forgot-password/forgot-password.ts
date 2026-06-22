@@ -1,10 +1,11 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
+import { AuthService } from '../../../core/services/auth.service';
 
 const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
-/** Password-reset request page. Shows a confirmation once an email is submitted. */
+/** Password-reset request page. Hits POST /api/Auth/forgot-password. */
 @Component({
   selector: 'app-forgot-password',
   standalone: true,
@@ -13,9 +14,12 @@ const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
   styleUrl: './forgot-password.css',
 })
 export class ForgotPasswordPage {
+  private readonly auth = inject(AuthService);
+
   email = '';
   isSubmitted = false;
   errorMessage = '';
+  isLoading = false;
 
   sendResetLink(): void {
     const email = this.email.trim();
@@ -24,7 +28,19 @@ export class ForgotPasswordPage {
       return;
     }
     this.errorMessage = '';
-    this.isSubmitted = true;
-    // No backend yet — a real implementation would POST to /auth/forgot-password here.
+    this.isLoading = true;
+
+    this.auth.forgotPassword(email).subscribe({
+      next: () => {
+        this.isSubmitted = true;
+        this.isLoading = false;
+      },
+      error: () => {
+        // The backend always returns 200 even if email doesn't exist (security)
+        // so this only fires on network/server errors
+        this.isSubmitted = true;
+        this.isLoading = false;
+      },
+    });
   }
 }

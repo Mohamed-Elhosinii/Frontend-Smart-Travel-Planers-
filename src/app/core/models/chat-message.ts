@@ -13,7 +13,7 @@ export interface ChatItinerary {
 /** A single message in the AI chat conversation. */
 export interface ChatMessage {
   id: string;
-  sender: 'user' | 'assistant';
+  sender: 'user' | 'assistant' | 'system';
   text: string;
   /** Display timestamp, e.g. "03:00 PM". */
   time: string;

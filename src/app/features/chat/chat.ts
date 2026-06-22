@@ -3,18 +3,19 @@ import {
   Component,
   ElementRef,
   OnDestroy,
+  OnInit,
   ViewChild,
   inject,
 } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { Navbar } from '../../layout/navbar/navbar';
-import { ASSISTANT_REPLY_DELAY_MS, ChatService } from '../../core/services/chat.service';
+import { ChatService } from '../../core/services/chat.service';
 import { AuthService } from '../../core/services/auth.service';
 import { ToastService } from '../../core/services/toast.service';
 import { ChatMessage, ChatSession } from '../../core/models';
 
-/** AI travel-assistant chat. State and the demo planner live in {@link ChatService}. */
+/** AI travel-assistant chat integrated with the backend API. */
 @Component({
   selector: 'app-chat',
   standalone: true,
@@ -22,7 +23,7 @@ import { ChatMessage, ChatSession } from '../../core/models';
   templateUrl: './chat.html',
   styleUrl: './chat.css',
 })
-export class ChatPage implements AfterViewChecked, OnDestroy {
+export class ChatPage implements AfterViewChecked, OnInit, OnDestroy {
   private readonly chat = inject(ChatService);
   private readonly auth = inject(AuthService);
   private readonly toast = inject(ToastService);
@@ -32,8 +33,8 @@ export class ChatPage implements AfterViewChecked, OnDestroy {
 
   newMessageText = '';
   isAssistantTyping = false;
+  isRedirecting = false;
 
-  private replyTimer?: ReturnType<typeof setTimeout>;
   private renderedCount = 0;
 
   get messages(): ChatMessage[] {
@@ -46,8 +47,19 @@ export class ChatPage implements AfterViewChecked, OnDestroy {
     return this.chat.suggestions;
   }
 
+  ngOnInit(): void {
+    // Only create a new session if we don't already have one in progress
+    if (this.messages.length === 0 || !this.chat.hasActiveSession()) {
+      this.chat.createSession().subscribe({
+        error: (err) => console.error('Failed to initialize chat session', err)
+      });
+    }
+
+    // Load historical sessions for the sidebar
+    this.chat.loadUserSessions().subscribe();
+  }
+
   ngAfterViewChecked(): void {
-    // Only scroll when a message is actually added, so users can scroll up freely.
     if (this.messages.length !== this.renderedCount) {
       this.renderedCount = this.messages.length;
       this.scrollToBottom();
@@ -55,7 +67,7 @@ export class ChatPage implements AfterViewChecked, OnDestroy {
   }
 
   ngOnDestroy(): void {
-    clearTimeout(this.replyTimer);
+    // Clean up if needed
   }
 
   sendMessage(): void {
@@ -66,11 +78,30 @@ export class ChatPage implements AfterViewChecked, OnDestroy {
     this.newMessageText = '';
     this.isAssistantTyping = true;
 
-    clearTimeout(this.replyTimer);
-    this.replyTimer = setTimeout(() => {
-      this.isAssistantTyping = false;
-      this.chat.addAssistantReply(text);
-    }, ASSISTANT_REPLY_DELAY_MS);
+    this.chat.sendMessage(text).subscribe({
+      next: (response) => {
+        this.isAssistantTyping = false;
+        
+        if (response.tripId) {
+          this.isRedirecting = true;
+          setTimeout(() => {
+            this.router.navigate(['/my-trips', response.tripId]);
+          }, 2000);
+        }
+      },
+      error: (err) => {
+        console.error('Error sending message:', err);
+        this.isAssistantTyping = false;
+        this.chat.addSystemErrorMessage('عذراً، حدث خطأ أثناء الاتصال بالخادم. يرجى المحاولة مرة أخرى.');
+        this.toast.danger('Failed to send message. Please try again.');
+      }
+    });
+  }
+
+  loadHistoricalSession(sessionId: string): void {
+    this.chat.loadSessionChat(sessionId).subscribe({
+      error: (err) => this.toast.danger('Failed to load chat history.')
+    });
   }
 
   selectSuggestion(prompt: string): void {
@@ -82,10 +113,6 @@ export class ChatPage implements AfterViewChecked, OnDestroy {
     this.chat.reset();
   }
 
-  /**
-   * Save a generated itinerary. This is the one action that requires an account:
-   * logged-out users are sent to sign in first (and returned here afterwards).
-   */
   savePlan(): void {
     if (!this.auth.isLoggedIn()) {
       this.toast.danger('Please sign in to save this plan.');

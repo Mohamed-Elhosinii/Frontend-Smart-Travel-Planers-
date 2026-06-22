@@ -1,0 +1,73 @@
+.confirm-wrapper {
+  background: #FDFBF7;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+}
+
+.confirm-card {
+  max-width: 480px;
+  width: 100%;
+  background: #ffffff;
+  border: 1px solid rgba(0, 0, 0, 0.06);
+}
+
+.brand-logo {
+  color: #B54304;
+  letter-spacing: 0.05em;
+}
+
+.text-deep {
+  color: #261814;
+}
+
+.text-accent {
+  color: #B54304;
+}
+
+.status-icon-box {
+  width: 80px;
+  height: 80px;
+  transition: all 0.3s ease;
+}
+
+.loading-pulse {
+  background-color: #B54304;
+  animation: pulse 1.5s ease-in-out infinite;
+}
+
+.success-box {
+  background-color: #2E7D32;
+}
+
+.error-box {
+  background-color: #C62828;
+}
+
+@keyframes pulse {
+  0%, 100% { transform: scale(1); opacity: 1; }
+  50% { transform: scale(1.08); opacity: 0.85; }
+}
+
+.btn-confirm {
+  background: #B54304;
+  color: #ffffff;
+  letter-spacing: 0.5px;
+  transition: all 0.2s ease;
+  box-shadow: 0 4px 15px rgba(181, 67, 4, 0.25);
+}
+
+.btn-confirm:hover {
+  background: #963503;
+  transform: translateY(-1px);
+  box-shadow: 0 6px 18px rgba(181, 67, 4, 0.35);
+  color: #ffffff;
+}
+
+.btn-confirm:active {
+  transform: translateY(0);
+}
+
+.spinner-border {
+  width: 2rem;
+  height: 2rem;
+  border-width: 3px;
+}
