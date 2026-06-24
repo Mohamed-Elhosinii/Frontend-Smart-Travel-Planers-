@@ -22,6 +22,7 @@ export class LoginPage implements OnInit {
   password = '';
   rememberMe = false;
   errorMessage = '';
+  isLoading = false;
   returnUrl = '/my-trips';
 
   ngOnInit(): void {
@@ -40,19 +41,39 @@ export class LoginPage implements OnInit {
       return;
     }
 
-    this.auth.login({ email: this.email, password: this.password }).subscribe(success => {
-      if (!success) {
-        this.errorMessage = 'We could not sign you in. Please check your details.';
-        return;
-      }
+    this.isLoading = true;
+    this.auth.login({ email: this.email, password: this.password }).subscribe({
+      next: (success) => {
+        this.isLoading = false;
+        if (!success) {
+          this.errorMessage = 'We could not sign you in. Please check your details.';
+          return;
+        }
 
-      if (this.rememberMe) {
-        this.safeSet(REMEMBERED_EMAIL_KEY, this.email);
-      } else {
-        this.safeRemove(REMEMBERED_EMAIL_KEY);
-      }
+        if (this.rememberMe) {
+          this.safeSet(REMEMBERED_EMAIL_KEY, this.email);
+        } else {
+          this.safeRemove(REMEMBERED_EMAIL_KEY);
+        }
 
-      this.router.navigateByUrl(this.returnUrl);
+        this.router.navigateByUrl(this.returnUrl);
+      },
+      error: (err) => {
+        this.isLoading = false;
+        let errorData = err.error;
+        if (typeof errorData === 'string') {
+          try {
+            errorData = JSON.parse(errorData);
+          } catch {
+            // Ignore parse failure
+          }
+        }
+        if (errorData?.errors && errorData.errors.length > 0) {
+          this.errorMessage = errorData.errors.join(' ');
+        } else {
+          this.errorMessage = errorData?.message || `Connection/Server Error (${err.status}: ${err.statusText || 'Server unreachable'}).`;
+        }
+      }
     });
   }
 

@@ -1,5 +1,6 @@
 import { Routes } from '@angular/router';
 import { authGuard } from './core/guards/auth-guard';
+import { adminGuard } from './core/guards/admin.guard';
 
 /**
  * Application routes.
@@ -32,7 +33,7 @@ export const routes: Routes = [
     path: 'google-callback',
     loadComponent: () => import('./features/auth/google-callback/google-callback').then((m) => m.GoogleCallbackPage),
   },
-  { path: 'plan', loadComponent: () => import('./features/trip-form/trip-form').then((m) => m.TripFormPage) },
+  { path: 'plan', loadComponent: () => import('./features/trip-form/trip-form').then((m) => m.TripFormPage), canActivate: [authGuard] },
   { path: 'about', loadComponent: () => import('./features/about/about').then((m) => m.AboutPage) },
   { path: 'terms', loadComponent: () => import('./features/legal/terms/terms').then((m) => m.TermsPage) },
   { path: 'privacy', loadComponent: () => import('./features/legal/privacy/privacy').then((m) => m.PrivacyPage) },
@@ -54,6 +55,20 @@ export const routes: Routes = [
         path: ':id',
         loadComponent: () => import('./features/my-trips/travel-plan/travel-plan').then((m) => m.TravelPlanPage),
       },
+    ],
+  },
+
+  // --- Admin pages ---
+  {
+    path: 'admin',
+    loadComponent: () => import('./features/admin/admin-layout/admin-layout').then((m) => m.AdminLayout),
+    canActivate: [adminGuard],
+    children: [
+      { path: '', redirectTo: 'overview', pathMatch: 'full' },
+      { path: 'overview', loadComponent: () => import('./features/admin/dashboard/dashboard').then((m) => m.Dashboard) },
+      { path: 'users', loadComponent: () => import('./features/admin/users/users').then((m) => m.Users) },
+      { path: 'plans', loadComponent: () => import('./features/admin/plans/plans').then((m) => m.Plans) },
+      { path: 'payments', loadComponent: () => import('./features/admin/payments/payments').then((m) => m.Payments) },
     ],
   },
 

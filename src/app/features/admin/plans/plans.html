@@ -1,0 +1,172 @@
+<div class="admin-page-header">
+  <div>
+    <h1 class="page-title">Subscription Plans</h1>
+    <p class="page-subtitle">Configure, create and adjust subscription plans & pricing tiers.</p>
+  </div>
+  <button (click)="openCreateModal()" class="btn btn-primary">
+    <i class="fa fa-plus"></i> Create New Plan
+  </button>
+</div>
+
+@if (loading) {
+  <div class="plans-grid">
+    @for (card of [1, 2, 3]; track card) {
+      <div class="plan-card loading-skeleton" style="height: 250px;"></div>
+    }
+  </div>
+} @else if (plans.length === 0) {
+  <div class="card p-5 text-center text-muted border-dashed">
+    <i class="fa fa-tags fa-3x mb-3 text-muted"></i>
+    <h5>No Subscription Plans Configured</h5>
+    <p class="mb-4">Get started by creating your first subscription package.</p>
+    <button (click)="openCreateModal()" class="btn btn-primary btn-sm mx-auto">Create Plan</button>
+  </div>
+} @else {
+  <div class="plans-grid">
+    @for (plan of plans; track plan.id) {
+      <div class="plan-card">
+        <div class="plan-header">
+          <h3 class="plan-name">{{ plan.name }}</h3>
+          <div class="plan-price">
+            <span class="currency">$</span>
+            <span class="amount">{{ plan.priceMonthly }}</span>
+            <span class="period">/mo</span>
+          </div>
+        </div>
+
+        <div class="plan-features">
+          <div class="feature-item">
+            <i class="fa fa-check-circle"></i>
+            <span>
+              Trips: 
+              <strong>{{ plan.maxTripsPerMonth === null ? 'Unlimited' : plan.maxTripsPerMonth + '/mo' }}</strong>
+            </span>
+          </div>
+          <div class="feature-item">
+            <i class="fa fa-check-circle"></i>
+            <span>
+              AI Messages: 
+              <strong>{{ plan.maxMessagesPerMonth === null ? 'Unlimited' : plan.maxMessagesPerMonth + '/mo' }}</strong>
+            </span>
+          </div>
+        </div>
+
+        <div class="plan-actions">
+          <button (click)="openEditModal(plan)" class="btn btn-sm btn-outline-dark">
+            <i class="fa fa-edit"></i> Edit
+          </button>
+          <button (click)="deletePlan(plan)" class="btn btn-sm btn-outline-danger">
+            <i class="fa fa-trash-alt"></i> Delete
+          </button>
+        </div>
+      </div>
+    }
+  </div>
+}
+
+<!-- Premium Modal Backdrop & dialog -->
+@if (showModal) {
+  <div class="modal-backdrop" (click)="closeModal()"></div>
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">{{ isEditMode ? 'Edit Plan' : 'Create New Plan' }}</h5>
+        <button type="button" class="btn-close-modal" (click)="closeModal()">
+          <i class="fa fa-times"></i>
+        </button>
+      </div>
+
+      <div class="modal-body">
+        <form (ngSubmit)="savePlan()">
+          <!-- Name Field -->
+          <div class="mb-3">
+            <label class="form-label">Plan Name</label>
+            <input 
+              type="text" 
+              class="form-control" 
+              [(ngModel)]="planForm.name" 
+              name="name" 
+              placeholder="e.g. Premium Plan" 
+              required
+            />
+          </div>
+
+          <!-- Price Field -->
+          <div class="mb-3">
+            <label class="form-label">Monthly Price ($)</label>
+            <input 
+              type="number" 
+              class="form-control" 
+              [(ngModel)]="planForm.priceMonthly" 
+              name="priceMonthly" 
+              min="0" 
+              step="0.01" 
+              required
+            />
+          </div>
+
+          <!-- Max Trips -->
+          <div class="mb-3">
+            <label class="form-label d-flex justify-content-between align-items-center">
+              <span>Max Trips Per Month</span>
+              <span class="form-check form-switch m-0">
+                <input 
+                  type="checkbox" 
+                  class="form-check-input" 
+                  [(ngModel)]="unlimitedTrips" 
+                  name="unlimitedTrips"
+                  id="unlimitedTripsCheck"
+                />
+                <label class="form-check-label text-muted fs-7" for="unlimitedTripsCheck">Unlimited</label>
+              </span>
+            </label>
+            @if (!unlimitedTrips) {
+              <input 
+                type="number" 
+                class="form-control" 
+                [(ngModel)]="planForm.maxTripsPerMonth" 
+                name="maxTripsPerMonth" 
+                min="1" 
+                placeholder="e.g. 5"
+                required
+              />
+            }
+          </div>
+
+          <!-- Max Messages -->
+          <div class="mb-3">
+            <label class="form-label d-flex justify-content-between align-items-center">
+              <span>Max AI Messages Per Month</span>
+              <span class="form-check form-switch m-0">
+                <input 
+                  type="checkbox" 
+                  class="form-check-input" 
+                  [(ngModel)]="unlimitedMessages" 
+                  name="unlimitedMessages"
+                  id="unlimitedMessagesCheck"
+                />
+                <label class="form-check-label text-muted fs-7" for="unlimitedMessagesCheck">Unlimited</label>
+              </span>
+            </label>
+            @if (!unlimitedMessages) {
+              <input 
+                type="number" 
+                class="form-control" 
+                [(ngModel)]="planForm.maxMessagesPerMonth" 
+                name="maxMessagesPerMonth" 
+                min="1" 
+                placeholder="e.g. 100"
+                required
+              />
+            }
+          </div>
+
+          <div class="modal-footer mt-4">
+            <button type="button" class="btn btn-outline-dark" (click)="closeModal()">Cancel</button>
+            <button type="submit" class="btn btn-primary">Save Plan</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+}

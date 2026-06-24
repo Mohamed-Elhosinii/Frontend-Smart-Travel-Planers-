@@ -1,0 +1,118 @@
+<div class="admin-page-header">
+  <div>
+    <h1 class="page-title">Users Management</h1>
+    <p class="page-subtitle">Manage system users, assign custom plans, and block/unblock accounts.</p>
+  </div>
+</div>
+
+<div class="table-card">
+  <!-- Table Header Controls -->
+  <div class="table-controls">
+    <div class="search-wrapper">
+      <i class="fa fa-search search-icon"></i>
+      <input 
+        type="text" 
+        class="form-control search-input" 
+        placeholder="Search by name or email..." 
+        (input)="onSearch($event)"
+      />
+    </div>
+  </div>
+
+  <!-- Users Table -->
+  <div class="table-responsive">
+    <table class="table admin-table">
+      <thead>
+        <tr>
+          <th>Full Name</th>
+          <th>Email</th>
+          <th>Created At</th>
+          <th>Current Plan</th>
+          <th>Status</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        @if (loading) {
+          @for (row of [1, 2, 3, 4, 5]; track row) {
+            <tr class="table-skeleton-row">
+              <td><div class="skeleton-line" style="width: 140px;"></div></td>
+              <td><div class="skeleton-line" style="width: 180px;"></div></td>
+              <td><div class="skeleton-line" style="width: 100px;"></div></td>
+              <td><div class="skeleton-line" style="width: 110px;"></div></td>
+              <td><div class="skeleton-line" style="width: 60px;"></div></td>
+              <td><div class="skeleton-line" style="width: 150px;"></div></td>
+            </tr>
+          }
+        } @else if (users.length === 0) {
+          <tr>
+            <td colspan="6" class="text-center py-5 text-muted">
+              No users found matching search query.
+            </td>
+          </tr>
+        } @else {
+          @for (user of users; track user.userId) {
+            <tr>
+              <td class="fw-bold">{{ user.fullName }}</td>
+              <td>{{ user.email }}</td>
+              <td>{{ user.createdAt | date:'shortDate' }}</td>
+              <td>
+                <select 
+                  class="form-select plan-select-sm" 
+                  [value]="user.planId" 
+                  [disabled]="updatingUserId === user.userId"
+                  (change)="changePlan(user, $event)"
+                >
+                  <option value="">No Active Plan</option>
+                  @for (plan of plans; track plan.id) {
+                    <option [value]="plan.id">{{ plan.name }}</option>
+                  }
+                </select>
+              </td>
+              <td>
+                <span class="badge" [class.bg-success]="!user.isBanned" [class.bg-danger]="user.isBanned">
+                  {{ user.isBanned ? 'Banned' : 'Active' }}
+                </span>
+              </td>
+              <td>
+                <button 
+                  class="btn btn-sm" 
+                  [class.btn-outline-danger]="!user.isBanned" 
+                  [class.btn-success]="user.isBanned"
+                  [disabled]="updatingUserId === user.userId"
+                  (click)="toggleBanStatus(user)"
+                >
+                  <i class="fa" [class.fa-ban]="!user.isBanned" [class.fa-check-circle]="user.isBanned"></i>
+                  {{ user.isBanned ? 'Unban' : 'Ban' }}
+                </button>
+              </td>
+            </tr>
+          }
+        }
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Pagination -->
+  @if (totalPages > 1) {
+    <div class="table-pagination">
+      <button 
+        class="btn btn-pagination" 
+        [disabled]="page === 1 || loading" 
+        (click)="goToPage(page - 1)"
+      >
+        <i class="fa fa-chevron-left"></i> Previous
+      </button>
+      
+      <span class="pagination-info">Page {{ page }} of {{ totalPages }}</span>
+      
+      <button 
+        class="btn btn-pagination" 
+        [disabled]="page === totalPages || loading" 
+        (click)="goToPage(page + 1)"
+      >
+        Next <i class="fa fa-chevron-right"></i>
+      </button>
+    </div>
+  }
+</div>

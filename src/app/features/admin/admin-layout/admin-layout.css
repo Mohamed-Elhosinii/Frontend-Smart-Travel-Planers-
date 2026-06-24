@@ -1,0 +1,234 @@
+.admin-dashboard-container {
+  display: flex;
+  min-height: 100vh;
+  background-color: #f7f3ed;
+  color: var(--secondary-dark);
+  transition: padding 0.3s ease;
+}
+
+/* Sidebar Styles */
+.admin-sidebar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  width: 260px;
+  background: linear-gradient(180deg, #3d2b2f 0%, #291c1f 100%);
+  color: #fff;
+  display: flex;
+  flex-direction: column;
+  z-index: 100;
+  transition: transform 0.3s ease, width 0.3s ease;
+  box-shadow: 4px 0 15px rgba(0, 0, 0, 0.1);
+}
+
+.sidebar-brand {
+  padding: 24px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.brand-link {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.brand-logo {
+  font-family: 'Playfair Display', serif;
+  font-size: 24px;
+  font-weight: 700;
+  color: #fff;
+  letter-spacing: 0.5px;
+}
+
+.brand-badge {
+  background: var(--primary-orange);
+  color: #fff;
+  font-size: 11px;
+  font-weight: 600;
+  padding: 2px 8px;
+  border-radius: 99px;
+  text-transform: uppercase;
+}
+
+.sidebar-nav {
+  flex: 1;
+  padding: 24px 16px;
+}
+
+.nav-list {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.nav-link {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 12px 16px;
+  color: rgba(255, 255, 255, 0.7);
+  border-radius: 10px;
+  font-weight: 500;
+  font-size: 15px;
+  transition: all 0.2s ease;
+}
+
+.nav-link i {
+  font-size: 18px;
+  width: 24px;
+  text-align: center;
+}
+
+.nav-link:hover, .nav-link.active {
+  background-color: rgba(255, 255, 255, 0.1);
+  color: #fff;
+}
+
+.nav-link.active {
+  background: var(--trip-gradient);
+  box-shadow: 0 4px 12px rgba(181, 67, 4, 0.2);
+}
+
+.sidebar-footer {
+  padding: 20px 16px;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.btn-sidebar-logout {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 12px 16px;
+  background: transparent;
+  border: none;
+  color: #fca5a5;
+  border-radius: 10px;
+  font-weight: 500;
+  font-size: 15px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  text-align: left;
+}
+
+.btn-sidebar-logout:hover {
+  background-color: rgba(239, 68, 68, 0.1);
+  color: #ef4444;
+}
+
+/* Main Content Wrapper */
+.main-content-wrapper {
+  flex: 1;
+  margin-left: 260px;
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  transition: margin-left 0.3s ease;
+}
+
+/* Topbar Styles */
+.admin-topbar {
+  background-color: #fff;
+  height: 64px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 32px;
+  border-bottom: 1px solid #e8ddd6;
+  position: sticky;
+  top: 0;
+  z-index: 99;
+}
+
+.toggle-sidebar-btn {
+  background: none;
+  border: none;
+  font-size: 20px;
+  color: var(--secondary-dark);
+  cursor: pointer;
+  padding: 8px;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background-color 0.2s ease;
+}
+
+.toggle-sidebar-btn:hover {
+  background-color: #f7f3ed;
+}
+
+.topbar-actions {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.admin-email {
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--text-muted);
+}
+
+.btn-outline-brand {
+  border-color: var(--primary-orange);
+  color: var(--primary-orange);
+  font-weight: 600;
+}
+
+.btn-outline-brand:hover {
+  background-color: var(--primary-orange);
+  color: #fff;
+}
+
+/* Main Content Area */
+.admin-main-content {
+  padding: 32px;
+  flex: 1;
+  background-color: #fdfbf7;
+}
+
+/* Sidebar Collapsed State */
+.admin-dashboard-container.sidebar-collapsed .admin-sidebar {
+  width: 78px;
+}
+
+.admin-dashboard-container.sidebar-collapsed .admin-sidebar .link-text,
+.admin-dashboard-container.sidebar-collapsed .admin-sidebar .brand-badge {
+  display: none;
+}
+
+.admin-dashboard-container.sidebar-collapsed .admin-sidebar .brand-logo {
+  font-size: 18px;
+}
+
+.admin-dashboard-container.sidebar-collapsed .main-content-wrapper {
+  margin-left: 78px;
+}
+
+/* Responsive Styles */
+@media (max-width: 992px) {
+  .admin-sidebar {
+    transform: translateX(-100%);
+  }
+
+  .main-content-wrapper {
+    margin-left: 0 !important;
+  }
+
+  .admin-dashboard-container.sidebar-collapsed .admin-sidebar {
+    transform: translateX(0);
+    width: 260px;
+  }
+
+  .admin-dashboard-container.sidebar-collapsed .admin-sidebar .link-text,
+  .admin-dashboard-container.sidebar-collapsed .admin-sidebar .brand-badge {
+    display: inline;
+  }
+
+  .admin-dashboard-container.sidebar-collapsed .admin-sidebar .brand-logo {
+    font-size: 24px;
+  }
+}

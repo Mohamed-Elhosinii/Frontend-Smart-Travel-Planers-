@@ -16,8 +16,8 @@ export class ResetPasswordPage implements OnInit {
   private readonly router = inject(Router);
   private readonly auth = inject(AuthService);
 
-  userId = '';
-  token = '';
+  email = '';
+  token = ''; // this is now the OTP
   newPassword = '';
   confirmPassword = '';
   errorMessage = '';
@@ -25,17 +25,20 @@ export class ResetPasswordPage implements OnInit {
   isLoading = false;
 
   ngOnInit(): void {
-    this.userId = this.route.snapshot.queryParams['userId'] || '';
-    this.token = this.route.snapshot.queryParams['token'] || '';
+    this.email = this.route.snapshot.queryParams['email'] || '';
 
-    if (!this.userId || !this.token) {
-      this.errorMessage = 'Invalid or expired password reset link. Please request a new one.';
+    if (!this.email) {
+      this.errorMessage = 'Invalid password reset request. Please start over.';
     }
   }
 
   submit(): void {
     this.errorMessage = '';
 
+    if (!this.token || this.token.length !== 6) {
+      this.errorMessage = 'Please enter the 6-digit code sent to your email.';
+      return;
+    }
     if (!this.newPassword || this.newPassword.length < 6) {
       this.errorMessage = 'Password must be at least 6 characters.';
       return;
@@ -44,15 +47,15 @@ export class ResetPasswordPage implements OnInit {
       this.errorMessage = 'Passwords do not match.';
       return;
     }
-    if (!this.userId || !this.token) {
-      this.errorMessage = 'Invalid reset link. Please request a new one.';
+    if (!this.email) {
+      this.errorMessage = 'Invalid reset request. Please start over.';
       return;
     }
 
     this.isLoading = true;
 
     const dto: ResetPasswordDto = {
-      userId: this.userId,
+      email: this.email,
       token: this.token,
       newPassword: this.newPassword,
       confirmPassword: this.confirmPassword,
@@ -66,7 +69,19 @@ export class ResetPasswordPage implements OnInit {
       },
       error: (err) => {
         this.isLoading = false;
-        this.errorMessage = err?.error?.message || 'Password reset failed. The link may have expired.';
+        let errorData = err?.error;
+        if (typeof errorData === 'string') {
+          try {
+            errorData = JSON.parse(errorData);
+          } catch {
+            // Ignore parse failure
+          }
+        }
+        if (errorData?.errors && errorData.errors.length > 0) {
+          this.errorMessage = errorData.errors.join(' ');
+        } else {
+          this.errorMessage = errorData?.message || 'Password reset failed. The link may have expired.';
+        }
       },
     });
   }

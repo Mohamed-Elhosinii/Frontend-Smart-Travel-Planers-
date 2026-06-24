@@ -1,0 +1,146 @@
+<div class="admin-page-header">
+  <div>
+    <h1 class="page-title">Overview</h1>
+    <p class="page-subtitle">Real-time statistics and overview metrics of TripMind.</p>
+  </div>
+  <button (click)="loadStats()" class="btn btn-outline-brand" [disabled]="loading">
+    <i class="fa fa-sync-alt" [class.fa-spin]="loading"></i> Refresh
+  </button>
+</div>
+
+@if (loading) {
+  <div class="metrics-grid">
+    @for (i of [1, 2, 3, 4]; track i) {
+      <div class="metric-card loading-skeleton">
+        <div class="skeleton-line" style="width: 40%"></div>
+        <div class="skeleton-line" style="width: 70%; height: 2rem;"></div>
+      </div>
+    }
+  </div>
+  <div class="charts-grid mt-4">
+    <div class="chart-card loading-skeleton" style="height: 300px;"></div>
+    <div class="chart-card loading-skeleton" style="height: 300px;"></div>
+  </div>
+} @else if (error) {
+  <div class="alert alert-danger" role="alert">
+    {{ error }}
+    <button (click)="loadStats()" class="btn btn-sm btn-danger ms-3">Retry</button>
+  </div>
+} @else if (stats) {
+  <!-- Metrics Cards Grid -->
+  <div class="metrics-grid">
+    <!-- Card 1: Users -->
+    <div class="metric-card users-card">
+      <div class="card-icon"><i class="fa fa-users"></i></div>
+      <div class="card-content">
+        <span class="card-label">Total Users</span>
+        <h3 class="card-value">{{ stats.totalUsers }}</h3>
+      </div>
+    </div>
+
+    <!-- Card 2: Trips -->
+    <div class="metric-card trips-card">
+      <div class="card-icon"><i class="fa fa-route"></i></div>
+      <div class="card-content">
+        <span class="card-label">Total Trips</span>
+        <h3 class="card-value">{{ stats.totalTrips }}</h3>
+      </div>
+    </div>
+
+    <!-- Card 3: Active Subscriptions -->
+    <div class="metric-card subs-card">
+      <div class="card-icon"><i class="fa fa-award"></i></div>
+      <div class="card-content">
+        <span class="card-label">Active Subscriptions</span>
+        <h3 class="card-value">{{ stats.activeSubscriptions }}</h3>
+      </div>
+    </div>
+
+    <!-- Card 4: Total Revenue -->
+    <div class="metric-card revenue-card">
+      <div class="card-icon"><i class="fa fa-dollar-sign"></i></div>
+      <div class="card-content">
+        <span class="card-label">Total Revenue</span>
+        <h3 class="card-value">{{ stats.totalRevenue | currency:'USD' }}</h3>
+      </div>
+    </div>
+  </div>
+
+  <!-- Charts Section -->
+  <div class="charts-grid mt-4">
+    <!-- Revenue Trend Chart -->
+    <div class="chart-card">
+      <h4 class="chart-title">Revenue Trend</h4>
+      <div class="chart-container">
+        @if (stats.revenueHistory && stats.revenueHistory.length > 0) {
+          <svg viewBox="0 0 500 150" class="svg-line-chart">
+            <defs>
+              <linearGradient id="revenueGrad" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stop-color="#B54304" stop-opacity="0.4"/>
+                <stop offset="100%" stop-color="#B54304" stop-opacity="0"/>
+              </linearGradient>
+            </defs>
+            
+            <!-- Grid Lines -->
+            <line x1="20" y1="20" x2="480" y2="20" stroke="#e8ddd6" stroke-dasharray="4" />
+            <line x1="20" y1="75" x2="480" y2="75" stroke="#e8ddd6" stroke-dasharray="4" />
+            <line x1="20" y1="130" x2="480" y2="130" stroke="#e8ddd6" stroke-dasharray="4" />
+
+            <!-- Area Path -->
+            <path [attr.d]="getRevenueAreaPath()" fill="url(#revenueGrad)" />
+
+            <!-- Line Path -->
+            <path [attr.d]="getRevenuePath()" fill="none" stroke="#B54304" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" />
+
+            <!-- Points on the Line -->
+            @for (pt of stats.revenueHistory; track pt.month; let idx = $index) {
+              <!-- We approximate x location dynamically matching getRevenuePath math -->
+              <circle 
+                [attr.cx]="20 + (idx * 460) / (stats.revenueHistory.length - 1 || 1)"
+                [attr.cy]="150 - 20 - ((pt.revenue - 0) * 110) / (stats.totalRevenue || 1)" 
+                r="5" 
+                fill="#fff" 
+                stroke="#B54304" 
+                stroke-width="3"
+                class="chart-dot"
+              >
+                <title>{{ pt.month }}: {{ pt.revenue | currency:'USD' }}</title>
+              </circle>
+            }
+          </svg>
+          
+          <!-- X Axis Labels -->
+          <div class="chart-labels">
+            @for (pt of stats.revenueHistory; track pt.month) {
+              <span>{{ pt.month }}</span>
+            }
+          </div>
+        } @else {
+          <div class="no-data">No revenue history available</div>
+        }
+      </div>
+    </div>
+
+    <!-- User Registrations Chart -->
+    <div class="chart-card">
+      <h4 class="chart-title">User Registrations (Last 7 Days)</h4>
+      <div class="chart-container">
+        @if (stats.userRegistrations && stats.userRegistrations.length > 0) {
+          <div class="bar-chart-wrapper">
+            @for (reg of stats.userRegistrations; track reg.date) {
+              <div class="bar-column">
+                <div class="bar-value">{{ reg.count }}</div>
+                <div class="bar-container">
+                  <div class="bar-fill" [style.height.%]="getBarHeight(reg.count)"></div>
+                </div>
+                <div class="bar-label">{{ formatDate(reg.date) }}</div>
+              </div>
+            }
+          </div>
+        } @else {
+          <div class="no-data">No registration data available</div>
+        }
+      </div>
+    </div>
+  </div>
+}

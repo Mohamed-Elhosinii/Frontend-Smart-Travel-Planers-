@@ -5,20 +5,6 @@
       <h2 class="font-serif brand-logo mb-4">TripMind</h2>
     </a>
 
-    @if (status === 'loading') {
-      <!-- Loading State -->
-      <div class="status-icon-box mx-auto mb-4 d-flex align-items-center justify-content-center rounded-circle loading-pulse">
-        <i class="fa-solid fa-envelope-open-text text-white fs-2"></i>
-      </div>
-      <h3 class="fw-bold text-deep font-serif mb-3">Verifying Your Email...</h3>
-      <p class="text-muted fs-6 lh-lg mb-0">
-        Please wait while we confirm your email address. This will only take a moment.
-      </p>
-      <div class="spinner-border text-accent mt-4" role="status">
-        <span class="visually-hidden">Loading...</span>
-      </div>
-    }
-
     @if (status === 'success') {
       <!-- Success State -->
       <div class="status-icon-box mx-auto mb-4 d-flex align-items-center justify-content-center rounded-circle success-box">
@@ -26,23 +12,60 @@
       </div>
       <h3 class="fw-bold text-deep font-serif mb-3">Email Confirmed!</h3>
       <p class="text-muted fs-6 lh-lg mb-4">
-        Your email address has been verified successfully. You will be redirected to the login page shortly.
+        Your email address has been verified successfully. Redirecting to login...
       </p>
       <a routerLink="/login" class="btn btn-confirm w-100 py-2 rounded-3 fw-bold border-0 text-decoration-none">
         Sign In Now
       </a>
-    }
-
-    @if (status === 'error') {
-      <!-- Error State -->
-      <div class="status-icon-box mx-auto mb-4 d-flex align-items-center justify-content-center rounded-circle error-box">
-        <i class="fa-solid fa-circle-xmark text-white fs-2"></i>
+    } @else {
+      <!-- Form State -->
+      <div class="status-icon-box mx-auto mb-4 d-flex align-items-center justify-content-center rounded-circle email-box" style="background: linear-gradient(135deg, var(--color-accent), #f18e9a);">
+        <i class="fa-solid fa-envelope-open-text text-white fs-2"></i>
       </div>
-      <h3 class="fw-bold text-deep font-serif mb-3">Verification Failed</h3>
-      <p class="text-muted fs-6 lh-lg mb-4">{{ errorMessage }}</p>
-      <a routerLink="/login" class="btn btn-confirm w-100 py-2 rounded-3 fw-bold border-0 text-decoration-none">
-        Back to Sign In
-      </a>
+      <h3 class="fw-bold text-deep font-serif mb-2">Check Your Email</h3>
+      <p class="text-muted fs-6 lh-lg mb-4">
+        We've sent a 6-digit verification code to your email. Please enter it below.
+      </p>
+
+      @if (status === 'error' && errorMessage) {
+        <div class="alert alert-danger py-2 mb-4" role="alert">
+          {{ errorMessage }}
+        </div>
+      }
+
+      <form [formGroup]="form" (ngSubmit)="submit()">
+        <div class="form-floating mb-4">
+          <input 
+            type="text" 
+            class="form-control text-center fs-4 fw-bold letter-spacing-md" 
+            id="otpInput" 
+            placeholder="123456" 
+            formControlName="otp"
+            maxlength="6"
+            [class.is-invalid]="f.otp.invalid && (f.otp.dirty || f.otp.touched)"
+          >
+          <label for="otpInput">6-Digit Code</label>
+        </div>
+
+        <button type="submit" class="btn btn-confirm w-100 py-2 rounded-3 fw-bold border-0" [disabled]="form.invalid || status === 'loading'">
+          @if (status === 'loading') {
+            <span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+            Verifying...
+          } @else {
+            Verify Email
+          }
+        </button>
+      </form>
+
+      <div class="mt-4">
+        <p class="text-muted mb-2">Didn't receive the code?</p>
+        <button (click)="resend()" class="btn btn-link text-accent fw-bold text-decoration-none p-0" [disabled]="!userId || resendMessage === 'Sending...'">
+          Resend Code
+        </button>
+        @if (resendMessage) {
+          <p class="text-success small mt-2 fw-semibold">{{ resendMessage }}</p>
+        }
+      </div>
     }
   </div>
 </div>

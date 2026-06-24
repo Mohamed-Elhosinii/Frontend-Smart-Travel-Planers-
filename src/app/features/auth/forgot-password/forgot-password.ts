@@ -1,6 +1,6 @@
 import { Component, inject } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { RouterLink } from '@angular/router';
+import { RouterLink, Router } from '@angular/router';
 import { AuthService } from '../../../core/services/auth.service';
 
 const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -15,6 +15,7 @@ const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 })
 export class ForgotPasswordPage {
   private readonly auth = inject(AuthService);
+  private readonly router = inject(Router);
 
   email = '';
   isSubmitted = false;
@@ -32,14 +33,14 @@ export class ForgotPasswordPage {
 
     this.auth.forgotPassword(email).subscribe({
       next: () => {
-        this.isSubmitted = true;
         this.isLoading = false;
+        // Navigate to reset password page to enter OTP
+        this.router.navigate(['/reset-password'], { queryParams: { email } });
       },
       error: () => {
-        // The backend always returns 200 even if email doesn't exist (security)
-        // so this only fires on network/server errors
-        this.isSubmitted = true;
         this.isLoading = false;
+        // Even on error, navigate to avoid leaking email existence (standard security practice)
+        this.router.navigate(['/reset-password'], { queryParams: { email } });
       },
     });
   }

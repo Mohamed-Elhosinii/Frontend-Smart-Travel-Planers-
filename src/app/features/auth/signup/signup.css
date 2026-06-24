@@ -132,6 +132,12 @@
   transform: translateY(0);
 }
 
+.btn-auth-submit:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+}
+
 .auth-redirect-link {
   color: #B54304;
   transition: color 0.15s ease;

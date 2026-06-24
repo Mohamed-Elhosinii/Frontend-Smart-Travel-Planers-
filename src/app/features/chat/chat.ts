@@ -14,6 +14,7 @@ import { ChatService } from '../../core/services/chat.service';
 import { AuthService } from '../../core/services/auth.service';
 import { ToastService } from '../../core/services/toast.service';
 import { ChatMessage, ChatSession } from '../../core/models';
+import { TripService } from '../../core/services/trip.service';
 
 /** AI travel-assistant chat integrated with the backend API. */
 @Component({
@@ -28,12 +29,14 @@ export class ChatPage implements AfterViewChecked, OnInit, OnDestroy {
   private readonly auth = inject(AuthService);
   private readonly toast = inject(ToastService);
   private readonly router = inject(Router);
+  private readonly tripService = inject(TripService);
 
   @ViewChild('scrollContainer') private scrollContainer?: ElementRef<HTMLElement>;
 
   newMessageText = '';
   isAssistantTyping = false;
   isRedirecting = false;
+  isPreparingPlan = false;
 
   private renderedCount = 0;
 
@@ -83,10 +86,10 @@ export class ChatPage implements AfterViewChecked, OnInit, OnDestroy {
         this.isAssistantTyping = false;
         
         if (response.tripId) {
-          this.isRedirecting = true;
-          setTimeout(() => {
-            this.router.navigate(['/my-trips', response.tripId]);
-          }, 2000);
+          // The orchestrator builds the plan in the BACKGROUND. Don't redirect
+          // yet — poll GET /api/Chat/plan/{tripId} until it's persisted (200),
+          // then navigate to the trip detail page.
+          this.awaitPlan(response.tripId);
         }
       },
       error: (err) => {
@@ -95,6 +98,28 @@ export class ChatPage implements AfterViewChecked, OnInit, OnDestroy {
         this.chat.addSystemErrorMessage('عذراً، حدث خطأ أثناء الاتصال بالخادم. يرجى المحاولة مرة أخرى.');
         this.toast.danger('Failed to send message. Please try again.');
       }
+    });
+  }
+
+  /**
+   * After a trip is triggered, the backend builds the plan asynchronously.
+   * Show a "preparing" state and poll until the plan is persisted (200), then
+   * redirect to its detail page. On timeout/error, keep the user in the chat
+   * (history stays intact server-side) and surface a message.
+   */
+  private awaitPlan(tripId: string): void {
+    this.isPreparingPlan = true;
+    this.tripService.pollPlan(tripId).subscribe({
+      next: () => {
+        this.isPreparingPlan = false;
+        this.isRedirecting = true;
+        this.router.navigate(['/my-trips', tripId]);
+      },
+      error: () => {
+        this.isPreparingPlan = false;
+        this.chat.addSystemErrorMessage('تأخرت الخطة، حاول تاني');
+        this.toast.danger('Your plan is taking longer than expected. Please try again.');
+      },
     });
   }
 

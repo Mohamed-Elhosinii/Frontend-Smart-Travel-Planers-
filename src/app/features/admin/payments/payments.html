@@ -1,0 +1,91 @@
+<div class="admin-page-header">
+  <div>
+    <h1 class="page-title">Payments History</h1>
+    <p class="page-subtitle">View and audit all subscription orders processed through Paymob.</p>
+  </div>
+</div>
+
+<div class="table-card">
+  <!-- Payments Table -->
+  <div class="table-responsive">
+    <table class="table admin-table">
+      <thead>
+        <tr>
+          <th>User Email</th>
+          <th>Plan Purchased</th>
+          <th>Amount</th>
+          <th>Status</th>
+          <th>Paymob Order ID</th>
+          <th>Paymob Trans ID</th>
+          <th>Date</th>
+        </tr>
+      </thead>
+      <tbody>
+        @if (loading) {
+          @for (row of [1, 2, 3, 4, 5]; track row) {
+            <tr class="table-skeleton-row">
+              <td><div class="skeleton-line" style="width: 160px;"></div></td>
+              <td><div class="skeleton-line" style="width: 100px;"></div></td>
+              <td><div class="skeleton-line" style="width: 70px;"></div></td>
+              <td><div class="skeleton-line" style="width: 60px;"></div></td>
+              <td><div class="skeleton-line" style="width: 140px;"></div></td>
+              <td><div class="skeleton-line" style="width: 90px;"></div></td>
+              <td><div class="skeleton-line" style="width: 100px;"></div></td>
+            </tr>
+          }
+        } @else if (transactions.length === 0) {
+          <tr>
+            <td colspan="7" class="text-center py-5 text-muted">
+              No payment transactions recorded yet.
+            </td>
+          </tr>
+        } @else {
+          @for (tx of transactions; track tx.id) {
+            <tr>
+              <td class="fw-medium">{{ tx.userEmail }}</td>
+              <td class="fw-bold">{{ tx.planName }}</td>
+              <td class="text-primary-accent fw-bold">{{ tx.amount | currency:'USD' }}</td>
+              <td>
+                <span 
+                  class="badge px-3 py-2" 
+                  [class.bg-success-subtle]="tx.status === 'paid'" 
+                  [class.text-success]="tx.status === 'paid'"
+                  [class.bg-danger-subtle]="tx.status !== 'paid'"
+                  [class.text-danger]="tx.status !== 'paid'"
+                >
+                  {{ tx.status | uppercase }}
+                </span>
+              </td>
+              <td><code class="order-code">{{ tx.paymobOrderId }}</code></td>
+              <td><code>{{ tx.paymobTransactionId }}</code></td>
+              <td>{{ tx.createdAt | date:'medium' }}</td>
+            </tr>
+          }
+        }
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Pagination -->
+  @if (totalPages > 1) {
+    <div class="table-pagination">
+      <button 
+        class="btn btn-pagination" 
+        [disabled]="page === 1 || loading" 
+        (click)="goToPage(page - 1)"
+      >
+        <i class="fa fa-chevron-left"></i> Previous
+      </button>
+      
+      <span class="pagination-info">Page {{ page }} of {{ totalPages }}</span>
+      
+      <button 
+        class="btn btn-pagination" 
+        [disabled]="page === totalPages || loading" 
+        (click)="goToPage(page + 1)"
+      >
+        Next <i class="fa fa-chevron-right"></i>
+      </button>
+    </div>
+  }
+</div>
