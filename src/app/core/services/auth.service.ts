@@ -59,7 +59,7 @@ export interface ConfirmEmailDto {
   token: string;
 }
 
-const API_BASE = 'http://localhost:5000/api/Auth';
+const API_BASE = 'https://localhost:7162/api/Auth';
 const SESSION_KEY = 'stp_session_email';
 const PROFILE_KEY = 'stp_profile';
 

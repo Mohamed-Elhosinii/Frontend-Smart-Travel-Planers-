@@ -40,6 +40,11 @@ export const routes: Routes = [
   { path: 'profile', loadComponent: () => import('./features/account/profile/profile').then((m) => m.ProfilePage), canActivate: [authGuard] },
   { path: 'settings', loadComponent: () => import('./features/account/settings/settings').then((m) => m.SettingsPage) },
   {
+    path: 'subscription',
+    loadComponent: () => import('./features/account/subscription/subscription').then((m) => m.SubscriptionPage),
+    canActivate: [authGuard],
+  },
+  {
     path: 'my-trips',
     loadComponent: () => import('./features/my-trips/my-trips-layout').then((m) => m.MyTripsLayout),
     canActivate: [authGuard],

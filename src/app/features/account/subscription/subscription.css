@@ -1,0 +1,169 @@
+/* ── Current Plan Card ───────────────────────────────────────────── */
+.sub-page-container {
+  padding-top: 85px;
+}
+
+.sub-hero-banner {
+  background: var(--trip-gradient);
+  border-radius: 1rem;
+  padding: 2.5rem 1.5rem;
+  color: #fff;
+}
+
+.sub-hero-banner h2 {
+  color: #fff;
+}
+
+.sub-hero-banner p {
+  color: rgba(255, 255, 255, 0.85);
+}
+
+.current-plan-card {
+  border: 1px solid var(--border-color);
+}
+
+.usage-progress {
+  background-color: rgba(181, 67, 4, 0.08); /* primary-orange with 8% opacity */
+  border-radius: 999px;
+  overflow: hidden;
+}
+
+.usage-progress .progress-bar {
+  background: var(--trip-gradient);
+}
+
+/* ── Status Badges ───────────────────────────────────────────────── */
+.badge-sub-active,
+.badge-sub-pastdue,
+.badge-sub-cancelled,
+.badge-sub-expired {
+  font-size: .72rem;
+  font-weight: 700;
+  letter-spacing: .03em;
+  padding: .35rem .75rem;
+}
+
+.badge-sub-active {
+  background: rgba(34, 197, 94, .14) !important;
+  color: #16a34a !important;
+  border: 1px solid rgba(34, 197, 94, .28);
+}
+
+.badge-sub-pastdue {
+  background: rgba(245, 158, 11, .15) !important;
+  color: #b45309 !important;
+  border: 1px solid rgba(245, 158, 11, .3);
+}
+
+.badge-sub-cancelled {
+  background: rgba(107, 107, 107, .12) !important;
+  color: #4a4a4a !important;
+  border: 1px solid rgba(107, 107, 107, .22);
+}
+
+.badge-sub-expired {
+  background: rgba(220, 38, 38, .12) !important;
+  color: #dc2626 !important;
+  border: 1px solid rgba(220, 38, 38, .25);
+}
+
+/* ── Plan Cards ───────────────────────────────────────────────────── */
+.plan-card {
+  display: flex;
+  flex-direction: column;
+  border: 1px solid var(--border-color);
+}
+
+.plan-card-current {
+  border: 2px solid var(--primary-orange);
+}
+
+.plan-current-tag {
+  background: rgba(181, 67, 4, .12) !important; /* primary-orange with 12% opacity */
+  color: var(--primary-orange) !important;
+  font-size: .68rem;
+  font-weight: 700;
+  letter-spacing: .03em;
+  padding: .3rem .65rem;
+  width: fit-content;
+}
+
+.plan-price {
+  font-family: 'Playfair Display', serif;
+  font-size: 1.9rem;
+  font-weight: 800;
+  color: var(--text-deep);
+}
+
+.plan-features {
+  font-size: .92rem;
+  color: var(--secondary-dark);
+}
+
+.btn-plan:disabled {
+  opacity: .55;
+  transform: none !important;
+  box-shadow: none !important;
+}
+
+/* ── Modals (custom — this project ships Bootstrap CSS only, no bundle JS) ── */
+.sub-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(38, 24, 20, .55); /* text-deep with 55% opacity */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+  z-index: 2000;
+}
+
+.sub-modal-content {
+  background: var(--body-bg);
+  border-radius: 1.25rem;
+  padding: 0.9rem 1.25rem 1.25rem;
+  width: 100%;
+  max-width: 520px;
+  max-height: 90vh;
+  overflow-y: auto;
+  box-shadow: var(--shadow-lg);
+}
+
+.sub-modal-content > .d-flex {
+  margin-bottom: 0.5rem;
+}
+
+.sub-confirm-content {
+  max-width: 420px;
+}
+
+.sub-payment-iframe {
+  width: 100%;
+  height: 560px;
+  margin-top: -0.25rem;
+  border: none;
+  border-radius: .75rem;
+}
+
+.btn-close-modal {
+  background: transparent;
+  border: none;
+  color: var(--text-muted);
+  font-size: 1.1rem;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.btn-close-modal:hover {
+  color: var(--secondary-dark);
+}
+
+.usage-progress-bar {
+  height: 8px;
+}
+
+@media (max-width: 576px) {
+  .sub-payment-iframe {
+    height: 60vh;
+  }
+}

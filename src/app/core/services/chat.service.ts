@@ -34,7 +34,7 @@ export class ChatService {
   createSession(): Observable<any> {
     const headers = this.getAuthHeaders();
     // Use an empty body for POST as required by standard session creation
-    return this.http.post<any>('http://localhost:5000/api/Chat/session', {}, { headers }).pipe(
+    return this.http.post<any>('http://localhost:5002/api/Chat/session', {}, { headers }).pipe(
       tap(session => {
         this.currentSessionId = session.sessionId;
         this._messages.set([this.welcomeMessage()]);
@@ -51,7 +51,7 @@ export class ChatService {
     // Assuming backend takes the message in the body as a simple string or JSON
     // Adjust payload structure if the backend expects a different model (e.g. { message: text })
     return this.http.post<any>(
-      `http://localhost:5000/api/Chat/send`,
+      `http://localhost:5002/api/Chat/send`,
       { sessionId: this.currentSessionId, message: text },
       { headers }
     ).pipe(
@@ -63,7 +63,7 @@ export class ChatService {
 
   loadUserSessions(): Observable<any> {
     const headers = this.getAuthHeaders();
-    return this.http.get<any>('http://localhost:5000/api/Chat/sessions', { headers }).pipe(
+    return this.http.get<any>('http://localhost:5002/api/Chat/sessions', { headers }).pipe(
       tap(sessions => this.history = sessions),
       catchError(err => { console.error('Failed to load sessions', err); return of([]); })
     );
@@ -71,7 +71,7 @@ export class ChatService {
 
   loadSessionChat(sessionId: string): Observable<any> {
     const headers = this.getAuthHeaders();
-    return this.http.get<any>(`http://localhost:5000/api/Chat/history/${sessionId}`, { headers }).pipe(
+    return this.http.get<any>(`http://localhost:5002/api/Chat/history/${sessionId}`, { headers }).pipe(
       tap(messages => {
         this.currentSessionId = sessionId;
         this._messages.set(messages);
