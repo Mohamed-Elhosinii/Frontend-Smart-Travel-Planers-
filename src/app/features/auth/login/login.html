@@ -72,8 +72,13 @@
         </div>
 
         <!-- Submit Button -->
-        <button type="submit" class="btn btn-auth-submit w-100 py-2 mb-3 rounded-3 fw-bold border-0">
-          Sign In
+        <button type="submit" class="btn btn-auth-submit w-100 py-2 mb-3 rounded-3 fw-bold border-0" [disabled]="isLoading" [attr.aria-busy]="isLoading">
+          @if (isLoading) {
+            <span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+            Signing In...
+          } @else {
+            Sign In
+          }
         </button>
 
         <!-- Redirect Link -->

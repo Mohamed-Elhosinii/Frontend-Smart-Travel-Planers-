@@ -1,6 +1,6 @@
 import { Injectable, signal, inject } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { ChatItinerary, ChatMessage, ChatSession } from '../models';
+import { ChatItinerary, ChatMessage, ChatSession, TripPlanDto } from '../models';
 import { tap, catchError } from 'rxjs/operators';
 import { of, Observable } from 'rxjs';
 import { AuthService } from './auth.service';
@@ -34,7 +34,7 @@ export class ChatService {
   createSession(): Observable<any> {
     const headers = this.getAuthHeaders();
     // Use an empty body for POST as required by standard session creation
-    return this.http.post<any>('http://localhost:5000/api/Chat/session', {}, { headers }).pipe(
+    return this.http.post<any>('/api/Chat/session', {}, { headers }).pipe(
       tap(session => {
         this.currentSessionId = session.sessionId;
         this._messages.set([this.welcomeMessage()]);
@@ -51,19 +51,24 @@ export class ChatService {
     // Assuming backend takes the message in the body as a simple string or JSON
     // Adjust payload structure if the backend expects a different model (e.g. { message: text })
     return this.http.post<any>(
-      `http://localhost:5000/api/Chat/send`,
+      `/api/Chat/send`,
       { sessionId: this.currentSessionId, message: text },
       { headers }
     ).pipe(
       tap(response => {
-        this.addAssistantReply(response.message, response.plan);
+        // TRIP_SHOW returns a backend TripPlanDto in `plan`; map it to the compact
+        // ChatItinerary shape the inline itinerary card binds to.
+        this.addAssistantReply(
+          response.message,
+          response.plan ? this.toChatItinerary(response.plan) : undefined,
+        );
       })
     );
   }
 
   loadUserSessions(): Observable<any> {
     const headers = this.getAuthHeaders();
-    return this.http.get<any>('http://localhost:5000/api/Chat/sessions', { headers }).pipe(
+    return this.http.get<any>('/api/Chat/sessions', { headers }).pipe(
       tap(sessions => this.history = sessions),
       catchError(err => { console.error('Failed to load sessions', err); return of([]); })
     );
@@ -71,10 +76,12 @@ export class ChatService {
 
   loadSessionChat(sessionId: string): Observable<any> {
     const headers = this.getAuthHeaders();
-    return this.http.get<any>(`http://localhost:5000/api/Chat/history/${sessionId}`, { headers }).pipe(
+    return this.http.get<any>(`/api/Chat/history/${sessionId}`, { headers }).pipe(
       tap(messages => {
         this.currentSessionId = sessionId;
-        this._messages.set(messages);
+        // Map backend ChatMessage entities ({ role, content, createdAt }) to the UI
+        // model ({ sender, text, time }) so restored history renders as chat bubbles.
+        this._messages.set((messages ?? []).map((m: any) => this.mapHistoryMessage(m)));
       })
     );
   }
@@ -139,6 +146,24 @@ export class ChatService {
     });
   }
 
+  /**
+   * Maps the backend `TripPlanDto` (returned inline by the TRIP_SHOW flow) to the
+   * compact `ChatItinerary` the inline card binds to. Field names differ:
+   * dayNumber→dayNum, ActivityPlanDto[]→string[] (names), budgetTotal→budget string.
+   */
+  private toChatItinerary(plan: TripPlanDto): ChatItinerary {
+    return {
+      destination: plan.destination,
+      duration: `${plan.days?.length ?? 0} days`,
+      budget: `$${plan.budgetTotal}`,
+      days: (plan.days ?? []).map((d) => ({
+        dayNum: d.dayNumber,
+        title: d.date,
+        activities: (d.activities ?? []).map((a) => a.name),
+      })),
+    };
+  }
+
   private append(message: ChatMessage): void {
     this._messages.update((list) => [...list, message]);
   }
@@ -161,6 +186,38 @@ export class ChatService {
     const now = new Date();
     let hours = now.getHours();
     const minutes = now.getMinutes().toString().padStart(2, '0');
+    const ampm = hours >= 12 ? 'PM' : 'AM';
+    hours = hours % 12 || 12;
+    return `${hours}:${minutes} ${ampm}`;
+  }
+
+  // --- history mapping (backend ChatMessage entity → UI ChatMessage) ---
+
+  private mapHistoryMessage(m: any): ChatMessage {
+    return {
+      id: String(m?.id ?? this.nextId()),
+      sender: this.mapRole(m?.role),
+      text: m?.content ?? '',
+      time: this.formatTimeFrom(m?.createdAt),
+    };
+  }
+
+  /** Backend MessageRole enum: 0=User, 1=Assistant, 2=System, 3=Tool (serialized as number). */
+  private mapRole(role: any): 'user' | 'assistant' | 'system' {
+    const r = typeof role === 'string' ? role.toLowerCase() : role;
+    if (r === 0 || r === 'user') return 'user';
+    if (r === 2 || r === 'system' || r === 3 || r === 'tool') return 'system';
+    return 'assistant';
+  }
+
+  private formatTimeFrom(iso: string | null | undefined): string {
+    if (!iso) return this.currentTime();
+    // Backend stores UTC without a 'Z' suffix; treat a naive timestamp as UTC.
+    const hasTz = /[zZ]|[+-]\d\d:?\d\d$/.test(iso);
+    const d = new Date(hasTz ? iso : iso + 'Z');
+    if (isNaN(d.getTime())) return this.currentTime();
+    let hours = d.getHours();
+    const minutes = d.getMinutes().toString().padStart(2, '0');
     const ampm = hours >= 12 ? 'PM' : 'AM';
     hours = hours % 12 || 12;
     return `${hours}:${minutes} ${ampm}`;

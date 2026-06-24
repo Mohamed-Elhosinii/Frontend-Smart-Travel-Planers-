@@ -151,8 +151,13 @@
 
       <!-- SUBMIT -->
       <div class="generate-section mt-5 text-center">
-        <button type="submit" class="generate-btn w-100 rounded-pill fw-bold fs-5 border-0 text-uppercase letter-spacing-1" [disabled]="form.invalid">
-          Generate My Trip
+        <button type="submit" class="generate-btn w-100 rounded-pill fw-bold fs-5 border-0 text-uppercase letter-spacing-1" [disabled]="form.invalid || isCreatingPlan || isRedirecting" [attr.aria-busy]="isCreatingPlan || isRedirecting">
+          @if (isCreatingPlan || isRedirecting) {
+            <span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+            Preparing your trip…
+          } @else {
+            Generate My Trip
+          }
         </button>
         <p class="generate-subtitle mt-3 small fw-medium">
           Crafted by AI, curated for your comfort.

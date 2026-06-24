@@ -20,6 +20,7 @@ export class SignupPage {
 
   submitted = false;
   errorMessage = '';
+  isLoading = false;
 
   readonly form = this.fb.nonNullable.group(
     {
@@ -44,7 +45,9 @@ export class SignupPage {
       return;
     }
     const { fullName, email, password, confirmPassword } = this.form.getRawValue();
+    this.isLoading = true;
     this.auth.register({ fullName, email, password, confirmPassword }).subscribe(success => {
+      this.isLoading = false;
       if (success) {
         this.router.navigate(['/my-trips']);
       } else {

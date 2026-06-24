@@ -1,11 +1,15 @@
 <app-navbar [lightBg]="true"></app-navbar>
 
-@if (isRedirecting) {
+@if (isPreparingPlan || isRedirecting) {
   <div class="redirect-overlay d-flex flex-column align-items-center justify-content-center h-100 w-100" style="min-height: calc(100vh - 60px);">
     <div class="spinner-border text-primary mb-3" role="status" style="width: 3rem; height: 3rem;">
       <span class="visually-hidden">Loading...</span>
     </div>
-    <h2 class="text-center">Plan created successfully! You will be redirected to your plan details in My Trips...</h2>
+    @if (isRedirecting) {
+      <h2 class="text-center">Plan created successfully! You will be redirected to your plan details in My Trips...</h2>
+    } @else {
+      <h2 class="text-center">Preparing your trip… we're building your itinerary. This won't take long.</h2>
+    }
   </div>
 } @else {
   <section class="assistant-shell d-flex overflow-hidden">

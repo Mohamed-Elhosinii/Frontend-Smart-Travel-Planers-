@@ -33,7 +33,7 @@ export const routes: Routes = [
     path: 'google-callback',
     loadComponent: () => import('./features/auth/google-callback/google-callback').then((m) => m.GoogleCallbackPage),
   },
-  { path: 'plan', loadComponent: () => import('./features/trip-form/trip-form').then((m) => m.TripFormPage) },
+  { path: 'plan', loadComponent: () => import('./features/trip-form/trip-form').then((m) => m.TripFormPage), canActivate: [authGuard] },
   { path: 'about', loadComponent: () => import('./features/about/about').then((m) => m.AboutPage) },
   { path: 'terms', loadComponent: () => import('./features/legal/terms/terms').then((m) => m.TermsPage) },
   { path: 'privacy', loadComponent: () => import('./features/legal/privacy/privacy').then((m) => m.PrivacyPage) },

@@ -22,6 +22,7 @@ export class LoginPage implements OnInit {
   password = '';
   rememberMe = false;
   errorMessage = '';
+  isLoading = false;
   returnUrl = '/my-trips';
 
   ngOnInit(): void {
@@ -40,7 +41,9 @@ export class LoginPage implements OnInit {
       return;
     }
 
+    this.isLoading = true;
     this.auth.login({ email: this.email, password: this.password }).subscribe(success => {
+      this.isLoading = false;
       if (!success) {
         this.errorMessage = 'We could not sign you in. Please check your details.';
         return;
