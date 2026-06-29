@@ -70,7 +70,9 @@
         <!-- Info Cards Row -->
         <div class="info-cards-row mb-5">
           <app-hotel-card [hotel]="t.hotel"></app-hotel-card>
-          <app-flight-card [flight]="t.flight"></app-flight-card>
+         @if (t.flight) {
+  <app-flight-card [flight]="t.flight"></app-flight-card>
+}
           <app-weather-banner [weather]="currentDayWeather()"></app-weather-banner>
         </div>
 
@@ -128,12 +130,12 @@
                       <div class="tl-card-col ps-2 pb-4">
                         <div class="activity-card p-3 p-md-4 rounded-4">
                           <div class="d-flex align-items-start justify-content-between gap-2 mb-2">
-                            <h4 class="activity-name mb-0 fw-bold">{{ activity.locationName }}</h4>
+                            <h4 class="activity-name mb-0 fw-bold">{{ activity.title }}</h4>
                             <span class="cat-badge cat-badge-{{ activity.category }} fw-bold text-uppercase">
                               {{ activity.category }}
                             </span>
                           </div>
-                          <p class="activity-desc mb-2">{{ activity.description }}</p>
+                          <p class="activity-desc mb-2">{{ activity.locationName || t.destination }}</p>
                           <div class="activity-footer mt-2 d-flex align-items-center gap-2">
                             <i class="fa-solid fa-location-dot footer-pin-icon"></i>
                             <span class="activity-coords">
@@ -209,9 +211,10 @@
           </button>
         </div>
         <app-trip-chat-panel
-          class="flex-grow-1 overflow-hidden"
-          [tripId]="t.id"
-        ></app-trip-chat-panel>
+  class="flex-grow-1 overflow-hidden"
+  [tripId]="t.id"
+  (tripUpdated)="onTripUpdated()"
+></app-trip-chat-panel>
       </aside>
     }
 

@@ -49,25 +49,37 @@
       <div class="dates mt-4">
         <div class="row g-3">
 
-          <div class="col-12 col-md-6">
-            <div class="form__group d-flex flex-column gap-2">
-              <label class="fw-bold small">Departure</label>
-              <div class="input-icon position-relative">
-                <i class="fa-solid fa-calendar-days icon position-absolute"></i>
-                <input type="date" formControlName="departureDate" class="w-100 fw-medium">
-              </div>
-            </div>
-          </div>
+     <div class="col-12 col-md-6">
+  <div class="form__group d-flex flex-column gap-2">
+    <label class="fw-bold small">Departure</label>
+    <div class="input-icon position-relative">
+      <i class="fa-solid fa-calendar-days icon position-absolute"></i>
+      <input type="date" formControlName="departureDate" class="w-100 fw-medium">
+    </div>
+  </div>
+  @if (form.get('departureDate')?.touched && form.get('departureDate')?.errors?.['pastDate']) {
+    <div class="text-danger small mt-1">Departure date cannot be in the past</div>
+  }
+  @if (form.get('departureDate')?.touched && form.get('departureDate')?.errors?.['required']) {
+    <div class="text-danger small mt-1">Please select a departure date</div>
+  }
+</div>
 
-          <div class="col-12 col-md-6">
-            <div class="form__group d-flex flex-column gap-2">
-              <label class="fw-bold small">Return</label>
-              <div class="input-icon position-relative">
-                <i class="fa-solid fa-calendar-check icon position-absolute"></i>
-                <input type="date" formControlName="returnDate" class="w-100 fw-medium">
-              </div>
-            </div>
-          </div>
+<div class="col-12 col-md-6">
+  <div class="form__group d-flex flex-column gap-2">
+    <label class="fw-bold small">Return</label>
+    <div class="input-icon position-relative">
+      <i class="fa-solid fa-calendar-check icon position-absolute"></i>
+      <input type="date" formControlName="returnDate" class="w-100 fw-medium">
+    </div>
+  </div>
+  @if (form.get('returnDate')?.touched && form.get('returnDate')?.errors?.['pastDate']) {
+    <div class="text-danger small mt-1">Return date cannot be in the past</div>
+  }
+  @if (form.get('returnDate')?.touched && form.get('returnDate')?.errors?.['required']) {
+    <div class="text-danger small mt-1">Please select a return date</div>
+  }
+</div>
 
         </div>
       </div>

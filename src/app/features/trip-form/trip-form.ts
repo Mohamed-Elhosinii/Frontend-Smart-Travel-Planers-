@@ -1,5 +1,5 @@
 import { Component, inject } from '@angular/core';
-import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import { AbstractControl, FormBuilder, FormGroup, ReactiveFormsModule, ValidationErrors, Validators } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { Navbar } from '../../layout/navbar/navbar';
@@ -45,13 +45,20 @@ export class TripFormPage {
   isCreatingPlan = false;
   isRedirecting = false;
 
+  pastDateValidator(control: AbstractControl): ValidationErrors | null {
+    if (!control.value) return null;
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    return new Date(control.value) < today ? { pastDate: true } : null;
+  }
+
   constructor() {
     this.form = this.fb.group(
       {
         from: ['', Validators.required],
         to: ['', Validators.required],
-        departureDate: ['', Validators.required],
-        returnDate: ['', Validators.required],
+        departureDate: ['', [Validators.required, this.pastDateValidator]],
+        returnDate: ['', [Validators.required, this.pastDateValidator]],
         adults: [1, [Validators.required, Validators.min(1)]],
         children: [0],
         rooms: [1],
@@ -80,9 +87,7 @@ export class TripFormPage {
 
   toggleStyle(style: string): void {
     const current = this.form.value.travelStyle as string[];
-    const next = current.includes(style)
-      ? current.filter((s) => s !== style)
-      : [...current, style];
+    const next = current.includes(style) ? current.filter((s) => s !== style) : [...current, style];
     this.form.patchValue({ travelStyle: next });
   }
 

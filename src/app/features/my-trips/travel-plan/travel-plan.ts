@@ -29,7 +29,15 @@ import { TripChatPanel } from '../itinerary/trip-chat-panel/trip-chat-panel';
 @Component({
   selector: 'app-travel-plan',
   standalone: true,
-  imports: [NgClass, RouterLink, FlightCard, HotelCard, WeatherBanner, InteractiveMap, TripChatPanel], // ← أضفنا TripChatPanel
+  imports: [
+    NgClass,
+    RouterLink,
+    FlightCard,
+    HotelCard,
+    WeatherBanner,
+    InteractiveMap,
+    TripChatPanel,
+  ], // ← أضفنا TripChatPanel
   templateUrl: './travel-plan.html',
   styleUrl: './travel-plan.css',
 })
@@ -125,6 +133,32 @@ export class TravelPlanPage implements OnInit {
     } finally {
       this.isExporting.set(false);
     }
+  }
+  // onTripUpdated(): void {
+  //   const id = this.route.snapshot.paramMap.get('id');
+  //   if (!id) return;
+
+  //  setTimeout(() => {
+  //    this.tripService.getPlan(id).subscribe({
+  //      next: async (dto) => {
+  //        const mapped = mapTripPlanDtoToUserTrip(dto);
+  //        const coverImage = await this.unsplash.getDestinationPhoto(dto.destination);
+  //        this.trip.set({ ...mapped, coverImage });
+  //      },
+  //    });
+  //  }, 15000);
+  onTripUpdated(): void {
+  const id = this.route.snapshot.paramMap.get('id');
+  if (!id) return;
+
+  this.tripService.getPlan(id).subscribe({
+    next: async (dto) => {
+      const mapped = mapTripPlanDtoToUserTrip(dto);
+      const coverImage = await this.unsplash.getDestinationPhoto(dto.destination);
+      this.trip.set({ ...mapped, coverImage });
+    },
+  });
+
   }
 }
 
@@ -250,4 +284,5 @@ export function mapTripPlanDtoToUserTrip(dto: TripPlanDto): UserTrip {
     flight,
     hotel,
   };
+ 
 }

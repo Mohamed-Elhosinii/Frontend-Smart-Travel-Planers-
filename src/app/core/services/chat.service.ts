@@ -13,6 +13,8 @@ export class ChatService {
 
   private readonly _messages = signal<ChatMessage[]>([]);
   readonly messages = this._messages.asReadonly();
+  private readonly _currentTripId = signal<string | null>(null);
+  readonly currentTripId = this._currentTripId.asReadonly();
 
   readonly suggestions: string[] = [
     'Plan a 5-day budget trip to Cairo, Egypt',
@@ -31,10 +33,10 @@ export class ChatService {
   createSession(): Observable<any> {
     const headers = this.getAuthHeaders();
     return this.http.post<any>('/api/Chat/session', {}, { headers }).pipe(
-      tap(session => {
+      tap((session) => {
         this.currentSessionId = session.sessionId;
         this._messages.set([this.welcomeMessage()]);
-      })
+      }),
     );
   }
 
@@ -44,55 +46,55 @@ export class ChatService {
     }
 
     const headers = this.getAuthHeaders();
-    return this.http.post<any>(
-      `/api/Chat/send`,
-      { sessionId: this.currentSessionId, message: text },
-      { headers }
-    ).pipe(
-      tap(response => {
-        this.addAssistantReply(
-          response.message,
-          response.plan ? this.toChatItinerary(response.plan) : undefined,
-        );
-      })
-    );
+    return this.http
+      .post<any>(`/api/Chat/send`, { sessionId: this.currentSessionId, message: text }, { headers })
+      .pipe(
+        tap((response) => {
+          if (response.tripId) {
+            this._currentTripId.set(response.tripId); // ← أضيفي السطر ده
+          }
+          this.addAssistantReply(
+            response.message,
+            response.plan ? this.toChatItinerary(response.plan) : undefined,
+          );
+        }),
+      );
   }
 
   loadUserSessions(): Observable<any> {
     const headers = this.getAuthHeaders();
     return this.http.get<ChatSession[]>('/api/Chat/sessions', { headers }).pipe(
-      tap(sessions => {
+      tap((sessions) => {
         this.history = sessions;
         // حفظ كل tripId موجود في localStorage عشان My Trips تلاقيه
-        const tripIds = sessions
-          .filter(s => !!s.tripId)
-          .map(s => s.tripId as string);
+        const tripIds = sessions.filter((s) => !!s.tripId).map((s) => s.tripId as string);
         if (tripIds.length > 0) {
           localStorage.setItem('userTripIds', JSON.stringify(tripIds));
         }
       }),
-      catchError(err => {
+      catchError((err) => {
         console.error('Failed to load sessions', err);
         return of([]);
-      })
+      }),
     );
   }
 
   loadSessionChat(sessionId: string): Observable<any> {
     const headers = this.getAuthHeaders();
     return this.http.get<any>(`/api/Chat/history/${sessionId}`, { headers }).pipe(
-      tap(messages => {
+      tap((messages) => {
         this.currentSessionId = sessionId;
         this._messages.set((messages ?? []).map((m: any) => this.mapHistoryMessage(m)));
-      })
+      }),
     );
   }
 
   reset(): void {
     this.currentSessionId = null;
+    this._currentTripId.set(null); // ← اعمليها null عند reset
     this._messages.set([]);
     this.createSession().subscribe({
-      error: (err) => console.error('Failed to create session:', err)
+      error: (err) => console.error('Failed to create session:', err),
     });
   }
 

@@ -50,7 +50,7 @@ export class ChatPage implements AfterViewChecked, OnInit, OnDestroy {
   ngOnInit(): void {
     if (this.messages.length === 0 || !this.chat.hasActiveSession()) {
       this.chat.createSession().subscribe({
-        error: (err) => console.error('Failed to initialize chat session', err)
+        error: (err) => console.error('Failed to initialize chat session', err),
       });
     }
     this.chat.loadUserSessions().subscribe();
@@ -69,6 +69,8 @@ export class ChatPage implements AfterViewChecked, OnInit, OnDestroy {
     const text = this.newMessageText.trim();
     if (!text || this.isAssistantTyping) return;
 
+    const isNewTrip = !this.chat.currentTripId(); // ← قبل الإرسال
+
     this.chat.addUserMessage(text);
     this.newMessageText = '';
     this.isAssistantTyping = true;
@@ -77,16 +79,19 @@ export class ChatPage implements AfterViewChecked, OnInit, OnDestroy {
       next: (response) => {
         this.isAssistantTyping = false;
 
-        if (response.tripId) {
+        if (response.tripId && isNewTrip) {
+          // ← بس لو رحلة جديدة
           this.awaitPlan(response.tripId);
         }
       },
       error: (err) => {
         console.error('Error sending message:', err);
         this.isAssistantTyping = false;
-        this.chat.addSystemErrorMessage('عذراً، حدث خطأ أثناء الاتصال بالخادم. يرجى المحاولة مرة أخرى.');
+        this.chat.addSystemErrorMessage(
+          'عذراً، حدث خطأ أثناء الاتصال بالخادم. يرجى المحاولة مرة أخرى.',
+        );
         this.toast.danger('Failed to send message. Please try again.');
-      }
+      },
     });
   }
 
@@ -108,7 +113,7 @@ export class ChatPage implements AfterViewChecked, OnInit, OnDestroy {
 
   loadHistoricalSession(sessionId: string): void {
     this.chat.loadSessionChat(sessionId).subscribe({
-      error: () => this.toast.danger('Failed to load chat history.')
+      error: () => this.toast.danger('Failed to load chat history.'),
     });
   }
 

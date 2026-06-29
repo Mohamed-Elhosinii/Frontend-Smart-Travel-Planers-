@@ -2,8 +2,10 @@ import {
   AfterViewChecked,
   Component,
   ElementRef,
+  EventEmitter,
   Input,
   OnInit,
+  Output,
   ViewChild,
   inject,
 } from '@angular/core';
@@ -33,6 +35,7 @@ export class TripChatPanel implements OnInit, AfterViewChecked {
 
   private readonly http = inject(HttpClient);
   private readonly toast = inject(ToastService);
+  @Output() tripUpdated = new EventEmitter<void>();
 
   newMessageText = '';
   isTyping = false;
@@ -55,13 +58,18 @@ export class TripChatPanel implements OnInit, AfterViewChecked {
   }
 
   private initSession(): void {
-    // الخطوة 1: عمل session جديدة
-    this.http.post<any>('/api/Chat/session', {}, { headers: this.authHeaders() })
+    this.http
+      .post<any>(
+        '/api/Chat/session/trip',
+        {
+          tripId: this.tripId,
+        },
+        { headers: this.authHeaders() },
+      )
       .subscribe({
-        next: (session) => {
-          this.panelSessionId = session.sessionId;
-          // الخطوة 2: اربط الـ session بالـ tripId فعلياً في الـ backend
-          this.linkSessionToTrip();
+        next: (res) => {
+          this.panelSessionId = res.sessionId;
+          this.loadWelcomeMessage();
         },
         error: () => {
           this.isInitializing = false;
@@ -78,90 +86,115 @@ export class TripChatPanel implements OnInit, AfterViewChecked {
    * هتشتغل صح بدون أي context message وهمية.
    */
   private linkSessionToTrip(): void {
-    this.http.post<any>(
-      '/api/Chat/session/link-trip',
-      { sessionId: this.panelSessionId, tripId: this.tripId },
-      { headers: this.authHeaders() }
-    ).subscribe({
-      next: () => {
-        // الـ session دلوقتي مربوطة فعلياً بالرحلة في الـ backend.
-        // جيب بيانات الرحلة فقط عشان نعرض رسالة ترحيب — مش عشان نعلم الـ AI بيها
-        this.loadWelcomeMessage();
-      },
-      error: () => {
-        this.isInitializing = false;
-        this.showError('تعذر ربط المحادثة بالرحلة، حاول تاني.');
-      },
-    });
+    this.http
+      .post<any>(
+        '/api/Chat/session/link-trip',
+        { sessionId: this.panelSessionId, tripId: this.tripId },
+        { headers: this.authHeaders() },
+      )
+      .subscribe({
+        next: () => {
+          // الـ session دلوقتي مربوطة فعلياً بالرحلة في الـ backend.
+          // جيب بيانات الرحلة فقط عشان نعرض رسالة ترحيب — مش عشان نعلم الـ AI بيها
+          this.loadWelcomeMessage();
+        },
+        error: () => {
+          this.isInitializing = false;
+          this.showError('تعذر ربط المحادثة بالرحلة، حاول تاني.');
+        },
+      });
   }
 
   private loadWelcomeMessage(): void {
-    this.http.get<any>(`/api/Chat/plan/${this.tripId}`, { headers: this.authHeaders() })
-      .subscribe({
-        next: (plan) => {
-          this.isInitializing = false;
-          this.messages = [{
+    this.http.get<any>(`/api/Chat/plan/${this.tripId}`, { headers: this.authHeaders() }).subscribe({
+      next: (plan) => {
+        this.isInitializing = false;
+        this.messages = [
+          {
             id: this.nextId(),
             sender: 'assistant',
             text: `أهلاً! أنا عارف رحلتك لـ ${plan.destination} من ${plan.startDate} لـ ${plan.endDate}. قولي إيه اللي عايز تغيره — فندق، أنشطة، تواريخ، ميزانية، أي حاجة! 🧳`,
             time: this.now(),
-          }];
-        },
-        error: () => {
-          // مش مشكلة لو فشل جلب التفاصيل — الـ session اتربطت بالفعل بالـ tripId
-          this.isInitializing = false;
-          this.messages = [{
+          },
+        ];
+      },
+      error: () => {
+        // مش مشكلة لو فشل جلب التفاصيل — الـ session اتربطت بالفعل بالـ tripId
+        this.isInitializing = false;
+        this.messages = [
+          {
             id: this.nextId(),
             sender: 'assistant',
             text: 'أهلاً! قولي إيه التعديل اللي عايز تعمله في رحلتك.',
             time: this.now(),
-          }];
-        },
-      });
+          },
+        ];
+      },
+    });
   }
 
   sendMessage(): void {
     const text = this.newMessageText.trim();
     if (!text || this.isTyping || !this.panelSessionId) return;
 
-    this.messages = [...this.messages, {
-      id: this.nextId(),
-      sender: 'user',
-      text,
-      time: this.now(),
-    }];
+    this.messages = [
+      ...this.messages,
+      {
+        id: this.nextId(),
+        sender: 'user',
+        text,
+        time: this.now(),
+      },
+    ];
     this.newMessageText = '';
     this.isTyping = true;
 
-    this.http.post<any>(
-      '/api/Chat/send',
-      { sessionId: this.panelSessionId, message: text },
-      { headers: this.authHeaders() }
-    ).subscribe({
-      next: (response) => {
-        this.isTyping = false;
-        this.messages = [...this.messages, {
-          id: this.nextId(),
-          sender: 'assistant',
-          text: response.message ?? '',
-          time: this.now(),
-        }];
-      },
-      error: () => {
-        this.isTyping = false;
-        this.showError('حدث خطأ، حاول تاني.');
-        this.toast.danger('Failed to send message.');
-      },
-    });
+    this.http
+      .post<any>(
+        '/api/Chat/send',
+        { sessionId: this.panelSessionId, message: text },
+        { headers: this.authHeaders() },
+      )
+      .subscribe({
+        next: (response) => {
+          this.isTyping = false;
+          this.messages = [
+            ...this.messages,
+            {
+              id: this.nextId(),
+              sender: 'assistant',
+              text: response.message ?? '',
+              time: this.now(),
+            },
+          ];
+
+          if (response.tripId) {
+            let attempts = 0;
+            const interval = setInterval(() => {
+              attempts++;
+              this.tripUpdated.emit();
+              if (attempts >= 3) clearInterval(interval);
+            }, 6000); // ← ابدأ بعد 8 ثواني وكرر 3 مرات
+          }
+        },
+        error: () => {
+          this.isTyping = false;
+          this.showError('حدث خطأ، حاول تاني.');
+          this.toast.danger('Failed to send message.');
+        },
+      });
   }
 
   private showError(text: string): void {
-    this.messages = [...this.messages, {
-      id: this.nextId(),
-      sender: 'system',
-      text,
-      time: this.now(),
-    }];
+    this.messages = [
+      ...this.messages,
+      {
+        id: this.nextId(),
+        sender: 'system',
+        text,
+        time: this.now(),
+      },
+    ];
   }
 
   private authHeaders(): HttpHeaders {
