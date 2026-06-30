@@ -57,7 +57,7 @@
               aria-haspopup="true"
               [attr.aria-expanded]="isDropdownOpen"
             >
-              <i class="fa fa-user-circle" aria-hidden="true"></i>
+              <span class="user-initials">{{ userInitials }}</span>
             </button>
             @if (isDropdownOpen) {
               <div class="user-dropdown open overflow-hidden" role="menu">

@@ -349,12 +349,12 @@
   min-height: 46px;
   border: 1px solid #dfd1c7;
   background: #ffffff;
-  box-shadow: 0 10px 30px rgba(61, 43, 47, 0.075);
+  box-shadow: none;
 }
 
 .composer:focus-within {
   border-color: rgba(181, 67, 4, 0.55);
-  box-shadow: 0 0 0 4px rgba(181, 67, 4, 0.09), 0 12px 34px rgba(61, 43, 47, 0.08);
+  box-shadow: 0 0 0 4px rgba(181, 67, 4, 0.09);
 }
 
 .composer-input {
@@ -541,5 +541,102 @@
   .composer-send {
     width: 36px;
     height: 36px;
+  }
+}
+
+
+/* ── Welcome Hero ─────────────────────────────────────────── */
+.welcome-hero {
+  pointer-events: none;
+}
+
+.hero-gradient {
+  background: radial-gradient(circle at center top, rgba(181, 67, 4, 0.08) 0%, rgba(253, 251, 247, 0) 60%);
+}
+
+.hero-content {
+  max-width: 600px;
+}
+
+.hero-title {
+  color: var(--primary-dk);
+  font-size: 2.5rem;
+  letter-spacing: -0.5px;
+}
+
+.empty-chat .composer-wrap {
+  position: absolute;
+  bottom: 35%;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 95%;
+  max-width: 900px;
+  border-top: none !important;
+  background: transparent !important;
+  z-index: 10;
+}
+
+.empty-chat .composer {
+  background: #f4f4f4;
+  border: 1px solid #e5e5e5;
+  box-shadow: none !important;
+  border-radius: 50px !important;
+  padding: 0.25rem 1rem !important;
+  min-height: 48px;
+}
+
+.empty-chat .composer:focus-within {
+  box-shadow: none !important;
+  border-color: rgba(181, 67, 4, 0.55);
+}
+
+.empty-chat .composer-input {
+  font-size: 1.15rem;
+  padding: 0.5rem;
+}
+
+.composer-input:focus {
+  outline: none;
+}
+
+.empty-chat .composer-send {
+  width: 45px;
+  height: 45px;
+  border-radius: 50%;
+  background: var(--primary);
+  color: #fff;
+}
+
+.empty-chat .composer-send:hover:not(:disabled) {
+  background: var(--primary-dk);
+}
+
+.floating-card {
+  z-index: 0;
+  border: 1px solid #ead9ce;
+  min-width: 200px;
+}
+
+.card-left {
+  top: 15%;
+  left: -20px;
+  transform: rotate(-12deg);
+}
+
+.card-right {
+  bottom: 20%;
+  right: -20px;
+  transform: rotate(10deg);
+}
+
+@media (min-width: 992px) {
+  .card-left {
+    top: 25%;
+    left: 5%;
+  }
+  .card-right {
+    top: 25%;
+    right: 5%;
+    bottom: auto;
   }
 }

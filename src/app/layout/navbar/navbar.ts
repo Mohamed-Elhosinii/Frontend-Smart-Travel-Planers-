@@ -47,4 +47,17 @@ export class Navbar {
     this.authService.logout();
     this.isDropdownOpen = false;
   }
+
+  get userInitials(): string {
+    const email = this.authService.currentEmail();
+    if (!email) return 'U';
+    
+    // Extract part before @
+    const namePart = email.split('@')[0];
+    const parts = namePart.split(/[._-]/).filter((p: string) => p.length > 0);
+    
+    if (parts.length === 0) return 'U';
+    if (parts.length === 1) return parts[0][0].toUpperCase();
+    return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
+  }
 }

@@ -165,6 +165,12 @@
   background: rgba(181, 67, 4, 0.08);
 }
 
+.user-initials {
+  font-weight: 700;
+  font-size: 0.9rem;
+  letter-spacing: 1px;
+}
+
 /* ── User Dropdown ────────────────────────────────────────── */
 .user-dropdown {
   position: absolute;

@@ -1,7 +1,7 @@
 import { Injectable, signal, inject } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { ChatItinerary, ChatMessage, ChatSession, TripPlanDto } from '../models';
-import { tap, catchError } from 'rxjs/operators';
+import { tap, catchError, switchMap } from 'rxjs/operators';
 import { of, Observable } from 'rxjs';
 import { AuthService } from './auth.service';
 
@@ -35,16 +35,25 @@ export class ChatService {
     return this.http.post<any>('/api/Chat/session', {}, { headers }).pipe(
       tap((session) => {
         this.currentSessionId = session.sessionId;
-        this._messages.set([this.welcomeMessage()]);
       }),
     );
   }
 
+  initLocalSession(): void {
+    this.currentSessionId = null;
+    this._messages.set([this.welcomeMessage()]);
+  }
+
   sendMessage(text: string): Observable<any> {
     if (!this.currentSessionId) {
-      throw new Error('No active chat session. Please start a new journey.');
+      return this.createSession().pipe(
+        switchMap(() => this.doSendMessage(text))
+      );
     }
+    return this.doSendMessage(text);
+  }
 
+  private doSendMessage(text: string): Observable<any> {
     const headers = this.getAuthHeaders();
     return this.http
       .post<any>(`/api/Chat/send`, { sessionId: this.currentSessionId, message: text }, { headers })
@@ -66,11 +75,6 @@ export class ChatService {
     return this.http.get<ChatSession[]>('/api/Chat/sessions', { headers }).pipe(
       tap((sessions) => {
         this.history = sessions;
-        // حفظ كل tripId موجود في localStorage عشان My Trips تلاقيه
-        const tripIds = sessions.filter((s) => !!s.tripId).map((s) => s.tripId as string);
-        if (tripIds.length > 0) {
-          localStorage.setItem('userTripIds', JSON.stringify(tripIds));
-        }
       }),
       catchError((err) => {
         console.error('Failed to load sessions', err);
@@ -92,10 +96,7 @@ export class ChatService {
   reset(): void {
     this.currentSessionId = null;
     this._currentTripId.set(null); // ← اعمليها null عند reset
-    this._messages.set([]);
-    this.createSession().subscribe({
-      error: (err) => console.error('Failed to create session:', err),
-    });
+    this.initLocalSession();
   }
 
   private getAuthHeaders(): HttpHeaders {

@@ -2,7 +2,7 @@ import { Injectable, inject } from '@angular/core';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Observable, of, throwError, timer, forkJoin } from 'rxjs';
 import { catchError, concatMap, first, take, map, switchMap } from 'rxjs/operators';
-import { TripCreateDto, TripPlanDto, UserTrip } from '../models';
+import { TripCreateDto, TripPlanDto, UserTrip, TripSummaryDto } from '../models';
 import { mapTripPlanDtoToUserTrip } from '../../features/my-trips/travel-plan/travel-plan';
 
 const CHAT_API_BASE = '/api/Chat';
@@ -13,24 +13,24 @@ export class TripService {
   private readonly http = inject(HttpClient);
 
   /**
-   * جيب كل trips اليوزر من الـ API عن طريق الـ tripIds
-   * المحفوظة في localStorage من الـ sessions.
+   * Fetch all trips for the authenticated user from the backend.
    */
   getAllFromApi(): Observable<UserTrip[]> {
-    const stored = localStorage.getItem('userTripIds');
-    const tripIds: string[] = stored ? JSON.parse(stored) : [];
-
-    if (tripIds.length === 0) return of([]);
-
-    const requests = tripIds.map(id =>
-      this.getPlan(id).pipe(
-        map(dto => mapTripPlanDtoToUserTrip(dto)),
-        catchError(() => of(null))
-      )
-    );
-
-    return forkJoin(requests).pipe(
-      map(results => results.filter((t): t is UserTrip => t !== null))
+    return this.http.get<TripSummaryDto[]>(TRIP_API_BASE).pipe(
+      map(dtos => dtos.map(dto => ({
+        id: dto.id,
+        destination: dto.destination,
+        country: dto.country || '',
+        from: dto.originCity,
+        departureDate: dto.startDate,
+        returnDate: dto.endDate,
+        coverImage: dto.coverImage || 'assets/images/default-trip.jpg', // Provide a fallback cover image
+        totalBudget: dto.budgetTotal,
+        spentBudget: dto.budgetSpent,
+        travelStyle: dto.travelStyle,
+        days: [], // Day details are not fetched in the summary
+        status: dto.status.toLowerCase() as any
+      } as UserTrip)))
     );
   }
 

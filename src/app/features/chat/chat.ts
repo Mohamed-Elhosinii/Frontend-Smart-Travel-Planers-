@@ -49,9 +49,7 @@ export class ChatPage implements AfterViewChecked, OnInit, OnDestroy {
 
   ngOnInit(): void {
     if (this.messages.length === 0 || !this.chat.hasActiveSession()) {
-      this.chat.createSession().subscribe({
-        error: (err) => console.error('Failed to initialize chat session', err),
-      });
+      this.chat.initLocalSession();
     }
     this.chat.loadUserSessions().subscribe();
   }

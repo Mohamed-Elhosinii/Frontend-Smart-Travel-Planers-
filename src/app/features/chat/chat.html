@@ -2,15 +2,14 @@
 
 <section class="assistant-shell d-flex overflow-hidden">
   <aside class="assistant-sidebar d-flex flex-column gap-3 py-2 px-3 flex-shrink-0" aria-label="Conversation history">
-    <div class="sidebar-header d-flex align-items-center justify-content-between gap-2">
-      <span class="eyebrow">AI Chat</span>
+    <div class="sidebar-header mt-3">
       <button
         type="button"
-        class="btn btn-new-chat d-inline-flex align-items-center gap-2 fw-bold text-nowrap"
+        class="btn btn-new-chat d-flex align-items-center justify-content-start gap-3 fw-bold w-100"
         (click)="startNewChat()"
         aria-label="Start a new journey"
       >
-        <i class="fa fa-plus" aria-hidden="true"></i>
+        <i class="fa fa-plus fs-5" aria-hidden="true"></i>
         <span>New Journey</span>
       </button>
     </div>
@@ -38,26 +37,21 @@
     </div>
   </aside>
 
-  <main class="assistant-main d-flex flex-column flex-grow-1 overflow-hidden">
+  <main class="assistant-main d-flex flex-column flex-grow-1 overflow-hidden position-relative" [class.empty-chat]="messages.length <= 1 && !isAssistantTyping">
 
-    <div class="messages-pane flex-grow-1 overflow-y-auto py-2 px-3" #scrollContainer>
-      <div class="messages-list d-flex flex-column gap-3 mx-auto">
-        @if (messages.length <= 1 && !isAssistantTyping) {
-          <section class="welcome-panel d-flex gap-3 p-2 rounded-4 shadow-sm" aria-label="Assistant welcome">
-            <div class="welcome-icon d-inline-flex align-items-center justify-content-center rounded-3 flex-shrink-0">
-              <i class="fa fa-compass" aria-hidden="true"></i>
-            </div>
-            <div>
-              <span class="eyebrow">Smart Travel Planner</span>
-              <h2 class="m-0 mt-1 mb-2">Where should we start?</h2>
-              <p class="m-0">
-                Ask for an itinerary, compare destinations, or tune a trip around budget,
-                pace, food, and landmarks.
-              </p>
-            </div>
-          </section>
-        }
+    <div class="messages-pane flex-grow-1 overflow-y-auto overflow-x-hidden py-2 px-3 position-relative" #scrollContainer>
+      @if (messages.length <= 1 && !isAssistantTyping) {
+        <section class="welcome-hero d-flex flex-column align-items-center justify-content-center w-100 h-100 position-absolute top-0 start-0 z-0" aria-label="Assistant welcome">
+          <!-- Background Gradient for empty chat -->
+          <div class="hero-gradient position-absolute top-0 start-0 w-100 h-100 pointer-events-none"></div>
 
+          <div class="hero-content text-center position-relative z-1 mb-4">
+            <h1 class="hero-title fw-bold m-0">Plan Your Next Adventure</h1>
+          </div>
+        </section>
+      }
+
+      <div class="messages-list d-flex flex-column gap-3 mx-auto" [class.d-none]="messages.length <= 1 && !isAssistantTyping">
         @for (msg of messages; track msg.id) {
           <article class="message-row d-flex align-items-start gap-2" [class.message-row-user]="msg.sender === 'user'">
             @if (msg.sender === 'assistant') {
@@ -147,36 +141,41 @@
       </div>
     </div>
 
-    <footer class="composer-wrap flex-shrink-0 border-top py-1 px-3">
-      @if (messages.length <= 1 && !isAssistantTyping) {
-        <div class="suggestions-row d-flex flex-wrap justify-content-center gap-2 mx-auto mb-3" aria-label="Suggested prompts">
-          @for (sug of suggestions; track sug) {
-            <button type="button" class="suggestion-chip border rounded-pill px-3 py-2 fw-bold text-nowrap" (click)="selectSuggestion(sug)">
-              {{ sug }}
-            </button>
-          }
-        </div>
-      }
+    <footer class="composer-wrap flex-shrink-0 py-1 px-3">
+      <form (ngSubmit)="sendMessage()" class="composer d-flex align-items-center gap-2 mx-auto rounded-pill p-1 position-relative" aria-label="Send a message" style="max-width: 900px; z-index: 10;">
+        <button type="button" class="btn btn-link text-dark fs-5 p-2 text-decoration-none rounded-circle ms-2" aria-label="Add attachment">
+          <i class="fa fa-plus" aria-hidden="true"></i>
+        </button>
 
-      <form (ngSubmit)="sendMessage()" class="composer d-flex align-items-center gap-2 mx-auto rounded-4 p-1 shadow-sm" aria-label="Send a message">
         <input
           type="text"
           name="newMessage"
           [(ngModel)]="newMessageText"
           autocomplete="off"
-          class="composer-input flex-grow-1 border-0 px-3 bg-transparent fw-semibold"
-          placeholder="Ask AI Travel Co-Pilot..."
+          class="composer-input flex-grow-1 border-0 px-2 bg-transparent"
+          placeholder="Ask anything"
           aria-label="Message AI Assistant"
         />
+
         <button
           type="submit"
-          class="btn composer-send d-inline-flex align-items-center justify-content-center rounded-3 border-0 flex-shrink-0"
+          class="btn composer-send d-inline-flex align-items-center justify-content-center rounded-circle border-0 flex-shrink-0 text-white shadow-sm me-1"
           [disabled]="!newMessageText.trim() || isAssistantTyping"
           aria-label="Send message"
         >
           <i class="fa fa-paper-plane" aria-hidden="true"></i>
         </button>
       </form>
+
+      @if (messages.length <= 1 && !isAssistantTyping) {
+        <div class="suggestions-row mx-auto mt-4 position-relative d-grid" aria-label="Suggested prompts" style="z-index: 1; grid-template-columns: 1fr 1fr; gap: 0.5rem; max-width: 900px;">
+          @for (sug of suggestions; track sug) {
+            <button type="button" class="suggestion-chip bg-white border border-secondary-subtle rounded-pill px-3 py-2 fw-semibold text-truncate text-dark text-start" style="font-size: 0.9rem;" (click)="selectSuggestion(sug)" [title]="sug">
+              {{ sug }}
+            </button>
+          }
+        </div>
+      }
     </footer>
   </main>
 </section>

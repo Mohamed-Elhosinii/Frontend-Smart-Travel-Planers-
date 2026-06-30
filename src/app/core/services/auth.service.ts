@@ -255,7 +255,6 @@ export class AuthService {
     this.safeRemove('refreshToken');
     this.safeRemove(SESSION_KEY);
     this.safeRemove(PROFILE_KEY);
-    this.safeRemove('userTripIds');
     this.router.navigate(['/login']);
   }
 
