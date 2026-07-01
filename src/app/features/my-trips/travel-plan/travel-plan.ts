@@ -1,6 +1,7 @@
 import { Component, OnInit, PLATFORM_ID, computed, inject, signal } from '@angular/core';
 import { NgClass, isPlatformBrowser } from '@angular/common';
 import { ActivatedRoute, RouterLink } from '@angular/router';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 import {
   Activity,
   ActivityCategory,
@@ -26,6 +27,16 @@ import { WeatherBanner } from '../itinerary/weather-banner/weather-banner';
 import { InteractiveMap } from '../itinerary/interactive-map/interactive-map';
 import { TripChatPanel } from '../itinerary/trip-chat-panel/trip-chat-panel';
 
+export interface PlaceSuggestion {
+  fsqPlaceId: string;
+  name: string;
+  category: string;
+  address: string;
+  latitude: number;
+  longitude: number;
+  images: string[];
+}
+
 @Component({
   selector: 'app-travel-plan',
   standalone: true,
@@ -47,13 +58,16 @@ export class TravelPlanPage implements OnInit {
   private readonly pdfExport = inject(PdfExportService);
   private readonly toast = inject(ToastService);
   private readonly unsplash = inject(UnsplashService);
+  private readonly http = inject(HttpClient);
   private readonly isBrowser = isPlatformBrowser(inject(PLATFORM_ID));
 
   readonly trip = signal<UserTrip | null>(null);
   readonly notFound = signal(false);
   readonly selectedDayIndex = signal(0);
   readonly isExporting = signal(false);
-  readonly isSplitOpen = signal(false); // ← جديد: حالة الـ split view
+  readonly isSplitOpen = signal(false);
+  readonly suggestions = signal<PlaceSuggestion[]>([]);
+  readonly isSuggestionsLoading = signal(false);
 
   readonly currentDayPlan = computed(() => {
     const t = this.trip();
@@ -80,24 +94,61 @@ export class TravelPlanPage implements OnInit {
         const mapped = mapTripPlanDtoToUserTrip(dto);
         const coverImage = await this.unsplash.getDestinationPhoto(dto.destination);
         this.trip.set({ ...mapped, coverImage });
+        this.loadSuggestions(id);
       },
       error: () => this.notFound.set(true),
     });
   }
 
-  /** فتح الـ split view */
-  openSplit(): void {
-    this.isSplitOpen.set(true);
+  private loadSuggestions(tripId: string): void {
+    this.isSuggestionsLoading.set(true);
+    const token = localStorage.getItem('token');
+    const headers = new HttpHeaders({
+      'Content-Type': 'application/json',
+      ...(token ? { Authorization: `Bearer ${token}` } : {}),
+    });
+
+    this.http.get<PlaceSuggestion[]>(`/api/Trip/${tripId}/suggestions?limit=6`, { headers })
+      .subscribe({
+        next: (data) => {
+          this.suggestions.set(data);
+          this.isSuggestionsLoading.set(false);
+        },
+        error: () => this.isSuggestionsLoading.set(false),
+      });
   }
 
-  /** إغلاق الـ split view */
-  closeSplit(): void {
-    this.isSplitOpen.set(false);
+  getCategoryIcon(category: string): string {
+    const icons: Record<string, string> = {
+      'Restaurant': '🍽️',
+      'Cafe': '☕',
+      'Museum': '🏛️',
+      'Park': '🌿',
+      'Shopping Mall': '🛍️',
+      'Movie Theater': '🎬',
+      'Theater': '🎭',
+      'Mosque': '🕌',
+      'Church': '⛪',
+      'Historic and Protected Site': '🏰',
+      'Pastry Shop': '🥐',
+      'Dessert Shop': '🍰',
+      'Hotel': '🏨',
+      'Art Museum': '🎨',
+      'Beach': '🏖️',
+    };
+    return icons[category] ?? '📍';
   }
 
-  selectDay(index: number): void {
-    this.selectedDayIndex.set(index);
+  openInMaps(lat: number, lng: number, name: string): void {
+    const url = `https://www.google.com/maps/search/?api=1&query=${lat},${lng}&query_place_name=${encodeURIComponent(name)}`;
+    window.open(url, '_blank');
   }
+
+  
+
+  openSplit(): void { this.isSplitOpen.set(true); }
+  closeSplit(): void { this.isSplitOpen.set(false); }
+  selectDay(index: number): void { this.selectedDayIndex.set(index); }
 
   getCategoryClass(category: string): string {
     const map: Record<string, string> = {
@@ -115,16 +166,13 @@ export class TravelPlanPage implements OnInit {
     const date = new Date(dateStr);
     if (isNaN(date.getTime())) return dateStr;
     return date.toLocaleDateString('en-US', {
-      month: 'short',
-      day: 'numeric',
-      year: 'numeric',
+      month: 'short', day: 'numeric', year: 'numeric',
     });
   }
 
   async exportToPDF(): Promise<void> {
     const t = this.trip();
     if (!this.isBrowser || !t || this.isExporting()) return;
-
     this.isExporting.set(true);
     try {
       await this.pdfExport.exportTrip(t);

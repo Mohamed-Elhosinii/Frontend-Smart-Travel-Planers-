@@ -572,3 +572,108 @@
     font-size: 1.15rem;
   }
 }
+
+
+
+/* ══════════════════════════════════════════════════════════════════════════════
+   SUGGESTED PLACES SECTION
+   ══════════════════════════════════════════════════════════════════════════════ */
+.suggestions-section {
+  border-top: 1px solid #e8ddd6;
+}
+
+.suggestions-subtitle {
+  font-size: 0.88rem;
+  color: var(--text-muted, #6B6B6B);
+}
+
+.suggestions-badge {
+  background: rgba(181, 67, 4, 0.08);
+  color: #B54304;
+  border: 1px solid rgba(181, 67, 4, 0.18);
+  border-radius: 50px;
+  padding: 4px 14px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.suggestion-card {
+  background: #ffffff;
+  border: 1px solid #e8ddd6;
+  box-shadow: 0 2px 12px rgba(61, 43, 47, 0.04);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.suggestion-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 28px rgba(61, 43, 47, 0.10);
+  border-color: #d4c5b7;
+}
+
+.suggestion-icon-wrap {
+  width: 44px;
+  height: 44px;
+  min-width: 44px;
+  background: rgba(181, 67, 4, 0.06);
+  border-radius: 12px;
+  font-size: 1.3rem;
+}
+
+.suggestion-name {
+  font-size: 0.92rem;
+  color: var(--text-deep, #261814);
+  line-height: 1.3;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.suggestion-category-badge {
+  display: inline-block;
+  background: rgba(181, 67, 4, 0.07);
+  color: #B54304;
+  border-radius: 4px;
+  padding: 2px 8px;
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.4px;
+  text-transform: uppercase;
+}
+
+.suggestion-address {
+  font-size: 0.75rem;
+  color: var(--text-muted, #6B6B6B);
+  line-height: 1.4;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.suggestion-map-btn {
+  background: transparent;
+  border: 1.5px solid #B54304;
+  color: #B54304;
+  font-size: 0.8rem;
+  font-weight: 600;
+  padding: 6px 16px;
+  transition: all 0.2s ease;
+}
+
+.suggestion-map-btn:hover {
+  background: #B54304;
+  color: #ffffff;
+}
+
+.suggestion-card-skeleton {
+  height: 140px;
+  background: linear-gradient(90deg, #f0e8e2 25%, #fdf6f0 50%, #f0e8e2 75%);
+  background-size: 200% 100%;
+}
+
+.suggestions-empty {
+  background: #fff;
+  border: 1px dashed #d4c5b7;
+}

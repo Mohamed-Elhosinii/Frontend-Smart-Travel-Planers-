@@ -15,7 +15,6 @@
           </a>
 
           <div class="row align-items-end justify-content-between g-4">
-            <!-- Main Hero Details -->
             <div class="col-lg-8">
               <div class="d-flex flex-wrap align-items-center gap-2 mb-2">
                 @for (style of t.travelStyle; track style) {
@@ -23,13 +22,9 @@
                 }
               </div>
               <h1 class="display-4 hero-title mb-2">{{ t.destination }}</h1>
-
-              <!-- Country -->
               <p class="hero-subtitle mb-2 fw-medium">
                 <i class="fa-solid fa-earth-americas me-2"></i>{{ t.country }}
               </p>
-
-              <!-- Dates as readable chips -->
               <div class="hero-dates-row">
                 <span class="hero-date-chip">
                   <span class="chip-label">Departure</span>
@@ -43,7 +38,6 @@
               </div>
             </div>
 
-            <!-- Action / Stats Side -->
             <div class="col-lg-4 text-lg-end">
               <div class="d-flex flex-column align-items-lg-end gap-3">
                 <button class="btn btn-pdf-export px-4 py-2 d-inline-flex align-items-center gap-2 fw-bold" (click)="exportToPDF()" [disabled]="isExporting()">
@@ -117,16 +111,13 @@
                 <div class="timeline-track d-flex flex-column w-100">
                   @for (activity of currentDayActivities(); track activity.id) {
                     <div class="timeline-item align-items-start" [ngClass]="getCategoryClass(activity.category)">
-
                       <div class="tl-time-col d-flex flex-column align-items-end pt-3 position-relative h-100">
                         <span class="activity-time fw-bold text-uppercase">{{ activity.time }}</span>
                         <div class="tl-connector flex-grow-1"></div>
                       </div>
-
                       <div class="tl-dot-col d-flex justify-content-center position-relative h-100 z-2">
                         <div class="tl-dot rounded-circle d-flex align-items-center justify-content-center mt-2">{{ activity.icon }}</div>
                       </div>
-
                       <div class="tl-card-col ps-2 pb-4">
                         <div class="activity-card p-3 p-md-4 rounded-4">
                           <div class="d-flex align-items-start justify-content-between gap-2 mb-2">
@@ -144,7 +135,6 @@
                           </div>
                         </div>
                       </div>
-
                     </div>
                   }
                 </div>
@@ -195,6 +185,72 @@
           </div>
 
         </div>
+
+        <!-- ══════════════════════════════════════════════════════
+             SUGGESTED PLACES SECTION
+             ══════════════════════════════════════════════════════ -->
+        <div class="suggestions-section mt-5 pt-4">
+          <div class="d-flex align-items-center gap-3 mb-4">
+            <div>
+              <h2 class="section-title mb-1">You Might Also Like</h2>
+              <p class="suggestions-subtitle mb-0">Handpicked places in {{ t.destination }} you shouldn't miss</p>
+            </div>
+            <span class="suggestions-badge ms-auto">{{ t.destination }}</span>
+          </div>
+
+          <!-- Loading State -->
+          @if (isSuggestionsLoading()) {
+            <div class="row g-3">
+              @for (i of [1,2,3,4,5,6]; track i) {
+                <div class="col-12 col-sm-6 col-lg-4">
+                  <div class="suggestion-card-skeleton rounded-4 skeleton-pulse"></div>
+                </div>
+              }
+            </div>
+          }
+
+          <!-- Suggestions Grid -->
+          @if (!isSuggestionsLoading() && suggestions().length > 0) {
+            <div class="row g-3">
+              @for (place of suggestions(); track place.fsqPlaceId) {
+                <div class="col-12 col-sm-6 col-lg-4">
+                  <div class="suggestion-card rounded-4 p-3 d-flex flex-column gap-2 h-100">
+                    <div class="d-flex align-items-start gap-3">
+                      <div class="suggestion-icon-wrap d-flex align-items-center justify-content-center flex-shrink-0">
+                        {{ getCategoryIcon(place.category) }}
+                      </div>
+                      <div class="flex-grow-1 min-w-0">
+                        <h5 class="suggestion-name fw-bold mb-1">{{ place.name }}</h5>
+                        <span class="suggestion-category-badge">{{ place.category }}</span>
+                      </div>
+                    </div>
+                    @if (place.address) {
+                      <p class="suggestion-address mb-0">
+                        <i class="fa-solid fa-location-dot me-1"></i>{{ place.address }}
+                      </p>
+                    }
+                    <button
+                      class="btn suggestion-map-btn mt-auto d-flex align-items-center justify-content-center gap-2 rounded-pill"
+                      (click)="openInMaps(place.latitude, place.longitude, place.name)"
+                    >
+                      <i class="fa-solid fa-map-location-dot"></i>
+                      View on Map
+                    </button>
+                  </div>
+                </div>
+              }
+            </div>
+          }
+
+          <!-- Empty State -->
+          @if (!isSuggestionsLoading() && suggestions().length === 0) {
+            <div class="suggestions-empty text-center py-4 rounded-4">
+              <i class="fa-solid fa-compass text-muted mb-2" style="font-size: 1.8rem;"></i>
+              <p class="text-muted mb-0">No suggestions available right now.</p>
+            </div>
+          }
+        </div>
+
       </div>
 
     </div><!-- end split-trip-panel -->
