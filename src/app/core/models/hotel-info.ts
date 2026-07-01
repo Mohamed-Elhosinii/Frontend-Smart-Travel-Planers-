@@ -8,4 +8,12 @@ export interface HotelInfo {
   checkOut: string;
   /** Guest review score, 0–10. */
   rating: number;
+  
+  // New enriched fields
+  hotelId?: string;
+  images?: string[];
+  pricePerNight?: number | null;
+  reviewScore?: number | null;
+  reviewCount?: number | null;
+  bookingUrl?: string | null;
 }

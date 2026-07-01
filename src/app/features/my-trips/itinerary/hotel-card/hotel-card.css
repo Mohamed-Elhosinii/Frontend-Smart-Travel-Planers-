@@ -110,14 +110,30 @@
   border-radius: 4px;
 }
 
-.skeleton-short  { width: 40px; }
-.skeleton-medium { width: 120px; }
-.skeleton-long   { width: 150px; }
+.skeleton-short {
+  width: 40px;
+}
+
+.skeleton-medium {
+  width: 120px;
+}
+
+.skeleton-long {
+  width: 150px;
+}
 
 @keyframes skeleton-blink {
-  0%   { opacity: .5; }
-  50%  { opacity: 1; }
-  100% { opacity: .5; }
+  0% {
+    opacity: .5;
+  }
+
+  50% {
+    opacity: 1;
+  }
+
+  100% {
+    opacity: .5;
+  }
 }
 
 @media (max-width: 768px) {

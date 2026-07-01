@@ -44,6 +44,11 @@ export class TripFormPage {
 
   isCreatingPlan = false;
   isRedirecting = false;
+  isResolving = false;
+  
+  confirmationSuggestion: any = null;
+  resolvedDestId: string | null = null;
+  resolvedDestType: string | null = null;
 
   pastDateValidator(control: AbstractControl): ValidationErrors | null {
     if (!control.value) return null;
@@ -68,6 +73,13 @@ export class TripFormPage {
       },
       { validators: dateRangeValidator },
     );
+    
+    // Reset resolution if user types in destination again
+    this.form.get('to')?.valueChanges.subscribe(() => {
+        this.confirmationSuggestion = null;
+        this.resolvedDestId = null;
+        this.resolvedDestType = null;
+    });
   }
 
   increase(field: string): void {
@@ -92,29 +104,77 @@ export class TripFormPage {
   }
 
   submit(): void {
-    if (this.form.invalid || this.isCreatingPlan) {
+    if (this.form.invalid || this.isCreatingPlan || this.isResolving) {
       this.form.markAllAsTouched();
       return;
     }
 
     const v = this.form.getRawValue();
+    const destination = (v.to ?? '').trim();
+    
+    if (!this.resolvedDestId && !this.confirmationSuggestion) {
+        this.isResolving = true;
+        this.tripService.resolveDestination(destination).subscribe({
+            next: (res) => {
+                this.isResolving = false;
+                if (res.status === 0 || res.status === 'Resolved') { // 0 = Resolved (enum value)
+                    this.resolvedDestId = res.destId;
+                    this.resolvedDestType = res.destType;
+                    this.createPlan();
+                } else if (res.status === 1 || res.status === 'NeedsConfirmation') { // 1 = NeedsConfirmation
+                    this.confirmationSuggestion = res.suggestion;
+                } else {
+                    this.toast.danger('Destination not found. Please try another city.');
+                }
+            },
+            error: () => {
+                this.isResolving = false;
+                this.toast.danger('Failed to resolve destination. Check your connection.');
+            }
+        });
+    } else {
+        this.createPlan();
+    }
+  }
+  
+  acceptSuggestion(): void {
+      if (this.confirmationSuggestion) {
+          this.form.patchValue({ to: this.confirmationSuggestion.resolvedName });
+          this.resolvedDestId = this.confirmationSuggestion.destId;
+          this.resolvedDestType = this.confirmationSuggestion.destType || 'city';
+          
+          this.tripService.confirmDestination(this.resolvedDestId!, this.confirmationSuggestion.resolvedName).subscribe();
+          
+          this.confirmationSuggestion = null;
+          this.createPlan();
+      }
+  }
+  
+  rejectSuggestion(): void {
+      this.confirmationSuggestion = null;
+      this.form.get('to')?.setValue('');
+      this.form.get('to')?.markAsTouched();
+  }
+
+  private createPlan(): void {
+    const v = this.form.getRawValue();
     const origin = (v.from ?? '').trim();
 
-    // Map the form to the backend TripCreateDto (exact field names).
     const dto: TripCreateDto = {
       destination: (v.to ?? '').trim(),
-      originCity: origin ? origin : null, // empty origin → null = trip without a flight
-      startDate: v.departureDate, // <input type="date"> already yields yyyy-MM-dd
+      destId: this.resolvedDestId,
+      destType: this.resolvedDestType,
+      originCity: origin ? origin : null,
+      startDate: v.departureDate,
       endDate: v.returnDate,
       numTravelers: (Number(v.adults) || 0) + (Number(v.children) || 0),
-      budgetTotal: parseFloat(v.budget), // matches Validators.min's parseFloat parsing
+      budgetTotal: parseFloat(v.budget),
       preferences: (v.travelStyle as string[]) ?? [],
     };
 
     this.isCreatingPlan = true;
     this.tripService.createQuickPlan(dto).subscribe({
       next: (res) => {
-        // Monthly trip limit reached → backend returns { message } and no tripId.
         if (!res.tripId) {
           this.isCreatingPlan = false;
           this.toast.danger(res.message ?? 'تعذّر إنشاء الرحلة، حاول تاني');
@@ -129,10 +189,6 @@ export class TripFormPage {
     });
   }
 
-  /**
-   * The plan builds in the background — poll the SAME helper the chat flow uses,
-   * then redirect to the new trip's detail page. On timeout/error, stay on the form.
-   */
   private awaitPlan(tripId: string): void {
     this.tripService.pollPlan(tripId).subscribe({
       next: () => {

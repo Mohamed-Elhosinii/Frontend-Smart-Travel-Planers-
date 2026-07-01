@@ -40,6 +40,15 @@
             @if (form.get('to')?.touched && form.get('to')?.invalid) {
               <div class="text-danger small mt-1">Tell us your destination to plan your trip</div>
             }
+            @if (confirmationSuggestion) {
+              <div class="destination-confirm mt-2 p-2 bg-light rounded border border-warning d-flex flex-column gap-2">
+                <span class="small">Did you mean <strong>{{ confirmationSuggestion.resolvedName }}</strong>?</span>
+                <div class="d-flex gap-2">
+                  <button type="button" class="btn btn-sm btn-success flex-fill" (click)="acceptSuggestion()">✓ Yes</button>
+                  <button type="button" class="btn btn-sm btn-outline-danger flex-fill" (click)="rejectSuggestion()">✗ No, retype</button>
+                </div>
+              </div>
+            }
           </div>
 
         </div>

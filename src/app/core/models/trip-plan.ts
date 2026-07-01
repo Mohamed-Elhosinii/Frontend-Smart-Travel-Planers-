@@ -91,6 +91,8 @@ export interface TripPlanDto {
  */
 export interface TripCreateDto {
   destination: string;
+  destId?: string | null;
+  destType?: string | null;
   originCity?: string | null;
   startDate: string; // yyyy-MM-dd
   endDate: string;   // yyyy-MM-dd

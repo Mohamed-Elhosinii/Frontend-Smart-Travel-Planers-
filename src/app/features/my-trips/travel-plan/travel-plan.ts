@@ -148,16 +148,16 @@ export class TravelPlanPage implements OnInit {
   //    });
   //  }, 15000);
   onTripUpdated(): void {
-  const id = this.route.snapshot.paramMap.get('id');
-  if (!id) return;
+    const id = this.route.snapshot.paramMap.get('id');
+    if (!id) return;
 
-  this.tripService.getPlan(id).subscribe({
-    next: async (dto) => {
-      const mapped = mapTripPlanDtoToUserTrip(dto);
-      const coverImage = await this.unsplash.getDestinationPhoto(dto.destination);
-      this.trip.set({ ...mapped, coverImage });
-    },
-  });
+    this.tripService.getPlan(id).subscribe({
+      next: async (dto) => {
+        const mapped = mapTripPlanDtoToUserTrip(dto);
+        const coverImage = await this.unsplash.getDestinationPhoto(dto.destination);
+        this.trip.set({ ...mapped, coverImage });
+      },
+    });
 
   }
 }
@@ -249,24 +249,26 @@ function deriveStatus(startDate: string, endDate: string): TripStatus {
 export function mapTripPlanDtoToUserTrip(dto: TripPlanDto): UserTrip {
   const flight: FlightInfo | undefined = dto.flight
     ? {
-        airline: dto.flight.airlineName,
-        flightNumber: dto.flight.flightNumber,
-        departure: dto.flight.departureAirport,
-        arrival: dto.flight.arrivalAirport,
-        departureTime: dto.flight.departureTime,
-        arrivalTime: dto.flight.arrivalTime,
-      }
+      airline: dto.flight.airlineName,
+      flightNumber: dto.flight.flightNumber,
+      departure: dto.flight.departureAirport,
+      arrival: dto.flight.arrivalAirport,
+      departureTime: dto.flight.departureTime,
+      arrivalTime: dto.flight.arrivalTime,
+    }
     : undefined;
 
   const hotel: HotelInfo | undefined = dto.hotel
     ? {
-        name: dto.hotel.name,
-        address: dto.hotel.address ?? '',
-        stars: Math.round(dto.hotel.rating ?? 0),
-        checkIn: dto.startDate,
-        checkOut: dto.endDate,
-        rating: dto.hotel.rating ?? 0,
-      }
+      name: dto.hotel.name,
+      address: dto.hotel.address ?? '',
+      stars: Math.round(dto.hotel.rating ?? 0),
+      checkIn: dto.startDate,
+      checkOut: dto.endDate,
+      rating: dto.hotel.rating ?? 0,
+      pricePerNight: dto.hotel.pricePerNight,
+      images: dto.hotel.images ?? [],
+    }
     : undefined;
 
   return {
@@ -284,5 +286,5 @@ export function mapTripPlanDtoToUserTrip(dto: TripPlanDto): UserTrip {
     flight,
     hotel,
   };
- 
+
 }

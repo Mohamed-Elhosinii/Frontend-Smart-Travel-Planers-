@@ -69,7 +69,7 @@ export class TripChatPanel implements OnInit, AfterViewChecked {
       .subscribe({
         next: (res) => {
           this.panelSessionId = res.sessionId;
-          this.loadWelcomeMessage();
+          this.loadHistory(res.sessionId);
         },
         error: () => {
           this.isInitializing = false;
@@ -130,6 +130,29 @@ export class TripChatPanel implements OnInit, AfterViewChecked {
           },
         ];
       },
+    });
+  }
+
+  private loadHistory(sessionId: string): void {
+    this.http.get<any[]>(`/api/Chat/history/${sessionId}`, { headers: this.authHeaders() }).subscribe({
+      next: (history) => {
+        if (history && history.length > 0) {
+          this.isInitializing = false;
+          this.messages = history.map((m: any) => ({
+            id: String(m.id || this.nextId()),
+            sender: this.mapRole(m.role),
+            text: m.content || '',
+            time: this.formatTimeFrom(m.createdAt)
+          }));
+        } else {
+          // If no history exists, fall back to the welcome message
+          this.loadWelcomeMessage();
+        }
+      },
+      error: () => {
+        // If history fails to load, fallback to welcome message
+        this.loadWelcomeMessage();
+      }
     });
   }
 
@@ -222,5 +245,24 @@ export class TripChatPanel implements OnInit, AfterViewChecked {
   private scrollToBottom(): void {
     const el = this.panelScroll?.nativeElement;
     if (el) el.scrollTop = el.scrollHeight;
+  }
+
+  private mapRole(role: any): 'user' | 'assistant' | 'system' {
+    const r = typeof role === 'string' ? role.toLowerCase() : role;
+    if (r === 0 || r === 'user') return 'user';
+    if (r === 2 || r === 'system' || r === 3 || r === 'tool') return 'system';
+    return 'assistant';
+  }
+
+  private formatTimeFrom(iso: string | null | undefined): string {
+    if (!iso) return this.now();
+    const hasTz = /[zZ]|[+-]\d\d:?\d\d$/.test(iso);
+    const d = new Date(hasTz ? iso : iso + 'Z');
+    if (isNaN(d.getTime())) return this.now();
+    let hours = d.getHours();
+    const minutes = d.getMinutes().toString().padStart(2, '0');
+    const ampm = hours >= 12 ? 'PM' : 'AM';
+    hours = hours % 12 || 12;
+    return `${hours}:${minutes} ${ampm}`;
   }
 }

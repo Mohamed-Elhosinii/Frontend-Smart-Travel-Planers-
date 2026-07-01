@@ -58,4 +58,12 @@ export class TripService {
       first((plan): plan is TripPlanDto => !!plan && plan.days.length > 0),
     );
   }
+
+  resolveDestination(query: string): Observable<any> {
+    return this.http.post('/api/places/resolve', { query });
+  }
+
+  confirmDestination(destId: string, resolvedName: string): Observable<any> {
+    return this.http.post('/api/places/confirm', { destId, resolvedName });
+  }
 }
