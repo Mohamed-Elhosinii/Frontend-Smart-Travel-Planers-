@@ -1,25 +1,54 @@
 @if (hotel) {
-<div class="summary-card hotel-card d-flex align-items-start position-relative overflow-hidden">
-  @if (hotel.images && hotel.images.length > 0) {
-    <div class="hotel-bg-image position-absolute w-100 h-100" [style.backgroundImage]="'url(' + hotel.images[0] + ')'" style="opacity: 0.15; top: 0; left: 0; z-index: 0; background-size: cover; background-position: center;"></div>
-  }
-  <div class="card-icon-wrap icon-secondary d-flex align-items-center justify-content-center flex-shrink-0" style="z-index: 1;">
-    <i class="fa-solid fa-hotel"></i>
+<div class="summary-card hotel-card d-flex flex-column position-relative p-0 overflow-hidden">
+  
+  <!-- Carousel Section -->
+  <div class="hotel-carousel position-relative w-100">
+    @if (hotel.images && hotel.images.length > 0) {
+      <img [src]="hotel.images[currentImageIndex]" class="carousel-img w-100 h-100" (error)="onImageError(currentImageIndex)" alt="{{ hotel.name }}">
+      
+      @if (hotel.images.length > 1) {
+        <button class="carousel-btn prev-btn" (click)="prevImage($event)" aria-label="Previous image">
+          <i class="fa-solid fa-chevron-left"></i>
+        </button>
+        <button class="carousel-btn next-btn" (click)="nextImage($event)" aria-label="Next image">
+          <i class="fa-solid fa-chevron-right"></i>
+        </button>
+        
+        <div class="carousel-dots d-flex justify-content-center gap-1 w-100 position-absolute pb-2">
+          @for (img of hotel.images; track $index) {
+            <div class="dot" [class.active]="$index === currentImageIndex" (click)="goToImage($index, $event)"></div>
+          }
+        </div>
+      }
+    } @else {
+      <div class="w-100 h-100 d-flex flex-column align-items-center justify-content-center bg-light text-muted">
+        <i class="fa-solid fa-image fs-1 mb-2"></i>
+        <span class="small">No images available</span>
+      </div>
+    }
   </div>
-  <div class="card-body-wrap w-100" style="z-index: 1;">
-    <div class="d-flex justify-content-between align-items-start">
-      <div>
-        <div class="card-label fw-bold text-uppercase">Hotel</div>
-        <div class="card-main fw-bold">{{ hotel.name }}</div>
+
+  <!-- Body Section -->
+  <div class="card-body-wrap p-3 w-100 d-flex flex-column">
+    <div class="d-flex justify-content-between align-items-start mb-2">
+      <div class="d-flex align-items-start gap-2">
+        <div class="card-icon-wrap icon-secondary d-flex align-items-center justify-content-center flex-shrink-0 mt-1">
+          <i class="fa-solid fa-hotel"></i>
+        </div>
+        <div>
+          <div class="card-label fw-bold text-uppercase">Hotel</div>
+          <div class="card-main fw-bold">{{ hotel.name }}</div>
+        </div>
       </div>
       @if (hotel.pricePerNight) {
-        <div class="hotel-price text-end">
+        <div class="hotel-price text-end flex-shrink-0 ms-2">
           <div class="fw-bold fs-5 text-success">${{ hotel.pricePerNight }}</div>
           <div class="small text-muted">/ night</div>
         </div>
       }
     </div>
-    <div class="card-sub fw-semibold mt-1">
+
+    <div class="card-sub fw-semibold">
       @for (s of getStars(hotel.stars); track $index) {
       <i class="fa-solid fa-star star-icon"></i>
       }
@@ -28,6 +57,7 @@
         <span class="ms-1 fw-normal text-muted small">({{ hotel.reviewCount }} reviews)</span>
       }
     </div>
+
     <div class="card-dates mt-3 d-flex flex-column gap-1">
       <div class="date-row d-flex align-items-center gap-2">
         <span class="date-badge check-in">Check-in</span>
@@ -38,8 +68,9 @@
         <span class="date-val">{{ formatDate(hotel.checkOut) }}</span>
       </div>
     </div>
-    <div class="mt-3">
-      <button class="btn btn-sm btn-primary fw-bold px-3 py-2" (click)="loadBookingLinks()" [disabled]="isLoadingLinks">
+
+    <div class="mt-3 mt-auto">
+      <button class="btn btn-sm btn-primary fw-bold w-100 py-2" (click)="loadBookingLinks()" [disabled]="isLoadingLinks">
         @if (isLoadingLinks) {
           <span class="spinner-border spinner-border-sm me-2"></span> Loading...
         } @else {
@@ -50,14 +81,17 @@
   </div>
 </div>
 } @else {
-<div class="summary-card hotel-card loading-card d-flex align-items-start">
-  <div
-    class="card-icon-wrap icon-secondary skeleton-pulse d-flex align-items-center justify-content-center flex-shrink-0">
-  </div>
-  <div class="card-body-wrap w-100">
-    <div class="skeleton-line skeleton-short skeleton-pulse mb-2"></div>
-    <div class="skeleton-line skeleton-medium skeleton-pulse mb-2"></div>
-    <div class="skeleton-line skeleton-long skeleton-pulse"></div>
+<div class="summary-card hotel-card loading-card d-flex flex-column p-0">
+  <div class="hotel-carousel skeleton-pulse w-100"></div>
+  <div class="card-body-wrap p-3 w-100">
+    <div class="d-flex align-items-start gap-2 mb-2">
+      <div class="card-icon-wrap icon-secondary skeleton-pulse d-flex align-items-center justify-content-center flex-shrink-0"></div>
+      <div class="w-100">
+        <div class="skeleton-line skeleton-short skeleton-pulse mb-2"></div>
+        <div class="skeleton-line skeleton-medium skeleton-pulse"></div>
+      </div>
+    </div>
+    <div class="skeleton-line skeleton-long skeleton-pulse mt-3"></div>
   </div>
 </div>
 }
