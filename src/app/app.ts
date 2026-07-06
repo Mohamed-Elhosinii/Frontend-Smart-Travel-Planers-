@@ -8,6 +8,5 @@ import { Toast } from './shared/toast/toast';
   standalone: true,
   imports: [RouterOutlet, Toast],
   templateUrl: './app.html',
-  styleUrl: './app.css',
 })
 export class App {}

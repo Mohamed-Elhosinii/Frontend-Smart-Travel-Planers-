@@ -1,6 +1,6 @@
 /**
  * Domain models for the Subscriptions feature.
- * Mirrors SmartTravelPlaners.BLL\Features\Subscription\DTOs on the backend.
+ * Mirrors the backend Subscription DTOs.
  */
 
 /** Maps to backend SubscriptionStatus enum. */

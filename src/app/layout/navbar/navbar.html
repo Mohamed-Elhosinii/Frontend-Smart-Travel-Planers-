@@ -2,7 +2,9 @@
   <div class="container-fluid px-3 px-lg-4">
 
     <!-- LEFT: Brand Logo -->
-    <a class="navbar-brand wandr-logo me-0 text-decoration-none" routerLink="/">TripMind</a>
+    <a class="navbar-brand wandr-logo me-0 text-decoration-none d-inline-flex align-items-center" routerLink="/">
+      <app-logo [size]="30"></app-logo>
+    </a>
 
     <!-- Mobile Toggler -->
     <button
@@ -28,9 +30,6 @@
           <a class="nav-link position-relative fw-semibold text-nowrap" routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{exact:true}">Home</a>
         </li>
         <li class="nav-item">
-          <a class="nav-link position-relative fw-semibold text-nowrap" routerLink="/plan" routerLinkActive="active">Plan Your Trip</a>
-        </li>
-        <li class="nav-item">
           <a class="nav-link position-relative fw-semibold text-nowrap" routerLink="/chat" routerLinkActive="active">AI Chat</a>
         </li>
         <li class="nav-item">
@@ -43,6 +42,10 @@
 
       <!-- RIGHT: Auth Section -->
       <div class="d-flex align-items-center gap-2 pb-3 pb-lg-0">
+        <button type="button" class="btn-plan-nav btn rounded-pill fw-semibold text-nowrap px-3" (click)="openPlanner()">
+          Plan Your Trip
+        </button>
+
         @if (!authService.isLoggedIn()) {
           <a routerLink="/signup" class="btn-signup d-inline-flex align-items-center fw-bold text-decoration-none text-nowrap">Sign Up</a>
         }
@@ -67,9 +70,6 @@
                 <a routerLink="/my-trips" class="dropdown-item d-flex align-items-center fw-medium text-decoration-none" role="menuitem">
                   <i class="fa fa-suitcase" aria-hidden="true"></i> My Trips
                 </a>
-                <a routerLink="/settings" class="dropdown-item d-flex align-items-center fw-medium text-decoration-none" role="menuitem">
-                  <i class="fa fa-cog" aria-hidden="true"></i> Settings
-                </a>
                 <a routerLink="/subscription" class="dropdown-item d-flex align-items-center fw-medium text-decoration-none" role="menuitem">
                   <i class="fa-solid fa-crown" aria-hidden="true"></i> Subscription
                 </a>
@@ -91,3 +91,13 @@
     </div>
   </div>
 </nav>
+
+<!-- Trip planner modal, triggered by the "Plan Your Trip" navbar button -->
+<app-modal
+  [open]="isPlannerOpen"
+  title="Plan Your Trip"
+  subtitle="Tell us where you're headed and we'll build the itinerary."
+  (closed)="isPlannerOpen = false"
+>
+  <app-trip-planner-form (submitted)="isPlannerOpen = false"></app-trip-planner-form>
+</app-modal>

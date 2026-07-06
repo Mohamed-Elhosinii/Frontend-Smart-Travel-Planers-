@@ -1,38 +1,22 @@
-import { Component, inject } from '@angular/core';
-import { AbstractControl, FormBuilder, FormGroup, ReactiveFormsModule, ValidationErrors, Validators } from '@angular/forms';
-import { CommonModule } from '@angular/common';
-import { Router } from '@angular/router';
+import { Component } from '@angular/core';
 import { Navbar } from '../../layout/navbar/navbar';
-import { dateRangeValidator } from '../../core/validators/date-range.validator';
-import { ToastService } from '../../core/services/toast.service';
-import { TripCreateDto } from '../../core/models';
-import { TripService } from '../../core/services/trip.service';
+import { TripPlannerForm } from '../../shared/trip-planner-form/trip-planner-form';
 
-/** Selectable travel-style options for the planner form. */
-export const TRAVEL_STYLES = [
-  'Adventure',
-  'Relaxation',
-  'Cultural',
-  'Foodie',
-  'Nature',
-  'Luxury',
-  'Nightlife',
-  'Family',
-] as const;
-
-/** Minimum spend (per the budget validator) before a trip can be generated. */
-const MIN_BUDGET = 1000;
-
-const STEP_MINIMUMS: Record<string, number> = { adults: 1, children: 0, rooms: 1 };
-
-/** Trip planner form: collects preferences and requests an AI itinerary. */
+/**
+ * Full-page trip planner (route `/plan`).
+ *
+ * A thin wrapper around the shared {@link TripPlannerForm}; the planning logic
+ * lives entirely in that reusable component so the page, the landing embed, and
+ * the navbar modal all stay in sync.
+ */
 @Component({
   selector: 'app-trip-form',
   standalone: true,
-  imports: [ReactiveFormsModule, CommonModule, Navbar],
+  imports: [Navbar, TripPlannerForm],
   templateUrl: './trip-form.html',
   styleUrl: './trip-form.css',
 })
+<<<<<<< Updated upstream
 export class TripFormPage {
   private readonly fb = inject(FormBuilder);
   private readonly router = inject(Router);
@@ -146,3 +130,6 @@ export class TripFormPage {
     });
   }
 }
+=======
+export class TripFormPage {}
+>>>>>>> Stashed changes

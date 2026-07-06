@@ -1,3 +1,4 @@
+<main>
 <!-- HERO -->
 <section class="my-trips-hero position-relative d-flex align-items-center justify-content-center text-center text-white overflow-hidden">
   <div class="hero-overlay position-absolute top-0 start-0 w-100 h-100"></div>
@@ -13,6 +14,27 @@
 <!-- MAIN -->
 <section class="trips-section py-5">
   <div class="container">
+
+    <!-- CONTROLS -->
+    @if (!isLoading() && trips().length > 0) {
+      <div class="trips-toolbar d-flex flex-wrap align-items-center justify-content-between gap-3 mb-4">
+        <div class="d-flex flex-wrap align-items-center gap-2">
+          <select class="form-select trip-filter" [ngModel]="statusFilter()" (ngModelChange)="statusFilter.set($event)" aria-label="Filter by status">
+            <option value="all">All Statuses</option>
+            @for (s of statuses(); track s) {
+              <option [value]="s">{{ s | titlecase }}</option>
+            }
+          </select>
+          <select class="form-select trip-filter" [ngModel]="sortOrder()" (ngModelChange)="sortOrder.set($event)" aria-label="Sort trips">
+            <option value="newest">Newest First</option>
+            <option value="oldest">Oldest First</option>
+          </select>
+        </div>
+        <a routerLink="/chat" class="btn btn-add-trip border-0 rounded-pill px-4 py-2 fw-semibold">
+          <i class="fa fa-plus me-2"></i>Add New Trip
+        </a>
+      </div>
+    }
 
     <!-- LOADING -->
     @if (isLoading()) {
@@ -49,28 +71,38 @@
       </div>
     }
 
+    <!-- NO MATCHES (filtered) -->
+    @if (!isLoading() && trips().length > 0 && visibleTrips().length === 0) {
+      <div class="text-center py-5">
+        <p class="text-muted mb-0">No trips match the selected filter.</p>
+      </div>
+    }
+
     <!-- TRIPS GRID -->
-    @if (!isLoading() && trips().length > 0) {
+    @if (!isLoading() && visibleTrips().length > 0) {
       <div class="row g-4">
-        @for (trip of trips(); track trip.id) {
+        @for (trip of visibleTrips(); track trip.id) {
           <div class="col-12 col-md-6 col-lg-4">
             <div class="card border-0 shadow-sm rounded-4 overflow-hidden trip-card h-100 position-relative">
 
-              <!-- زرار الحذف -->
+              <!-- Delete button -->
               <button
+                type="button"
                 class="btn-remove-trip"
-                (click)="removeTrip(trip.id, $event)"
-                aria-label="Remove trip"
+                (click)="requestDelete(trip, $event)"
+                [attr.aria-label]="'Remove trip to ' + trip.destination"
                 title="Remove trip"
               >
-                <i class="fa fa-times"></i>
+                <i class="fa fa-times" aria-hidden="true"></i>
               </button>
 
-              <!-- صورة الكارد — بتييجي من trip.coverImage اللي اتجابت من Unsplash -->
+              <!-- Card cover — trip.coverImage is hydrated from Unsplash -->
               <div class="card-img-wrapper position-relative overflow-hidden">
                 <img
                   [src]="trip.coverImage"
-                  [alt]="trip.destination"
+                  [alt]="'Cover photo of ' + trip.destination"
+                  loading="lazy"
+                  decoding="async"
                   class="card-img-top w-100 h-100 object-fit-cover"
                 />
                 <span class="position-absolute top-0 end-0 m-3 badge rounded-pill"
@@ -139,3 +171,25 @@
 
   </div>
 </section>
+</main>
+
+<!-- Delete confirmation (FE-10) -->
+<app-modal
+  [open]="tripPendingDelete() !== null"
+  title="Remove this trip?"
+  (closed)="cancelDelete()"
+>
+  @if (tripPendingDelete(); as trip) {
+    <p class="text-muted text-center mb-4">
+      "<strong>{{ trip.destination }}</strong>" will be removed from your trips. You can plan it again anytime.
+    </p>
+    <div class="d-flex flex-column flex-sm-row justify-content-center gap-2">
+      <button type="button" class="btn btn-outline-secondary rounded-pill px-4 fw-semibold order-2 order-sm-1" (click)="cancelDelete()">
+        Cancel
+      </button>
+      <button type="button" class="btn btn-danger rounded-pill px-4 fw-semibold order-1 order-sm-2" (click)="confirmDelete()">
+        Remove trip
+      </button>
+    </div>
+  }
+</app-modal>

@@ -10,8 +10,14 @@ export const authGuard: CanActivateFn = (_route, state) => {
   const auth = inject(AuthService);
   const router = inject(Router);
 
-  const token = auth.getToken();
-  if (token && token.trim() !== '') {
+  // A valid, unexpired access token grants access immediately.
+  if (auth.getToken() && !auth.isTokenExpired()) {
+    return true;
+  }
+  // Access token missing/expired but a refresh token exists: allow — the HTTP
+  // interceptor transparently refreshes on the first request (and logs out if
+  // that fails). This avoids bouncing users with a merely-stale access token.
+  if (auth.getRefreshToken()) {
     return true;
   }
   return router.createUrlTree(['/login'], { queryParams: { returnUrl: state.url } });

@@ -71,6 +71,34 @@ export interface TripPlanDto {
   summary: string;
 }
 
+/** A suggested destination returned when a query needs user confirmation. */
+export interface DestinationSuggestion {
+  resolvedName: string;
+  destId: string;
+  destType?: string;
+}
+
+/**
+ * Response of POST /api/places/resolve. The backend `status` is a numeric enum
+ * (0 = Resolved, 1 = NeedsConfirmation, 2 = NotFound) which some builds serialise
+ * as the string name — callers must accept either.
+ */
+export interface ResolveDestinationResponse {
+  status: number | 'Resolved' | 'NeedsConfirmation' | 'NotFound';
+  destId: string;
+  destType: string;
+  resolvedName: string | null;
+  originalInput: string | null;
+  source: string | null;
+  suggestion: DestinationSuggestion | null;
+}
+
+/** Response of POST /api/places/confirm. */
+export interface ConfirmDestinationResponse {
+  destId: string;
+  resolvedName: string;
+}
+
 /**
  * Request body for POST /api/Trip/quick-plan (and the chat's TRIP_READY payload).
  * Mirrors the backend `TripCreateDto` exactly. `originCity` null/omitted → no flight.

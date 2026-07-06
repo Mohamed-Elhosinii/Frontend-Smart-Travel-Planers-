@@ -2,14 +2,18 @@ import { Component, OnInit, inject } from '@angular/core';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { AuthService } from '../../../core/services/auth.service';
-
-const REMEMBERED_EMAIL_KEY = 'stp_remembered_email';
+import { extractErrorMessage } from '../../../core/utils/http-error';
+import { STORAGE_KEYS } from '../../../core/constants/storage';
+import { APP_ROUTES } from '../../../core/constants/routes';
+import { MESSAGES } from '../../../core/constants/messages';
+import { storage } from '../../../core/utils/storage';
+import { Logo } from '../../../shared/logo/logo';
 
 /** Sign-in page. Authenticates via {@link AuthService} and honours `returnUrl`. */
 @Component({
   selector: 'app-login',
   standalone: true,
-  imports: [RouterLink, FormsModule],
+  imports: [RouterLink, FormsModule, Logo],
   templateUrl: './login.html',
   styleUrl: './login.css',
 })
@@ -23,7 +27,7 @@ export class LoginPage implements OnInit {
   rememberMe = false;
   errorMessage = '';
   isLoading = false;
-  returnUrl = '/my-trips';
+  returnUrl: string = APP_ROUTES.myTrips;
   showPassword = false;
 
   togglePassword(): void {
@@ -35,8 +39,14 @@ export class LoginPage implements OnInit {
   }
 
   ngOnInit(): void {
-    this.returnUrl = this.route.snapshot.queryParams['returnUrl'] || '/my-trips';
-    const saved = this.safeGet(REMEMBERED_EMAIL_KEY);
+    this.returnUrl = this.route.snapshot.queryParams['returnUrl'] || APP_ROUTES.myTrips;
+
+    // Surface a failed Google OAuth round-trip (backend redirects here with ?error=).
+    if (this.route.snapshot.queryParams['error'] === 'google_auth_failed') {
+      this.errorMessage = 'Google sign-in failed. Please try again or use your email and password.';
+    }
+
+    const saved = storage.get(STORAGE_KEYS.rememberedEmail);
     if (saved) {
       this.email = saved;
       this.rememberMe = true;
@@ -55,56 +65,22 @@ export class LoginPage implements OnInit {
       next: (success) => {
         this.isLoading = false;
         if (!success) {
-          this.errorMessage = 'We could not sign you in. Please check your details.';
+          this.errorMessage = MESSAGES.loginFailed;
           return;
         }
 
         if (this.rememberMe) {
-          this.safeSet(REMEMBERED_EMAIL_KEY, this.email);
+          storage.set(STORAGE_KEYS.rememberedEmail, this.email);
         } else {
-          this.safeRemove(REMEMBERED_EMAIL_KEY);
+          storage.remove(STORAGE_KEYS.rememberedEmail);
         }
 
         this.router.navigateByUrl(this.returnUrl);
       },
       error: (err) => {
         this.isLoading = false;
-        let errorData = err.error;
-        if (typeof errorData === 'string') {
-          try {
-            errorData = JSON.parse(errorData);
-          } catch {
-            // Ignore parse failure
-          }
-        }
-        if (errorData?.errors && errorData.errors.length > 0) {
-          this.errorMessage = errorData.errors.join(' ');
-        } else {
-          this.errorMessage = errorData?.message || `Connection/Server Error (${err.status}: ${err.statusText || 'Server unreachable'}).`;
-        }
+        this.errorMessage = extractErrorMessage(err, MESSAGES.loginFailed);
       }
     });
-  }
-
-  private safeGet(key: string): string | null {
-    try {
-      return localStorage.getItem(key);
-    } catch {
-      return null;
-    }
-  }
-  private safeSet(key: string, value: string): void {
-    try {
-      localStorage.setItem(key, value);
-    } catch {
-      /* no-op */
-    }
-  }
-  private safeRemove(key: string): void {
-    try {
-      localStorage.removeItem(key);
-    } catch {
-      /* no-op */
-    }
   }
 }

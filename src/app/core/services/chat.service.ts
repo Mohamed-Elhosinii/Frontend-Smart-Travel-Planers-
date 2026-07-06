@@ -1,9 +1,10 @@
 import { Injectable, signal, inject } from '@angular/core';
-import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { HttpClient } from '@angular/common/http';
 import { ChatItinerary, ChatMessage, ChatSession, TripPlanDto } from '../models';
 import { tap, catchError } from 'rxjs/operators';
 import { of, Observable } from 'rxjs';
 import { AuthService } from './auth.service';
+import { ENDPOINTS } from '../config/endpoints';
 
 @Injectable({ providedIn: 'root' })
 export class ChatService {
@@ -16,6 +17,15 @@ export class ChatService {
   private readonly _currentTripId = signal<string | null>(null);
   readonly currentTripId = this._currentTripId.asReadonly();
 
+  /**
+   * The backend session id of the active conversation (null for a fresh,
+   * not-yet-persisted local session). Exposed so the UI can highlight the
+   * active item in the history sidebar. This is the SINGLE source of truth
+   * for conversation identity — never fabricate an id.
+   */
+  private readonly _activeSessionId = signal<string | null>(null);
+  readonly activeSessionId = this._activeSessionId.asReadonly();
+
   readonly suggestions: string[] = [
     'Plan a 5-day budget trip to Cairo, Egypt',
     'Create a luxury honeymoon itinerary for Maldives',
@@ -23,35 +33,62 @@ export class ChatService {
     'Plan a family summer vacation to Paris for 7 days',
   ];
 
-  history: ChatSession[] = [];
-  private currentSessionId: string | null = null;
+  private readonly _history = signal<ChatSession[]>([]);
+  /** Past conversations for the sidebar (backend order: most-recent first). */
+  readonly history = this._history.asReadonly();
 
   hasActiveSession(): boolean {
-    return this.currentSessionId !== null;
+    return this._activeSessionId() !== null;
   }
 
   createSession(): Observable<any> {
-    const headers = this.getAuthHeaders();
-    return this.http.post<any>('/api/Chat/session', {}, { headers }).pipe(
+    const headers = this.auth.getAuthHeaders();
+    return this.http.post<any>(ENDPOINTS.chat.session, {}, { headers }).pipe(
       tap((session) => {
+<<<<<<< Updated upstream
         this.currentSessionId = session.sessionId;
         this._messages.set([this.welcomeMessage()]);
+=======
+        this._activeSessionId.set(session.sessionId);
+>>>>>>> Stashed changes
       }),
     );
   }
 
+<<<<<<< Updated upstream
   sendMessage(text: string): Observable<any> {
     if (!this.currentSessionId) {
       throw new Error('No active chat session. Please start a new journey.');
+=======
+  initLocalSession(): void {
+    this._activeSessionId.set(null);
+    this._currentTripId.set(null);
+    this._messages.set([this.welcomeMessage()]);
+  }
+
+  sendMessage(text: string): Observable<any> {
+    if (!this._activeSessionId()) {
+      return this.createSession().pipe(
+        switchMap(() => this.doSendMessage(text))
+      );
+>>>>>>> Stashed changes
     }
 
+<<<<<<< Updated upstream
     const headers = this.getAuthHeaders();
+=======
+  private doSendMessage(text: string): Observable<any> {
+    const headers = this.auth.getAuthHeaders();
+>>>>>>> Stashed changes
     return this.http
-      .post<any>(`/api/Chat/send`, { sessionId: this.currentSessionId, message: text }, { headers })
+      .post<any>(ENDPOINTS.chat.send, { sessionId: this._activeSessionId(), message: text }, { headers })
       .pipe(
         tap((response) => {
+          // The backend links a trip to the session and returns its id — this is
+          // the authoritative Trip↔Chat link; keep it so follow-up edits stay
+          // on the same conversation.
           if (response.tripId) {
-            this._currentTripId.set(response.tripId); // ← أضيفي السطر ده
+            this._currentTripId.set(response.tripId);
           }
           this.addAssistantReply(
             response.message,
@@ -62,15 +99,19 @@ export class ChatService {
   }
 
   loadUserSessions(): Observable<any> {
-    const headers = this.getAuthHeaders();
-    return this.http.get<ChatSession[]>('/api/Chat/sessions', { headers }).pipe(
+    const headers = this.auth.getAuthHeaders();
+    return this.http.get<ChatSession[]>(ENDPOINTS.chat.sessions, { headers }).pipe(
       tap((sessions) => {
+<<<<<<< Updated upstream
         this.history = sessions;
         // حفظ كل tripId موجود في localStorage عشان My Trips تلاقيه
         const tripIds = sessions.filter((s) => !!s.tripId).map((s) => s.tripId as string);
         if (tripIds.length > 0) {
           localStorage.setItem('userTripIds', JSON.stringify(tripIds));
         }
+=======
+        this._history.set(sessions ?? []);
+>>>>>>> Stashed changes
       }),
       catchError((err) => {
         console.error('Failed to load sessions', err);
@@ -79,32 +120,33 @@ export class ChatService {
     );
   }
 
-  loadSessionChat(sessionId: string): Observable<any> {
-    const headers = this.getAuthHeaders();
-    return this.http.get<any>(`/api/Chat/history/${sessionId}`, { headers }).pipe(
+  /**
+   * Restore a past conversation. Both the session id AND its linked trip id
+   * are restored so a follow-up message continues the SAME backend conversation
+   * and keeps editing the SAME trip.
+   */
+  loadSessionChat(sessionId: string, tripId: string | null = null): Observable<any> {
+    const headers = this.auth.getAuthHeaders();
+    return this.http.get<any>(ENDPOINTS.chat.history(sessionId), { headers }).pipe(
       tap((messages) => {
-        this.currentSessionId = sessionId;
+        this._activeSessionId.set(sessionId);
+        this._currentTripId.set(tripId);
         this._messages.set((messages ?? []).map((m: any) => this.mapHistoryMessage(m)));
       }),
     );
   }
 
   reset(): void {
+<<<<<<< Updated upstream
     this.currentSessionId = null;
     this._currentTripId.set(null); // ← اعمليها null عند reset
     this._messages.set([]);
     this.createSession().subscribe({
       error: (err) => console.error('Failed to create session:', err),
     });
-  }
-
-  private getAuthHeaders(): HttpHeaders {
-    const token = localStorage.getItem('token');
-    let headers = new HttpHeaders({ 'Content-Type': 'application/json' });
-    if (token && token.trim() !== '') {
-      headers = headers.set('Authorization', `Bearer ${token.trim()}`);
-    }
-    return headers;
+=======
+    this.initLocalSession();
+>>>>>>> Stashed changes
   }
 
   addUserMessage(text: string): void {

@@ -1,56 +1,54 @@
-import { Component, inject } from '@angular/core';
-import { FormsModule } from '@angular/forms';
+import { Component, inject, signal } from '@angular/core';
+import { Router } from '@angular/router';
+import { AuthService } from '../../../../core/services/auth.service';
+import { UserProfileService } from '../../../../core/services/user-profile.service';
 import { ToastService } from '../../../../core/services/toast.service';
-
-const MIN_PASSWORD_LENGTH = 8;
+import { APP_ROUTES } from '../../../../core/constants/routes';
 
 /**
- * Change-password form with live validation.
- *
- * There is no auth backend, so this validates input and resets on success
- * without persisting — wire it to `AuthService.changePassword()` when available.
+ * Security tab. The backend has no authenticated "change password" endpoint —
+ * password changes are only supported via the email-verified reset flow
+ * (POST /Auth/forgot-password → /reset-password). This component triggers that
+ * real flow instead of faking a change.
  */
 @Component({
   selector: 'app-password-form',
   standalone: true,
-  imports: [FormsModule],
+  imports: [],
   templateUrl: './password-form.html',
   styleUrl: './password-form.css',
 })
 export class PasswordForm {
+  private readonly auth = inject(AuthService);
+  private readonly profileService = inject(UserProfileService);
   private readonly toast = inject(ToastService);
+  private readonly router = inject(Router);
 
-  security = {
-    currentPassword: '',
-    newPassword: '',
-    confirmPassword: '',
-  };
+  readonly sending = signal(false);
 
-  get isNewPasswordLengthValid(): boolean {
-    return this.security.newPassword.length >= MIN_PASSWORD_LENGTH;
+  get email(): string {
+    return this.profileService.profile().email;
   }
 
-  get doPasswordsMatch(): boolean {
-    return (
-      this.security.newPassword.length > 0 &&
-      this.security.newPassword === this.security.confirmPassword
-    );
-  }
-
-  get isSecurityFormValid(): boolean {
-    return (
-      this.security.currentPassword.length > 0 &&
-      this.isNewPasswordLengthValid &&
-      this.doPasswordsMatch
-    );
-  }
-
-  changePassword(): void {
-    if (!this.isSecurityFormValid) {
-      this.toast.danger('Please fix the highlighted fields before submitting.');
+  sendResetCode(): void {
+    const email = this.email?.trim();
+    if (!email) {
+      this.toast.danger('Your account email is still loading — please try again in a moment.');
       return;
     }
-    this.toast.success('Password updated successfully.');
-    this.security = { currentPassword: '', newPassword: '', confirmPassword: '' };
+    if (this.sending()) return;
+
+    this.sending.set(true);
+    this.auth.forgotPassword(email).subscribe({
+      next: () => {
+        this.sending.set(false);
+        this.toast.success(`We've emailed a reset code to ${email}.`);
+        this.router.navigate([APP_ROUTES.resetPassword], { queryParams: { email } });
+      },
+      error: () => {
+        this.sending.set(false);
+        this.toast.danger('Could not start the password reset. Please try again.');
+      },
+    });
   }
 }

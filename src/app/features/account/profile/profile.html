@@ -10,15 +10,21 @@
         <div class="position-relative d-inline-flex align-items-center justify-content-center bg-primary text-white rounded-circle shadow-sm border border-3 border-white mx-auto mb-3 fw-bold fs-2" style="width: 100px; height: 100px;">
           {{ userInitials }}
         </div>
-        <h5 class="fw-bold text-deep mb-1">{{ userProfile.firstName }} {{ userProfile.lastName }}</h5>
-        <div class="d-flex align-items-center justify-content-center gap-2 mb-1">
-          <p class="text-muted small mb-0"><i class="fa-solid fa-location-dot me-1"></i>{{ userProfile.country || 'Not set' }}</p>
-        </div>
-        <div>
-          <span class="badge bg-success-subtle text-success border border-success-subtle px-2 py-1 rounded-pill small fw-semibold">
-            <i class="fa-solid fa-crown me-1"></i> {{ userProfile.currentPlan || 'Free Plan' }}
-          </span>
-        </div>
+        @if (loading()) {
+          <div class="skeleton-line skeleton-pulse mx-auto mb-2" style="width: 60%; height: 1rem;"></div>
+          <div class="skeleton-line skeleton-pulse mx-auto mb-2" style="width: 45%; height: 0.75rem;"></div>
+          <div class="skeleton-line skeleton-pulse mx-auto rounded-pill" style="width: 40%; height: 1.25rem;"></div>
+        } @else {
+          <h5 class="fw-bold text-deep mb-1">{{ userProfile.firstName }} {{ userProfile.lastName }}</h5>
+          <div class="d-flex align-items-center justify-content-center gap-2 mb-1">
+            <p class="text-muted small mb-0"><i class="fa-solid fa-location-dot me-1"></i>{{ userProfile.country || 'Not set' }}</p>
+          </div>
+          <div>
+            <span class="badge bg-success-subtle text-success border border-success-subtle px-2 py-1 rounded-pill small fw-semibold">
+              <i class="fa-solid fa-crown me-1"></i> {{ userProfile.currentPlan || 'Free Plan' }}
+            </span>
+          </div>
+        }
       </div>
 
       <!-- Navigation List -->
@@ -44,20 +50,31 @@
       </div>
     </div>
 
-    <!-- Right Main Content Area (The Settings Cards) -->
+    <!-- Right Main Content Area -->
     <div class="col-lg-9">
-      
-      <!-- Settings Card -->
+
       <div class="card shadow-sm border-0 rounded-4 p-4 bg-white">
-        @switch (activeTab) {
-          @case ('personal') {
-            <app-personal-info
-              [userProfile]="editableProfile"
-              (saveProfile)="onProfileSaved($event)"
-            ></app-personal-info>
-          }
-          @case ('security') {
-            <app-password-form></app-password-form>
+        @if (loading()) {
+          <div class="skeleton-line skeleton-pulse mb-4" style="width: 40%; height: 1.4rem;"></div>
+          <div class="row g-3">
+            @for (i of [1,2,3,4]; track i) {
+              <div class="col-md-6">
+                <div class="skeleton-line skeleton-pulse mb-2" style="width: 35%; height: 0.7rem;"></div>
+                <div class="skeleton-line skeleton-pulse" style="width: 100%; height: 2.5rem; border-radius: 0.75rem;"></div>
+              </div>
+            }
+          </div>
+        } @else {
+          @switch (activeTab) {
+            @case ('personal') {
+              <app-personal-info
+                [userProfile]="editableProfile"
+                (saveProfile)="onProfileSaved($event)"
+              ></app-personal-info>
+            }
+            @case ('security') {
+              <app-password-form></app-password-form>
+            }
           }
         }
       </div>

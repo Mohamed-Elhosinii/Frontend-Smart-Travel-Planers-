@@ -15,149 +15,15 @@
 
 .title .subtitle {
   letter-spacing: 2px;
-  color: var(--primary-orange, #B54304);
+  color: var(--primary-orange);
 }
 
 .title h1 {
-  color: var(--secondary-dark, #3D2B2F);
+  color: var(--secondary-dark);
 }
 
 .card {
-  max-width: 800px;
+  max-width: 900px;
   background: rgba(255, 255, 255, 0.95);
   backdrop-filter: blur(20px);
-}
-
-label {
-  color: var(--secondary-dark, #3D2B2F);
-}
-
-.input-icon .icon {
-  left: 18px;
-  top: 50%;
-  transform: translateY(-50%);
-  color: var(--primary-orange, #B54304);
-  pointer-events: none;
-  z-index: 2;
-}
-
-/* Standardized Custom form controls */
-.input-icon input {
-  height: 60px;
-  padding-left: 50px;
-  padding-right: 16px;
-  background: #faf7f2;
-  border: 1px solid #e8ddd6;
-  border-radius: 12px;
-  color: var(--secondary-dark, #3D2B2F);
-  transition: all 0.3s ease;
-  outline: none;
-}
-
-.input-icon input:focus, .input-icon input:hover {
-  background: #ffffff;
-  border-color: var(--primary-orange, #B54304);
-  box-shadow: 0 0 0 4px rgba(181, 67, 4, 0.1);
-}
-
-input::placeholder {
-  color: #ad9c96;
-}
-
-input[type="date"]::-webkit-calendar-picker-indicator {
-  opacity: 0;
-  position: absolute;
-  right: 10px;
-  width: 100%;
-  height: 100%;
-  cursor: pointer;
-}
-
-/* Travelers Box */
-.travelers-box {
-  min-height: 80px;
-  background: #faf7f2;
-  border: 1px solid #e8ddd6;
-  transition: all 0.3s ease;
-}
-
-.travelers-box:hover {
-  background: #ffffff;
-  border-color: rgba(181, 67, 4, 0.3);
-  box-shadow: 0 4px 15px rgba(181, 67, 4, 0.05);
-}
-
-.row-item {
-  color: var(--secondary-dark, #3D2B2F);
-}
-
-.controls button {
-  width: 32px;
-  height: 32px;
-  background-color: #ffffff;
-  color: var(--secondary-dark, #3D2B2F);
-  border: 1px solid #e8ddd6;
-  transition: all 0.2s ease;
-  outline: none;
-}
-
-.controls button:hover {
-  background-color: var(--primary-orange, #B54304);
-  color: #ffffff;
-  border-color: var(--primary-orange, #B54304);
-  box-shadow: 0 2px 8px rgba(181, 67, 4, 0.2);
-}
-
-/* Modern Travel Style Chips */
-.style-chip {
-  background: #ffffff;
-  color: var(--secondary-dark, #3D2B2F);
-  border: 1px solid #e8ddd6;
-  letter-spacing: 0.5px;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-.style-chip:hover {
-  background-color: #faf7f2;
-  border-color: var(--primary-orange, #B54304);
-  color: var(--primary-orange, #B54304);
-  transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(181, 67, 4, 0.1);
-}
-
-.style-chip.active {
-  background: linear-gradient(135deg, var(--primary-orange, #B54304), #9f2c0f);
-  border-color: transparent;
-  color: #ffffff;
-  box-shadow: 0 6px 16px rgba(181, 67, 4, 0.25);
-  transform: translateY(-2px);
-}
-
-/* Submit Button */
-.generate-btn {
-  height: 60px;
-  background: linear-gradient(135deg, var(--primary-orange, #B54304), #9f2c0f);
-  color: white;
-  transition: all 0.3s ease;
-  box-shadow: 0 6px 20px rgba(181, 67, 4, 0.25);
-}
-
-.generate-btn:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 8px 25px rgba(181, 67, 4, 0.35);
-}
-
-.generate-btn:active {
-  transform: scale(0.98);
-}
-
-.generate-btn:disabled {
-  background: #d4c4b9;
-  box-shadow: none;
-  transform: none;
-  cursor: not-allowed;
-}
-
-.generate-subtitle {
-  color: #8c7b75;
 }

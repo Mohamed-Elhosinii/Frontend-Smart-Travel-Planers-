@@ -2,8 +2,12 @@
 
 <section class="assistant-shell d-flex overflow-hidden">
   <aside class="assistant-sidebar d-flex flex-column gap-3 py-2 px-3 flex-shrink-0" aria-label="Conversation history">
+<<<<<<< Updated upstream
     <div class="sidebar-header d-flex align-items-center justify-content-between gap-2">
       <span class="eyebrow">AI Chat</span>
+=======
+    <div class="sidebar-header mt-3 d-flex flex-column gap-2">
+>>>>>>> Stashed changes
       <button
         type="button"
         class="btn btn-new-chat d-inline-flex align-items-center gap-2 fw-bold text-nowrap"
@@ -13,21 +17,41 @@
         <i class="fa fa-plus" aria-hidden="true"></i>
         <span>New Journey</span>
       </button>
+
+      <button
+        type="button"
+        class="btn btn-sidebar-link d-flex align-items-center justify-content-start gap-3 fw-semibold w-100"
+        (click)="goToTrips()"
+        aria-label="Go to My Trips"
+      >
+        <i class="fa fa-suitcase" aria-hidden="true"></i>
+        <span>My Trips</span>
+      </button>
     </div>
 
-    <div class="history-section d-flex flex-column gap-2 flex-grow-1">
-      <div class="section-label">Recent Plans</div>
+    <div class="history-section d-flex flex-column gap-2 flex-grow-1 overflow-hidden">
+      <div class="section-label">History</div>
       <div class="history-list flex-grow-1 overflow-y-auto pe-1">
-        @for (item of chatHistory; track item.id) {
-          <button type="button" class="history-card d-flex align-items-start gap-2 w-100 border-0 rounded-3 p-2 mb-1 text-start" aria-label="Open {{ item.title }}" (click)="loadHistoricalSession(item.id)">
-            <span class="history-icon d-inline-flex align-items-center justify-content-center rounded-3 flex-shrink-0">
-              <i class="fa fa-comments-o" aria-hidden="true"></i>
-            </span>
-            <span class="history-copy d-flex flex-column">
-              <span class="history-title overflow-hidden fw-bold text-nowrap">{{ item.title }}</span>
-              <span class="history-date fw-semibold">{{ item.date }}</span>
-            </span>
-          </button>
+        @for (group of historyGroups; track group.label) {
+          <div class="history-group-label fw-semibold text-uppercase">{{ group.label }}</div>
+          @for (item of group.items; track item.id) {
+            <button
+              type="button"
+              class="history-card d-flex align-items-center gap-2 w-100 border-0 rounded-3 p-2 mb-1 text-start"
+              [class.active]="item.id === activeSessionId"
+              [attr.aria-current]="item.id === activeSessionId ? 'true' : null"
+              aria-label="Open {{ item.title }}"
+              (click)="loadHistoricalSession(item)"
+            >
+              <span class="history-icon d-inline-flex align-items-center justify-content-center rounded-3 flex-shrink-0">
+                <i class="fa" [class.fa-map-marker]="item.tripId" [class.fa-comments-o]="!item.tripId" aria-hidden="true"></i>
+              </span>
+              <span class="history-copy d-flex flex-column overflow-hidden">
+                <span class="history-title overflow-hidden fw-bold text-nowrap">{{ item.title }}</span>
+                <span class="history-date fw-semibold">{{ item.date }}</span>
+              </span>
+            </button>
+          }
         } @empty {
           <div class="history-empty d-flex flex-column align-items-center justify-content-center gap-2 p-3 rounded-3 text-center fw-semibold">
             <i class="fa fa-map-o" aria-hidden="true"></i>
@@ -38,6 +62,7 @@
     </div>
   </aside>
 
+<<<<<<< Updated upstream
   <main class="assistant-main d-flex flex-column flex-grow-1 overflow-hidden">
 
     <div class="messages-pane flex-grow-1 overflow-y-auto py-2 px-3" #scrollContainer>
@@ -58,21 +83,45 @@
           </section>
         }
 
+=======
+  <main class="assistant-main d-flex flex-column flex-grow-1 overflow-hidden position-relative" [class.empty-chat]="isEmptyState">
+
+    <div class="messages-pane flex-grow-1 overflow-y-auto overflow-x-hidden py-2 px-3 position-relative" #scrollContainer>
+      @if (isEmptyState) {
+        <section class="welcome-hero d-flex flex-column align-items-center justify-content-center w-100 h-100 position-absolute top-0 start-0 z-0" aria-label="Assistant welcome">
+          <div class="hero-gradient position-absolute top-0 start-0 w-100 h-100 pointer-events-none"></div>
+
+          <div class="hero-content text-center position-relative z-1 mb-4">
+            <span class="hero-eyebrow d-inline-flex align-items-center gap-2 mb-3">
+              <span class="eyebrow-rule"></span>
+              AI TRAVEL CONCIERGE
+              <span class="eyebrow-rule"></span>
+            </span>
+            <h1 class="hero-title fw-bold m-0">Plan Your Next Adventure</h1>
+            <p class="hero-subtitle mt-2 m-0">Tell me where you dream of going — I'll build the itinerary.</p>
+          </div>
+        </section>
+      }
+
+      <div class="messages-list d-flex flex-column gap-3 mx-auto" [class.d-none]="isEmptyState">
+>>>>>>> Stashed changes
         @for (msg of messages; track msg.id) {
-          <article class="message-row d-flex align-items-start gap-2" [class.message-row-user]="msg.sender === 'user'">
-            @if (msg.sender === 'assistant') {
+          <article class="message-row d-flex align-items-start gap-2"
+                   [class.message-row-user]="msg.sender === 'user'"
+                   [class.message-row-system]="msg.sender === 'system'">
+            @if (msg.sender !== 'user') {
               <div class="avatar assistant-avatar d-inline-flex align-items-center justify-content-center flex-shrink-0" aria-hidden="true">
-                <i class="fa-solid fa-robot"></i>
+                <i class="fa-solid" [class.fa-robot]="msg.sender === 'assistant'" [class.fa-triangle-exclamation]="msg.sender === 'system'"></i>
               </div>
             }
 
             <div class="message-stack">
               <div class="message-meta d-flex align-items-center gap-2 px-1 fw-semibold" [class.meta-user]="msg.sender === 'user'">
-                <span>{{ msg.sender === 'user' ? 'You' : 'AI Assistant' }}</span>
+                <span>{{ msg.sender === 'user' ? 'You' : (msg.sender === 'system' ? 'Notice' : 'AI Assistant') }}</span>
                 <span>{{ msg.time }}</span>
               </div>
 
-              <div class="message-bubble" [class.user-bubble]="msg.sender === 'user'">
+              <div class="message-bubble" [class.user-bubble]="msg.sender === 'user'" [class.system-bubble]="msg.sender === 'system'">
                 <p class="m-0">{{ msg.text }}</p>
               </div>
 
@@ -147,6 +196,7 @@
       </div>
     </div>
 
+<<<<<<< Updated upstream
     <footer class="composer-wrap flex-shrink-0 border-top py-1 px-3">
       @if (messages.length <= 1 && !isAssistantTyping) {
         <div class="suggestions-row d-flex flex-wrap justify-content-center gap-2 mx-auto mb-3" aria-label="Suggested prompts">
@@ -157,9 +207,21 @@
           }
         </div>
       }
+=======
+    <footer class="composer-wrap flex-shrink-0 py-1 px-3">
+      @if (isEmptyState) {
+        <div class="composer-eyebrow text-center mb-2 d-lg-none"></div>
+      }
+
+      <form (ngSubmit)="sendMessage()" class="composer d-flex align-items-center gap-2 mx-auto rounded-pill p-1 position-relative" aria-label="Send a message">
+        <button type="button" class="btn btn-link text-dark fs-5 p-2 text-decoration-none rounded-circle ms-2" aria-label="Add attachment" tabindex="-1">
+          <i class="fa fa-plus" aria-hidden="true"></i>
+        </button>
+>>>>>>> Stashed changes
 
       <form (ngSubmit)="sendMessage()" class="composer d-flex align-items-center gap-2 mx-auto rounded-4 p-1 shadow-sm" aria-label="Send a message">
         <input
+          #composerInput
           type="text"
           name="newMessage"
           [(ngModel)]="newMessageText"
@@ -177,6 +239,19 @@
           <i class="fa fa-paper-plane" aria-hidden="true"></i>
         </button>
       </form>
+<<<<<<< Updated upstream
+=======
+
+      @if (isEmptyState) {
+        <div class="suggestions-row mx-auto mt-4 position-relative d-grid" aria-label="Suggested prompts">
+          @for (sug of suggestions; track sug) {
+            <button type="button" class="suggestion-chip bg-white border rounded-pill px-3 py-2 fw-semibold text-truncate text-dark text-start" (click)="selectSuggestion(sug)" [title]="sug">
+              {{ sug }}
+            </button>
+          }
+        </div>
+      }
+>>>>>>> Stashed changes
     </footer>
   </main>
 </section>

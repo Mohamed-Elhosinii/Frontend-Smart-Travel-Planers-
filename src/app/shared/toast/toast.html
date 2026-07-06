@@ -3,8 +3,8 @@
     class="alert alert-toast d-flex align-items-center gap-2 mb-0"
     [class.alert-success]="toast.type === 'success'"
     [class.alert-danger]="toast.type === 'danger'"
-    role="alert"
-    aria-live="assertive"
+    [attr.role]="toast.type === 'danger' ? 'alert' : 'status'"
+    [attr.aria-live]="toast.type === 'danger' ? 'assertive' : 'polite'"
     aria-atomic="true"
   >
     <i

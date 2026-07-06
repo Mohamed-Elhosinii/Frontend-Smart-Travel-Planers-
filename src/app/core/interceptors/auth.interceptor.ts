@@ -1,72 +1,84 @@
-import { HttpInterceptorFn, HttpRequest, HttpHandlerFn, HttpErrorResponse } from '@angular/common/http';
+import {
+  HttpContextToken,
+  HttpErrorResponse,
+  HttpHandlerFn,
+  HttpInterceptorFn,
+  HttpRequest,
+} from '@angular/common/http';
 import { inject } from '@angular/core';
-import { Router } from '@angular/router';
-import { catchError, switchMap, throwError } from 'rxjs';
+import { catchError, map, Observable, shareReplay, switchMap, take, throwError } from 'rxjs';
+import { finalize } from 'rxjs/operators';
 import { AuthService } from '../services/auth.service';
+import { PUBLIC_API_PATHS } from '../config/endpoints';
 
-/** Paths that should NOT receive the Authorization header. */
-const PUBLIC_PATHS = ['/api/Auth/login', '/api/Auth/register', '/api/Auth/forgot-password', '/api/Auth/reset-password', '/api/Auth/confirm-email'];
+/**
+ * Marks a request that has already been retried after a token refresh, so a
+ * second 401 on the same request does NOT trigger another refresh (prevents an
+ * infinite refresh→retry→401 loop when the refreshed token is still rejected).
+ */
+const ALREADY_RETRIED = new HttpContextToken<boolean>(() => false);
 
-/** Tracks whether a token refresh is already in flight to prevent loops. */
-let isRefreshing = false;
+/**
+ * A single in-flight refresh shared by every request that hits a 401 while it
+ * runs. The first 401 starts the refresh; concurrent 401s subscribe to the same
+ * stream (via `shareReplay`) and retry once the new token is available — instead
+ * of each firing its own refresh or being dropped. Reset in `finalize` so a
+ * later expiry can refresh again.
+ */
+let refresh$: Observable<string | null> | null = null;
+
+function withToken(req: HttpRequest<unknown>, token: string | null): HttpRequest<unknown> {
+  const trimmed = token?.trim();
+  return trimmed
+    ? req.clone({ setHeaders: { Authorization: `Bearer ${trimmed}` } })
+    : req;
+}
 
 /**
  * Functional HTTP interceptor that:
  * 1. Attaches the Bearer token to every outgoing API request (except public auth routes).
- * 2. Intercepts 401 responses and attempts a transparent token refresh via
- *    POST /api/Auth/refresh-token. If the refresh succeeds, the original
- *    request is retried with the new token. If it fails, the user is logged
- *    out and redirected to /login.
+ * 2. On a 401, transparently refreshes the token once (shared across concurrent
+ *    requests) and retries the original request. If the refresh fails, the user
+ *    is logged out.
  */
 export const authInterceptor: HttpInterceptorFn = (req: HttpRequest<unknown>, next: HttpHandlerFn) => {
   const auth = inject(AuthService);
-  const router = inject(Router);
+  const isPublic = PUBLIC_API_PATHS.some((path) => req.url.includes(path));
 
-  // Skip token injection for public auth endpoints
-  const isPublic = PUBLIC_PATHS.some(path => req.url.includes(path));
+  const outgoing = isPublic ? req : withToken(req, auth.getToken());
 
-  let authorizedReq = req;
-  if (!isPublic) {
-    const token = auth.getToken();
-    if (token && token.trim() !== '') {
-      authorizedReq = req.clone({
-        setHeaders: { Authorization: `Bearer ${token.trim()}` },
-      });
-    }
-  }
-
-  return next(authorizedReq).pipe(
+  return next(outgoing).pipe(
     catchError((error: HttpErrorResponse) => {
-      // Only attempt refresh on 401 and not on public routes
-      if (error.status === 401 && !isPublic && !isRefreshing) {
-        isRefreshing = true;
+      const alreadyRetried = req.context.get(ALREADY_RETRIED);
+      if (error.status !== 401 || isPublic || alreadyRetried) {
+        return throwError(() => error);
+      }
 
-        return auth.refreshAccessToken().pipe(
-          switchMap(success => {
-            isRefreshing = false;
-
-            if (success) {
-              // Retry the original request with the fresh token
-              const newToken = auth.getToken();
-              const retryReq = req.clone({
-                setHeaders: { Authorization: `Bearer ${newToken}` },
-              });
-              return next(retryReq);
+      // Start (or join) the single shared refresh.
+      if (!refresh$) {
+        refresh$ = auth.refreshAccessToken().pipe(
+          map((success) => {
+            if (!success) {
+              auth.logout();
+              throw error;
             }
-
-            // Refresh failed — force logout
-            auth.logout();
-            return throwError(() => error);
+            return auth.getToken();
           }),
-          catchError(refreshError => {
-            isRefreshing = false;
-            auth.logout();
-            return throwError(() => refreshError);
+          finalize(() => {
+            refresh$ = null;
           }),
+          shareReplay(1),
         );
       }
 
-      return throwError(() => error);
+      return refresh$.pipe(
+        take(1),
+        switchMap((newToken) => {
+          const retried = req.clone({ context: req.context.set(ALREADY_RETRIED, true) });
+          return next(withToken(retried, newToken));
+        }),
+        catchError(() => throwError(() => error)),
+      );
     }),
   );
 };

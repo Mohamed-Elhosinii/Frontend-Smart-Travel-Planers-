@@ -1,65 +1,63 @@
 <div class="split-layout d-flex w-100">
-  
-  <!-- Left Side: Hero Text -->
-  <div class="hero-side d-none d-lg-flex flex-column justify-content-center p-5 position-relative">
-    <a routerLink="/" class="position-absolute top-0 start-0 p-4 brand-logo d-flex align-items-center gap-2 text-white text-decoration-none fw-bold fs-5 font-sans">
-      <div class="logo-dot" style="border-color: white;"></div>
-      TripMind
+
+  <!-- Left Side: Photo Hero -->
+  <div class="hero-side d-none d-lg-flex flex-column justify-content-between p-5 position-relative overflow-hidden">
+    <div class="hero-overlay position-absolute top-0 start-0 w-100 h-100"></div>
+
+    <a routerLink="/" class="position-relative brand-logo text-white text-decoration-none">
+      <app-logo [size]="34"></app-logo>
     </a>
 
-    <div class="hero-content mx-auto" style="max-width: 500px;">
+    <div class="hero-content position-relative">
       <div class="badge-pill mb-4 d-inline-flex align-items-center gap-2">
         <i class="fa-solid fa-wand-magic-sparkles text-accent"></i>
-        <span class="text-uppercase small fw-bold tracking-wider opacity-75">AI Travel Concierge</span>
+        <span class="text-uppercase small fw-bold tracking-wider">AI Travel Concierge</span>
       </div>
-      
-      <h1 class="display-4 fw-bold text-white mb-4 lh-sm font-sans">
+
+      <h1 class="hero-heading fw-bold text-white mb-4">
         One last step.
       </h1>
-      
-      <p class="text-white fs-5 mb-5 lh-lg opacity-75">
-        Secure your account to ensure your itineraries are safe and synced across all your devices.
-      </p>
 
-      <div class="d-flex align-items-center gap-3 opacity-50">
-        <hr class="flex-grow-1 border-light-white m-0">
-        <span class="text-uppercase small tracking-wider text-white">12,400+ Adventurers</span>
-        <hr class="flex-grow-1 border-light-white m-0">
+      <p class="hero-subtext text-white mb-0">
+        Verify your email to keep your itineraries safe and synced across all your devices.
+      </p>
+    </div>
+
+    <div class="position-relative d-flex align-items-center gap-3">
+      <div class="avatar-stack d-flex align-items-center">
+        <span class="avatar"></span>
+        <span class="avatar"></span>
+        <span class="avatar"></span>
+        <span class="avatar"></span>
       </div>
+      <span class="text-white small fw-semibold tracking-wider">12,400+ Adventurers</span>
     </div>
   </div>
 
   <!-- Right Side: Auth Form -->
   <div class="form-side d-flex flex-column justify-content-center align-items-center p-4 position-relative">
-    
-    <div class="position-absolute top-0 start-0 w-100 p-4 d-flex justify-content-between align-items-center">
-      <a routerLink="/" class="brand-logo d-flex align-items-center gap-2 text-deep text-decoration-none fw-bold fs-5 font-sans d-lg-none">
-        <div class="logo-dot"></div>
-        TripMind
-      </a>
-    </div>
 
-    <div class="auth-card w-100 mx-auto text-center" style="max-width: 440px;">
-      
+    <a routerLink="/" class="position-absolute top-0 start-0 m-4 text-deep text-decoration-none d-lg-none">
+      <app-logo [size]="30"></app-logo>
+    </a>
+
+    <div class="auth-card w-100 mx-auto text-center">
+
       @if (status === 'success') {
-        <div class="mx-auto mb-4 d-flex align-items-center justify-content-center rounded-circle" style="width:64px;height:64px;background:rgba(181, 67, 4, 0.1);color:var(--primary-orange, #B54304);">
+        <div class="auth-status-icon success mx-auto mb-3 d-flex align-items-center justify-content-center rounded-circle">
           <i class="fa-solid fa-circle-check fs-2"></i>
         </div>
-        <h3 class="h3 text-deep fw-bold mb-2">Email Confirmed!</h3>
-        <p class="text-muted small mb-4">
-          Your email address has been verified successfully. Redirecting...
-        </p>
+        <h2 class="auth-title fw-bold text-deep mb-2">Email Confirmed</h2>
+        <p class="text-muted small mb-4">Your email address has been verified. Redirecting you to sign in…</p>
         <a routerLink="/login" class="btn btn-primary-accent w-100 py-3 rounded-3 fw-bold border-0 text-decoration-none">
           Sign In Now
         </a>
       } @else {
-        <div class="mx-auto mb-4 d-flex align-items-center justify-content-center rounded-circle" style="width:64px;height:64px;background:rgba(61, 43, 47, 0.05);color:var(--secondary-dark, #3D2B2F);">
+        <div class="auth-status-icon pending mx-auto mb-3 d-flex align-items-center justify-content-center rounded-circle">
           <i class="fa-solid fa-envelope-open-text fs-2"></i>
         </div>
-        <h3 class="h3 text-deep fw-bold mb-2">Check Your Email</h3>
-        <p class="text-muted small mb-4">
-          We've sent a 6-digit verification code to your email.
-        </p>
+        <h2 class="auth-title fw-bold text-deep mb-2">Check Your Email</h2>
+        <p class="text-muted small mb-4">We've sent a 6-digit verification code to your email.</p>
 
         @if (status === 'error' && errorMessage) {
           <div class="alert alert-danger d-flex align-items-center gap-2 rounded-3 py-2 px-3 mb-4 text-start" role="alert">
@@ -68,18 +66,19 @@
           </div>
         }
 
-        <form (ngSubmit)="submit()" class="text-start">
+        <form (ngSubmit)="submit()" class="text-start" novalidate>
           <div class="form-group mb-4">
             <label class="form-label text-uppercase tracking-wider small text-muted mb-3 d-block text-center">6-Digit Code</label>
-            <div class="d-flex justify-content-center gap-2 mb-2" (paste)="onOtpPaste($event)">
+            <div class="d-flex justify-content-center gap-2" (paste)="onOtpPaste($event)">
               @for (digit of otpDigits; track $index) {
-                <input type="text"
+                <input type="text" inputmode="numeric"
                   #otpInput
                   class="form-control custom-input otp-input"
                   maxlength="1"
                   [(ngModel)]="otpDigits[$index]"
                   name="otp_{{$index}}"
                   (keyup)="onOtpInput($event, $index)"
+                  [attr.aria-label]="'Verification code digit ' + ($index + 1)"
                   autocomplete="off">
               }
             </div>
@@ -97,11 +96,16 @@
 
         <div class="text-center mt-4">
           <span class="text-muted small">Didn't receive the code? </span>
-          <button (click)="resend()" class="btn btn-link text-accent text-decoration-none small fw-bold p-0" [disabled]="!userId || resendMessage === 'Sending...'">
-            Resend Code
+          <button (click)="resend()" class="btn btn-link text-accent text-decoration-none small fw-bold p-0"
+            [disabled]="!userId || isResending || resendCooldown > 0">
+            @if (resendCooldown > 0) {
+              Resend in {{ resendCooldown }}s
+            } @else {
+              Resend Code
+            }
           </button>
           @if (resendMessage) {
-            <p class="text-success small mt-2 fw-semibold">{{ resendMessage }}</p>
+            <p class="small mt-2 fw-semibold" [class.text-success]="!isResending" [class.text-muted]="isResending">{{ resendMessage }}</p>
           }
         </div>
       }

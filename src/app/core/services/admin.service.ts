@@ -1,7 +1,7 @@
 import { Injectable, inject } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { environment } from '../../../environments/environment';
+import { ENDPOINTS } from '../config/endpoints';
 
 export interface OverviewStats {
   totalUsers: number;
@@ -66,11 +66,10 @@ export interface PaginatedPayments {
 @Injectable({ providedIn: 'root' })
 export class AdminService {
   private readonly http = inject(HttpClient);
-  private readonly API_BASE = `${environment.apiUrl}/admin`;
 
   // 1. Stats Overview
   getOverviewStats(): Observable<OverviewStats> {
-    return this.http.get<OverviewStats>(`${this.API_BASE}/stats/overview`);
+    return this.http.get<OverviewStats>(ENDPOINTS.admin.statsOverview);
   }
 
   // 2. Users Management
@@ -78,42 +77,42 @@ export class AdminService {
     let params = new HttpParams()
       .set('page', page.toString())
       .set('pageSize', pageSize.toString());
-    
+
     if (search && search.trim() !== '') {
       params = params.set('search', search.trim());
     }
-    
-    return this.http.get<PaginatedUsers>(`${this.API_BASE}/users`, { params });
+
+    return this.http.get<PaginatedUsers>(ENDPOINTS.admin.users, { params });
   }
 
   forceUpdateUserPlan(userId: string, planId: string): Observable<{ message: string }> {
     // Send the raw GUID string as a JSON value
     return this.http.put<{ message: string }>(
-      `${this.API_BASE}/users/${userId}/plan`,
+      ENDPOINTS.admin.userPlan(userId),
       JSON.stringify(planId),
       { headers: { 'Content-Type': 'application/json' } }
     );
   }
 
   toggleUserStatus(userId: string): Observable<{ message: string }> {
-    return this.http.post<{ message: string }>(`${this.API_BASE}/users/${userId}/toggle-status`, {});
+    return this.http.post<{ message: string }>(ENDPOINTS.admin.userToggleStatus(userId), {});
   }
 
   // 3. Plans CRUD
   getPlans(): Observable<PlanDto[]> {
-    return this.http.get<PlanDto[]>(`${this.API_BASE}/plans`);
+    return this.http.get<PlanDto[]>(ENDPOINTS.admin.plans);
   }
 
   createPlan(plan: CreatePlanDto): Observable<PlanDto> {
-    return this.http.post<PlanDto>(`${this.API_BASE}/plans`, plan);
+    return this.http.post<PlanDto>(ENDPOINTS.admin.plans, plan);
   }
 
   updatePlan(id: string, plan: CreatePlanDto): Observable<{ message: string }> {
-    return this.http.put<{ message: string }>(`${this.API_BASE}/plans/${id}`, plan);
+    return this.http.put<{ message: string }>(ENDPOINTS.admin.plan(id), plan);
   }
 
   deletePlan(id: string): Observable<{ message: string }> {
-    return this.http.delete<{ message: string }>(`${this.API_BASE}/plans/${id}`);
+    return this.http.delete<{ message: string }>(ENDPOINTS.admin.plan(id));
   }
 
   // 4. Payments
@@ -121,7 +120,7 @@ export class AdminService {
     const params = new HttpParams()
       .set('page', page.toString())
       .set('pageSize', pageSize.toString());
-    
-    return this.http.get<PaginatedPayments>(`${this.API_BASE}/payments`, { params });
+
+    return this.http.get<PaginatedPayments>(ENDPOINTS.admin.payments, { params });
   }
 }

@@ -1,9 +1,9 @@
-import { Component, EventEmitter, Input, Output, inject } from '@angular/core';
+import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { UserProfile } from '../../../../core/models';
-import { ToastService } from '../../../../core/services/toast.service';
 
-/** Editable personal-information form. Emits the saved profile to its parent. */
+/** Editable personal-information form. Emits the saved profile to its parent,
+ *  which persists it and reports success/error. */
 @Component({
   selector: 'app-personal-info',
   standalone: true,
@@ -12,17 +12,22 @@ import { ToastService } from '../../../../core/services/toast.service';
   styleUrl: './personal-info.css',
 })
 export class PersonalInfo {
-  private readonly toast = inject(ToastService);
-
   @Input({ required: true }) userProfile!: UserProfile;
   @Output() saveProfile = new EventEmitter<UserProfile>();
 
+  /** Set once the user attempts to submit, to reveal inline validation. */
+  submitted = false;
+
+  get firstNameInvalid(): boolean {
+    return !this.userProfile.firstName?.trim();
+  }
+  get lastNameInvalid(): boolean {
+    return !this.userProfile.lastName?.trim();
+  }
+
   onSubmit(): void {
-    if (!this.userProfile.firstName.trim() || !this.userProfile.lastName.trim()) {
-      this.toast.danger('First and last name are required.');
-      return;
-    }
+    this.submitted = true;
+    if (this.firstNameInvalid || this.lastNameInvalid) return;
     this.saveProfile.emit({ ...this.userProfile });
-    this.toast.success('Personal information updated.');
   }
 }

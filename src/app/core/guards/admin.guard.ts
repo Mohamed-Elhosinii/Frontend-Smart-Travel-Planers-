@@ -10,9 +10,11 @@ export const adminGuard: CanActivateFn = () => {
   const auth = inject(AuthService);
   const router = inject(Router);
 
-  if (auth.isLoggedIn() && auth.isAdmin()) {
+  // Require a signed-in, non-expired session with the Admin role. The backend
+  // re-checks the role on every admin request — this guard is a UX gate only.
+  if (auth.isLoggedIn() && !auth.isTokenExpired() && auth.isAdmin()) {
     return true;
   }
-  
+
   return router.createUrlTree(['/']);
 };

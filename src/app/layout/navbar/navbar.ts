@@ -1,12 +1,15 @@
 import { Component, HostListener, Input } from '@angular/core';
 import { RouterLink, RouterLinkActive } from '@angular/router';
 import { AuthService } from '../../core/services/auth.service';
+import { Modal } from '../../shared/modal/modal';
+import { TripPlannerForm } from '../../shared/trip-planner-form/trip-planner-form';
+import { Logo } from '../../shared/logo/logo';
 
 /** Fixed top navigation bar with an auth-aware menu and responsive mobile drawer. */
 @Component({
   selector: 'app-navbar',
   standalone: true,
-  imports: [RouterLink, RouterLinkActive],
+  imports: [RouterLink, RouterLinkActive, Modal, TripPlannerForm, Logo],
   templateUrl: './navbar.html',
   styleUrl: './navbar.css',
 })
@@ -17,6 +20,7 @@ export class Navbar {
   isScrolled = false;
   isDropdownOpen = false;
   isMenuOpen = false;
+  isPlannerOpen = false;
 
   constructor(public readonly authService: AuthService) {}
 
@@ -41,6 +45,11 @@ export class Navbar {
 
   toggleDropdown(): void {
     this.isDropdownOpen = !this.isDropdownOpen;
+  }
+
+  openPlanner(): void {
+    this.isPlannerOpen = true;
+    this.isMenuOpen = false;
   }
 
   logout(): void {

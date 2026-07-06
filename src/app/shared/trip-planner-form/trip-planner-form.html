@@ -1,0 +1,153 @@
+<form class="planner-form" [formGroup]="form" (ngSubmit)="submit()">
+  <!-- ROW 1: FROM / TO / DEPART / RETURN -->
+  <div class="row g-3">
+    <!-- FROM -->
+    <div class="col-12 col-md-6 col-lg-3">
+      <label class="planner-label form-label text-uppercase fw-semibold small mb-1">From</label>
+      <div class="planner-field input-group border rounded-3 px-2">
+        <span class="input-group-text bg-transparent border-0 px-1"><i class="fa-solid fa-plane-departure"></i></span>
+        <input type="text" formControlName="from" placeholder="Cairo, Egypt" class="form-control border-0 bg-transparent shadow-none fw-medium" />
+      </div>
+      @if (form.get('from')?.touched && form.get('from')?.invalid) {
+        <div class="text-danger small mt-1">Please enter your departure city</div>
+      }
+    </div>
+
+    <!-- TO -->
+    <div class="col-12 col-md-6 col-lg-3">
+      <label class="planner-label form-label text-uppercase fw-semibold small mb-1">To</label>
+      <div class="planner-field input-group border rounded-3 px-2">
+        <span class="input-group-text bg-transparent border-0 px-1"><i class="fa-solid fa-plane-arrival"></i></span>
+        <input type="text" formControlName="to" placeholder="Where do you want to go?" class="form-control border-0 bg-transparent shadow-none fw-medium" />
+      </div>
+      @if (form.get('to')?.touched && form.get('to')?.invalid) {
+        <div class="text-danger small mt-1">Tell us your destination to plan your trip</div>
+      }
+      @if (confirmationSuggestion) {
+        <div class="mt-2 p-2 bg-light rounded border border-warning d-flex flex-column gap-2">
+          <span class="small">Did you mean <strong>{{ confirmationSuggestion.resolvedName }}</strong>?</span>
+          <div class="d-flex gap-2">
+            <button type="button" class="btn btn-sm btn-success flex-fill" (click)="acceptSuggestion()">Yes</button>
+            <button type="button" class="btn btn-sm btn-outline-danger flex-fill" (click)="rejectSuggestion()">No, retype</button>
+          </div>
+        </div>
+      }
+    </div>
+
+    <!-- DEPART -->
+    <div class="col-12 col-md-6 col-lg-3">
+      <label class="planner-label form-label text-uppercase fw-semibold small mb-1">Depart</label>
+      <div class="planner-field planner-field-date input-group border rounded-3 px-2" (click)="openDatePicker(depInput)">
+        <span class="input-group-text bg-transparent border-0 px-1"><i class="fa-solid fa-calendar-days"></i></span>
+        <input #depInput type="date" formControlName="departureDate" class="form-control border-0 bg-transparent shadow-none fw-medium" />
+      </div>
+      @if (form.get('departureDate')?.touched && form.get('departureDate')?.errors?.['pastDate']) {
+        <div class="text-danger small mt-1">Departure date cannot be in the past</div>
+      }
+      @if (form.get('departureDate')?.touched && form.get('departureDate')?.errors?.['required']) {
+        <div class="text-danger small mt-1">Please select a departure date</div>
+      }
+    </div>
+
+    <!-- RETURN -->
+    <div class="col-12 col-md-6 col-lg-3">
+      <label class="planner-label form-label text-uppercase fw-semibold small mb-1">Return</label>
+      <div class="planner-field planner-field-date input-group border rounded-3 px-2" (click)="openDatePicker(retInput)">
+        <span class="input-group-text bg-transparent border-0 px-1"><i class="fa-solid fa-calendar-check"></i></span>
+        <input #retInput type="date" formControlName="returnDate" class="form-control border-0 bg-transparent shadow-none fw-medium" />
+      </div>
+      @if (form.get('returnDate')?.touched && form.get('returnDate')?.errors?.['pastDate']) {
+        <div class="text-danger small mt-1">Return date cannot be in the past</div>
+      }
+      @if (form.get('returnDate')?.touched && form.get('returnDate')?.errors?.['required']) {
+        <div class="text-danger small mt-1">Please select a return date</div>
+      }
+    </div>
+  </div>
+  @if (form.errors?.['dateInvalid']) {
+    <div class="text-danger small mt-1">Return date must be after departure date</div>
+  }
+
+  <!-- ROW 2: TRAVELERS & ROOMS / TRAVEL STYLE / BUDGET -->
+  <div class="row g-3 mt-1">
+    <!-- TRAVELERS & ROOMS -->
+    <div class="col-12 col-md-6 col-lg-4 position-relative">
+      <label class="planner-label form-label text-uppercase fw-semibold small mb-1">Travelers &amp; Rooms</label>
+      <button type="button" class="planner-field planner-trigger border rounded-3 w-100 d-flex align-items-center gap-2 px-3 text-start" (click)="togglePanel('travelers')" [attr.aria-expanded]="openPanel === 'travelers'">
+        <i class="fa-solid fa-user-group"></i>
+        <span class="flex-grow-1 fw-medium text-truncate">{{ travelersSummary }}</span>
+        <i class="fa-solid fa-chevron-down small opacity-75"></i>
+      </button>
+      @if (openPanel === 'travelers') {
+        <div class="planner-panel bg-white rounded-3 shadow p-3 position-absolute w-100 mt-1">
+          @for (row of [{ key: 'adults', label: 'Adults' }, { key: 'children', label: 'Children' }, { key: 'rooms', label: 'Rooms' }]; track row.key) {
+            <div class="d-flex justify-content-between align-items-center fw-semibold py-1">
+              <span [id]="'stepper-' + row.key">{{ row.label }}</span>
+              <div class="d-flex align-items-center gap-2">
+                <button type="button" class="stepper-btn btn btn-sm rounded-circle" (click)="decrease(row.key)" [attr.aria-label]="'Decrease ' + row.label">-</button>
+                <span class="planner-count text-center" aria-live="polite" [attr.aria-labelledby]="'stepper-' + row.key">{{ form.get(row.key)?.value }}</span>
+                <button type="button" class="stepper-btn btn btn-sm rounded-circle" (click)="increase(row.key)" [attr.aria-label]="'Increase ' + row.label">+</button>
+              </div>
+            </div>
+          }
+        </div>
+      }
+    </div>
+
+    <!-- TRAVEL STYLE -->
+    <div class="col-12 col-md-6 col-lg-4 position-relative">
+      <label class="planner-label form-label text-uppercase fw-semibold small mb-1">Travel Style</label>
+      <button type="button" class="planner-field planner-trigger border rounded-3 w-100 d-flex align-items-center gap-2 px-3 text-start" (click)="togglePanel('style')" [attr.aria-expanded]="openPanel === 'style'">
+        <i class="fa-solid fa-wand-magic-sparkles"></i>
+        <span class="flex-grow-1 fw-medium text-truncate">{{ styleSummary }}</span>
+        <i class="fa-solid fa-chevron-down small opacity-75"></i>
+      </button>
+      @if (openPanel === 'style') {
+        <div class="planner-panel bg-white rounded-3 shadow p-3 position-absolute w-100 mt-1">
+          <div class="d-flex flex-wrap gap-2" role="group" aria-label="Travel style">
+            @for (style of travelStyles; track style) {
+              <button type="button" class="style-chip px-3 py-1 rounded-pill small fw-semibold" [class.active]="isStyleSelected(style)" [attr.aria-pressed]="isStyleSelected(style)" (click)="toggleStyle(style)">
+                {{ style }}
+              </button>
+            }
+          </div>
+        </div>
+      }
+    </div>
+
+    <!-- BUDGET -->
+    <div class="col-12 col-lg-4">
+      <label class="planner-label form-label text-uppercase fw-semibold small mb-1">Budget</label>
+      <div class="planner-field input-group border rounded-3 px-2">
+        <span class="input-group-text bg-transparent border-0 px-1"><i class="fa-solid fa-money-bill"></i></span>
+        <input type="text" formControlName="budget" placeholder="e.g. 5000 USD" class="form-control border-0 bg-transparent shadow-none fw-medium" />
+      </div>
+      @if (form.get('budget')?.touched && form.get('budget')?.invalid) {
+        <div class="text-danger small mt-1">Please set a budget of 1000 or more to continue.</div>
+      }
+    </div>
+  </div>
+
+  <!-- ROW 3: SPECIAL REQUESTS -->
+  <div class="row g-3 mt-1">
+    <div class="col-12">
+      <label class="planner-label form-label text-uppercase fw-semibold small mb-1">Special Requests</label>
+      <div class="planner-field input-group border rounded-3 px-2">
+        <span class="input-group-text bg-transparent border-0 px-1"><i class="fa-solid fa-pen-to-square"></i></span>
+        <input type="text" formControlName="specialRequests" placeholder="Any special notes..." class="form-control border-0 bg-transparent shadow-none fw-medium" />
+      </div>
+    </div>
+  </div>
+
+  <!-- SUBMIT -->
+  <div class="mt-4">
+    <button type="submit" class="generate-btn btn w-100 rounded-pill fw-bold text-uppercase py-3 border-0" [disabled]="form.invalid || isCreatingPlan || isRedirecting" [attr.aria-busy]="isCreatingPlan || isRedirecting || isResolving">
+      @if (isCreatingPlan || isRedirecting || isResolving) {
+        <span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+        Preparing your trip…
+      } @else {
+        Generate My Trip
+      }
+    </button>
+  </div>
+</form>

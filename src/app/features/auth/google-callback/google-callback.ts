@@ -1,6 +1,7 @@
 import { Component, OnInit, inject } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { AuthService } from '../../../core/services/auth.service';
+import { APP_ROUTES } from '../../../core/constants/routes';
 
 /**
  * Google OAuth callback handler.
@@ -43,29 +44,30 @@ export class GoogleCallbackPage implements OnInit {
 
     if (!accessToken) {
       this.errorMessage = 'Google authentication failed. No token received.';
-      setTimeout(() => this.router.navigate(['/login']), 3000);
+      setTimeout(() => this.router.navigate([APP_ROUTES.login]), 3000);
       return;
     }
 
-    this.auth.handleGoogleCallback(accessToken, refreshToken, email);
+    // Persist tokens (and email if the backend supplied it) once.
+    this.auth.handleGoogleCallback(accessToken, refreshToken, email || undefined);
 
-    // If we don't have the email from query params, fetch it from /me
-    if (!email) {
-      this.auth.getCurrentUser().subscribe({
-        next: (profile) => {
-          if (profile?.email) {
-            // Update the session email from the profile
-            this.auth.handleGoogleCallback(accessToken, refreshToken, profile.email);
-          }
-          this.router.navigate(['/my-trips']);
-        },
-        error: () => {
-          // Token is saved, navigate anyway
-          this.router.navigate(['/my-trips']);
-        },
-      });
-    } else {
-      this.router.navigate(['/my-trips']);
+    if (email) {
+      this.router.navigate([APP_ROUTES.myTrips]);
+      return;
     }
+
+    // No email in the query string — resolve it from /me, then continue.
+    this.auth.getCurrentUser().subscribe({
+      next: (profile) => {
+        if (profile?.email) {
+          this.auth.setSessionEmail(profile.email);
+        }
+        this.router.navigate([APP_ROUTES.myTrips]);
+      },
+      error: () => {
+        // Tokens are already saved; proceed regardless.
+        this.router.navigate([APP_ROUTES.myTrips]);
+      },
+    });
   }
 }

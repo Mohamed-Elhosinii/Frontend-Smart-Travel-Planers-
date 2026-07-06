@@ -3,6 +3,16 @@
   padding-top: 85px;
 }
 
+/* Empty / failed plans state */
+.sub-empty {
+  background: #fff;
+  border: 1px dashed var(--border-color);
+}
+.sub-empty i {
+  font-size: 2rem;
+  color: var(--text-muted);
+}
+
 .sub-hero-banner {
   background: var(--trip-gradient);
   border-radius: 1rem;

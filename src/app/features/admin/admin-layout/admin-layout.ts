@@ -1,5 +1,5 @@
 import { Component, inject } from '@angular/core';
-import { Router, RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
+import { RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
 import { AuthService } from '../../../core/services/auth.service';
 
 @Component({
@@ -11,7 +11,6 @@ import { AuthService } from '../../../core/services/auth.service';
 })
 export class AdminLayout {
   auth = inject(AuthService);
-  router = inject(Router);
   isSidebarOpen = true;
 
   toggleSidebar() {
@@ -19,7 +18,7 @@ export class AdminLayout {
   }
 
   logout() {
+    // AuthService.logout() clears session and redirects to /login.
     this.auth.logout();
-    this.router.navigate(['/login']);
   }
 }

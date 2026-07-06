@@ -6,10 +6,10 @@
 
       <!-- Loading State -->
       @if (isInitializing) {
-        <div class="panel-welcome p-3 rounded-3 text-center">
+        <div class="panel-welcome p-3 rounded-3 text-center" role="status" aria-live="polite">
           <div class="d-flex align-items-center justify-content-center gap-2">
-            <div class="spinner-border spinner-border-sm text-primary" role="status" style="width:16px;height:16px;border-width:2px;color:var(--primary,#B54304)!important"></div>
-            <span style="font-size:0.82rem;color:#6B6B6B;font-weight:600;">جاري تحميل بيانات رحلتك…</span>
+            <div class="spinner-border spinner-border-sm text-primary" style="width:16px;height:16px;border-width:2px;color:var(--primary,#B54304)!important" aria-hidden="true"></div>
+            <span style="font-size:0.82rem;color:#6B6B6B;font-weight:600;">Loading your trip details…</span>
           </div>
         </div>
       }
@@ -60,7 +60,7 @@
         [(ngModel)]="newMessageText"
         (keydown.enter)="sendMessage()"
         autocomplete="off"
-        placeholder="عدّل رحلتك…"
+        placeholder="Edit your trip…"
         [disabled]="isInitializing"
         class="panel-input flex-grow-1 border-0 bg-transparent px-2 fw-semibold"
         aria-label="Send modification request"

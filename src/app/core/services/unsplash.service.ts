@@ -1,9 +1,9 @@
 import { Injectable } from '@angular/core';
-import { environment } from '../../../environments/environment';
+import { UNSPLASH_CONFIG } from '../config/external.config';
 
 @Injectable({ providedIn: 'root' })
 export class UnsplashService {
-  private readonly accessKey = environment.unsplashAccessKey;
+  private readonly accessKey = UNSPLASH_CONFIG.accessKey;
   private readonly cache = new Map<string, string>();
 
   /**
@@ -20,7 +20,7 @@ export class UnsplashService {
 
     try {
       const query = encodeURIComponent(`${destination} city travel landmark`);
-      const url = `https://api.unsplash.com/search/photos?query=${query}&per_page=1&orientation=landscape&client_id=${this.accessKey}`;
+      const url = `${UNSPLASH_CONFIG.searchUrl}?query=${query}&per_page=1&orientation=landscape&client_id=${this.accessKey}`;
 
       const response = await fetch(url);
       if (!response.ok) throw new Error('Unsplash API error');
@@ -38,7 +38,7 @@ export class UnsplashService {
       return imageUrl;
 
     } catch {
-      const fallback = 'https://images.unsplash.com/photo-1476514525535-07fb3b4ae5f1?w=800&q=80';
+      const fallback = UNSPLASH_CONFIG.fallbackImage;
       this.cache.set(key, fallback);
       return fallback;
     }

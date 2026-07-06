@@ -1,7 +1,64 @@
 @if (hotel) {
+<<<<<<< Updated upstream
   <div class="summary-card hotel-card d-flex align-items-start">
     <div class="card-icon-wrap icon-secondary d-flex align-items-center justify-content-center flex-shrink-0">
       <i class="fa-solid fa-hotel"></i>
+=======
+<div class="summary-card hotel-card d-flex flex-column position-relative p-0 overflow-hidden">
+  
+  <!-- Carousel Section -->
+  <div class="hotel-carousel position-relative w-100">
+    @if (hotel.images && hotel.images.length > 0) {
+      <img [src]="hotel.images[currentImageIndex]" class="carousel-img w-100 h-100" (error)="onImageError(currentImageIndex)" [alt]="'Photo of ' + hotel.name" loading="lazy" decoding="async">
+
+      @if (hotel.images.length > 1) {
+        <button type="button" class="carousel-btn prev-btn" (click)="prevImage($event)" aria-label="Previous image">
+          <i class="fa-solid fa-chevron-left" aria-hidden="true"></i>
+        </button>
+        <button type="button" class="carousel-btn next-btn" (click)="nextImage($event)" aria-label="Next image">
+          <i class="fa-solid fa-chevron-right" aria-hidden="true"></i>
+        </button>
+
+        <div class="carousel-dots d-flex justify-content-center gap-1 w-100 position-absolute pb-2" role="tablist" aria-label="Hotel photos">
+          @for (img of hotel.images; track $index) {
+            <button
+              type="button"
+              class="dot"
+              [class.active]="$index === currentImageIndex"
+              (click)="goToImage($index, $event)"
+              [attr.aria-label]="'Go to image ' + ($index + 1)"
+              [attr.aria-current]="$index === currentImageIndex ? 'true' : null"
+            ></button>
+          }
+        </div>
+      }
+    } @else {
+      <div class="w-100 h-100 d-flex flex-column align-items-center justify-content-center bg-light text-muted">
+        <i class="fa-solid fa-image fs-1 mb-2"></i>
+        <span class="small">No images available</span>
+      </div>
+    }
+  </div>
+
+  <!-- Body Section -->
+  <div class="card-body-wrap p-3 w-100 d-flex flex-column">
+    <div class="d-flex justify-content-between align-items-start mb-2">
+      <div class="d-flex align-items-start gap-2">
+        <div class="card-icon-wrap icon-secondary d-flex align-items-center justify-content-center flex-shrink-0 mt-1">
+          <i class="fa-solid fa-hotel"></i>
+        </div>
+        <div>
+          <div class="card-label fw-bold text-uppercase">Hotel</div>
+          <div class="card-main fw-bold">{{ hotel.name }}</div>
+        </div>
+      </div>
+      @if (hotel.pricePerNight) {
+        <div class="hotel-price text-end flex-shrink-0 ms-2">
+          <div class="fw-bold fs-5 text-success">${{ hotel.pricePerNight }}</div>
+          <div class="small text-muted">/ night</div>
+        </div>
+      }
+>>>>>>> Stashed changes
     </div>
     <div class="card-body-wrap">
       <div class="card-label fw-bold text-uppercase">Hotel</div>

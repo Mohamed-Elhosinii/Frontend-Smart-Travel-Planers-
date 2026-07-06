@@ -324,7 +324,83 @@
 }
 
 .suggestions-row {
-  max-width: 860px;
+  max-width: 900px;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.5rem;
+  z-index: 1;
+}
+
+@media (max-width: 560px) {
+  .suggestions-row {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* ── Sidebar Nav Link (My Trips) ──────────────────────────── */
+.btn-sidebar-link {
+  min-height: 38px;
+  padding: 0 16px;
+  border-radius: 12px;
+  border: 1px solid var(--chat-border);
+  color: var(--chat-text);
+  background: #ffffff;
+  font-size: 0.86rem;
+  transition: transform 0.25s ease, border-color 0.25s ease, color 0.25s ease;
+}
+.btn-sidebar-link:hover {
+  border-color: var(--chat-primary);
+  color: var(--chat-primary);
+  transform: translateY(-1px);
+}
+
+/* ── History grouping + active state ──────────────────────── */
+.history-group-label {
+  color: var(--chat-muted);
+  font-size: 0.66rem;
+  letter-spacing: 0.08em;
+  margin: 0.5rem 0 0.25rem;
+}
+
+.history-card.active {
+  background: #ffffff;
+  border: 1px solid var(--chat-primary) !important;
+  box-shadow: 0 6px 18px rgba(181, 67, 4, 0.12);
+}
+.history-card.active .history-icon {
+  background: var(--trip-gradient);
+  color: #fff;
+}
+
+/* ── Empty-state eyebrow ──────────────────────────────────── */
+.hero-eyebrow {
+  color: var(--chat-primary);
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 0.14em;
+}
+.eyebrow-rule {
+  width: 28px;
+  height: 1px;
+  background: currentColor;
+  opacity: 0.6;
+}
+.hero-subtitle {
+  color: var(--chat-muted);
+  font-size: 0.98rem;
+}
+
+/* ── System / error message ───────────────────────────────── */
+.message-row-system .assistant-avatar {
+  border-color: #dc3545;
+  color: #dc3545;
+  background: #fff5f5;
+}
+.system-bubble {
+  border-color: #f3c2c7 !important;
+  background: #fff5f5 !important;
+}
+.system-bubble p {
+  color: #b02a37 !important;
 }
 
 .suggestion-chip {

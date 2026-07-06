@@ -1,0 +1,35 @@
+@if (open) {
+  <div
+    class="modal-backdrop-custom position-fixed top-0 start-0 w-100 h-100 d-flex align-items-start align-items-md-center justify-content-center overflow-auto p-3 py-md-5"
+    (click)="close()"
+  >
+    <div
+      class="modal-card col-12 col-sm-11 col-md-9 col-lg-8 col-xl-7 mx-auto my-auto bg-white rounded-4 shadow-lg position-relative p-4 p-md-5"
+      role="dialog"
+      aria-modal="true"
+      [attr.aria-labelledby]="title ? 'appModalTitle' : null"
+      [attr.aria-label]="title ? null : 'Dialog'"
+      (click)="$event.stopPropagation()"
+    >
+      <button
+        type="button"
+        class="modal-close position-absolute top-0 end-0 m-3 d-flex align-items-center justify-content-center rounded-circle border-0"
+        aria-label="Close"
+        (click)="close()"
+      >
+        <i class="fa-solid fa-xmark" aria-hidden="true"></i>
+      </button>
+
+      @if (title) {
+        <div class="text-center mb-4">
+          <h2 id="appModalTitle" class="fw-bold mb-1">{{ title }}</h2>
+          @if (subtitle) {
+            <p class="text-muted mb-0">{{ subtitle }}</p>
+          }
+        </div>
+      }
+
+      <ng-content></ng-content>
+    </div>
+  </div>
+}

@@ -4,6 +4,7 @@ import { PersonalInfo } from '../components/personal-info/personal-info';
 import { PasswordForm } from '../components/password-form/password-form';
 import { UserProfile } from '../../../core/models';
 import { UserProfileService } from '../../../core/services/user-profile.service';
+import { ToastService } from '../../../core/services/toast.service';
 
 /** Account page hosting the personal-info and security tabs. */
 @Component({
@@ -15,8 +16,11 @@ import { UserProfileService } from '../../../core/services/user-profile.service'
 })
 export class ProfilePage implements OnInit {
   private readonly profileService = inject(UserProfileService);
+  private readonly toast = inject(ToastService);
 
   activeTab: 'personal' | 'security' = 'personal';
+
+  readonly loading = this.profileService.loading;
 
   /** Working copy handed to the editable form (keeps service state immutable). */
   editableProfile: UserProfile = { ...this.profileService.profile() };
@@ -49,7 +53,15 @@ export class ProfilePage implements OnInit {
   }
 
   onProfileSaved(updated: UserProfile): void {
-    this.profileService.update(updated);
     this.editableProfile = { ...updated };
+    this.profileService.update(updated).subscribe((ok) => {
+      if (ok) {
+        this.toast.success('Personal information updated.');
+      } else {
+        this.toast.danger('Could not save your changes. Please try again.');
+        // Optimistic change was rolled back in the service; resync the form.
+        this.editableProfile = { ...this.profileService.profile() };
+      }
+    });
   }
 }

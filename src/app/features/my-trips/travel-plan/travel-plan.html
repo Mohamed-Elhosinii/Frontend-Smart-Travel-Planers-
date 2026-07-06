@@ -1,3 +1,6 @@
+<!-- Single premium loader for the whole generation wait (shown on fresh trips) -->
+<app-generation-loader [active]="isGenerating()"></app-generation-loader>
+
 @if (trip(); as t) {
   <!-- Split View Wrapper -->
   <div class="split-shell" [class.split-active]="isSplitOpen()">
@@ -18,15 +21,28 @@
             <!-- Main Hero Details -->
             <div class="col-lg-8">
               <div class="d-flex flex-wrap align-items-center gap-2 mb-2">
+                @if (statusMeta(); as sm) {
+                  <span class="trip-status-badge {{ sm.cls }} fw-bold text-uppercase d-inline-flex align-items-center gap-2">
+                    <i class="fa-solid {{ sm.icon }}"></i>{{ sm.label }}
+                  </span>
+                }
                 @for (style of t.travelStyle; track style) {
                   <span class="style-badge fw-bold text-uppercase">{{ style }}</span>
                 }
               </div>
               <h1 class="display-4 hero-title mb-2">{{ t.destination }}</h1>
+<<<<<<< Updated upstream
 
               <!-- Country -->
               <p class="hero-subtitle mb-2 fw-medium">
                 <i class="fa-solid fa-earth-americas me-2"></i>{{ t.country }}
+=======
+              <p class="hero-subtitle mb-2 fw-medium d-inline-flex align-items-center gap-3 flex-wrap">
+                <span><i class="fa-solid fa-calendar-day me-2"></i>{{ durationDays() }}-day itinerary</span>
+                @if (t.country) {
+                  <span><i class="fa-solid fa-earth-americas me-2"></i>{{ t.country }}</span>
+                }
+>>>>>>> Stashed changes
               </p>
 
               <!-- Dates as readable chips -->
@@ -241,7 +257,7 @@
       <i class="fa fa-arrow-left me-2"></i>Back to My Trips
     </a>
   </div>
-} @else {
+} @else if (!isGenerating()) {
   <div class="d-flex flex-column align-items-center justify-content-center min-vh-100 bg-cream-base text-center">
     <div class="spinner-border text-primary mb-3" role="status" style="width: 3rem; height: 3rem;">
       <span class="visually-hidden">Loading plan…</span>

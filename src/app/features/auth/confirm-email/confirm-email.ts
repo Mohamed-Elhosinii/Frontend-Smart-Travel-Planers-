@@ -1,17 +1,20 @@
-import { Component, OnInit, inject, ViewChildren, QueryList, ElementRef } from '@angular/core';
+import { Component, OnDestroy, OnInit, inject, ViewChildren, QueryList, ElementRef } from '@angular/core';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { AuthService } from '../../../core/services/auth.service';
+import { extractErrorMessage } from '../../../core/utils/http-error';
+import { APP_ROUTES } from '../../../core/constants/routes';
+import { Logo } from '../../../shared/logo/logo';
 
 /** Email OTP confirmation page. */
 @Component({
   selector: 'app-confirm-email',
   standalone: true,
-  imports: [RouterLink, FormsModule],
+  imports: [RouterLink, FormsModule, Logo],
   templateUrl: './confirm-email.html',
   styleUrl: './confirm-email.css',
 })
-export class ConfirmEmailPage implements OnInit {
+export class ConfirmEmailPage implements OnInit, OnDestroy {
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
   private readonly auth = inject(AuthService);
@@ -20,6 +23,9 @@ export class ConfirmEmailPage implements OnInit {
   status: 'idle' | 'loading' | 'success' | 'error' = 'idle';
   errorMessage = '';
   resendMessage = '';
+  isResending = false;
+  resendCooldown = 0;
+  private cooldownTimer: ReturnType<typeof setInterval> | null = null;
 
   otpDigits: string[] = ['', '', '', '', '', ''];
   @ViewChildren('otpInput') otpInputs!: QueryList<ElementRef<HTMLInputElement>>;
@@ -32,11 +38,14 @@ export class ConfirmEmailPage implements OnInit {
     }
   }
 
+  ngOnDestroy(): void {
+    if (this.cooldownTimer) clearInterval(this.cooldownTimer);
+  }
+
   onOtpInput(event: KeyboardEvent, index: number): void {
     const input = event.target as HTMLInputElement;
     const key = event.key;
-    
-    // Allow navigation
+
     if (key === 'ArrowLeft' && index > 0) {
       this.otpInputs.get(index - 1)?.nativeElement.focus();
       return;
@@ -72,57 +81,66 @@ export class ConfirmEmailPage implements OnInit {
         this.otpDigits[i] = digits[i];
       }
     }
-    
+
     const nextIndex = Math.min(digits.length, 5);
     this.otpInputs.get(nextIndex)?.nativeElement.focus();
   }
 
   submit(): void {
-    if (!this.userId) return;
+    if (!this.userId || this.status === 'loading') return;
 
     const token = this.otpDigits.join('');
     if (token.length !== 6) {
+      this.status = 'error';
       this.errorMessage = 'Please enter the complete 6-digit code.';
       return;
     }
 
     this.status = 'loading';
     this.errorMessage = '';
-    
+
     this.auth.confirmEmail({ userId: this.userId, token }).subscribe({
       next: () => {
         this.status = 'success';
-        setTimeout(() => this.router.navigate(['/login']), 2000);
+        setTimeout(() => this.router.navigate([APP_ROUTES.login]), 2000);
       },
       error: (err) => {
         this.status = 'error';
-        let errorData = err?.error;
-        if (typeof errorData === 'string') {
-          try {
-            errorData = JSON.parse(errorData);
-          } catch {}
-        }
-        if (errorData?.errors && errorData.errors.length > 0) {
-          this.errorMessage = errorData.errors.join(' ');
-        } else {
-          this.errorMessage = errorData?.message || 'Invalid code or it may have expired.';
-        }
-      }
+        this.errorMessage = extractErrorMessage(err, 'Invalid code — it may have expired.');
+      },
     });
   }
 
   resend(): void {
-    if (!this.userId) return;
-    this.resendMessage = 'Sending...';
+    if (!this.userId || this.isResending || this.resendCooldown > 0) return;
+
+    this.isResending = true;
+    this.resendMessage = 'Sending…';
     this.auth.resendConfirmEmail(this.userId).subscribe({
       next: () => {
-        this.resendMessage = 'A new code has been sent to your email!';
-        setTimeout(() => this.resendMessage = '', 5000);
+        this.isResending = false;
+        this.resendMessage = 'A new code has been sent to your email.';
+        this.startCooldown(60);
+        setTimeout(() => (this.resendMessage = ''), 5000);
       },
-      error: () => {
-        this.resendMessage = 'Failed to resend code. Please try again later.';
-        setTimeout(() => this.resendMessage = '', 5000);
-      }
+      error: (err) => {
+        this.isResending = false;
+        this.resendMessage = extractErrorMessage(err, 'Failed to resend the code. Please try again later.');
+        setTimeout(() => (this.resendMessage = ''), 5000);
+      },
     });
+  }
+
+  /** Prevents resend-spam: disables the button for `seconds`. */
+  private startCooldown(seconds: number): void {
+    this.resendCooldown = seconds;
+    if (this.cooldownTimer) clearInterval(this.cooldownTimer);
+    this.cooldownTimer = setInterval(() => {
+      this.resendCooldown -= 1;
+      if (this.resendCooldown <= 0 && this.cooldownTimer) {
+        clearInterval(this.cooldownTimer);
+        this.cooldownTimer = null;
+      }
+    }, 1000);
   }
 }

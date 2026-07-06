@@ -8,8 +8,7 @@ import {
   Plan,
   SubscribeResponse,
 } from '../models';
-
-const API_BASE = 'https://localhost:7162/api/subscription';
+import { ENDPOINTS } from '../config/endpoints';
 
 const POLL_INTERVAL_MS = 3000;
 const POLL_MAX_ATTEMPTS = 20;
@@ -28,7 +27,7 @@ export class SubscriptionService {
   readonly isActive = computed(() => this._mySubscription()?.status === 'Active');
 
   loadPlans(): Observable<Plan[]> {
-    return this.http.get<Plan[]>(`${API_BASE}/plans`).pipe(
+    return this.http.get<Plan[]>(ENDPOINTS.subscription.plans).pipe(
       tap((plans) => this._plans.set(plans)),
       catchError((err) => {
         console.error('Failed to load subscription plans:', err);
@@ -38,7 +37,7 @@ export class SubscriptionService {
   }
 
   loadMySubscription(): Observable<MySubscription | null> {
-    return this.http.get<MySubscription>(`${API_BASE}/my-subscription`).pipe(
+    return this.http.get<MySubscription>(ENDPOINTS.subscription.mySubscription).pipe(
       tap((sub) => this._mySubscription.set(sub)),
       catchError((err) => {
         console.error('Failed to load current subscription:', err);
@@ -58,11 +57,11 @@ export class SubscriptionService {
   }
 
   subscribe(planId: string): Observable<SubscribeResponse> {
-    return this.http.post<SubscribeResponse>(`${API_BASE}/subscribe`, { planId });
+    return this.http.post<SubscribeResponse>(ENDPOINTS.subscription.subscribe, { planId });
   }
 
   cancel(): Observable<CancelSubscriptionResponse> {
-    return this.http.post<CancelSubscriptionResponse>(`${API_BASE}/cancel`, {}).pipe(
+    return this.http.post<CancelSubscriptionResponse>(ENDPOINTS.subscription.cancel, {}).pipe(
       tap(() => this.loadMySubscription().subscribe()),
     );
   }

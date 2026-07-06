@@ -1,6 +1,19 @@
-import { Component, OnInit, PLATFORM_ID, computed, inject, signal } from '@angular/core';
+import {
+  Component,
+  DestroyRef,
+  OnInit,
+  PLATFORM_ID,
+  computed,
+  inject,
+  signal,
+} from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { NgClass, isPlatformBrowser } from '@angular/common';
 import { ActivatedRoute, RouterLink } from '@angular/router';
+<<<<<<< Updated upstream
+=======
+import { HttpClient } from '@angular/common/http';
+>>>>>>> Stashed changes
 import {
   Activity,
   ActivityCategory,
@@ -17,14 +30,17 @@ import {
   Weather,
 } from '../../../core/models';
 import { TripService } from '../../../core/services/trip.service';
+import { AuthService } from '../../../core/services/auth.service';
 import { PdfExportService } from '../../../core/services/pdf-export.service';
 import { ToastService } from '../../../core/services/toast.service';
 import { UnsplashService } from '../../../core/services/unsplash.service';
+import { ENDPOINTS } from '../../../core/config/endpoints';
 import { FlightCard } from '../itinerary/flight-card/flight-card';
 import { HotelCard } from '../itinerary/hotel-card/hotel-card';
 import { WeatherBanner } from '../itinerary/weather-banner/weather-banner';
 import { InteractiveMap } from '../itinerary/interactive-map/interactive-map';
 import { TripChatPanel } from '../itinerary/trip-chat-panel/trip-chat-panel';
+import { GenerationLoader } from '../../../shared/generation-loader/generation-loader';
 
 @Component({
   selector: 'app-travel-plan',
@@ -37,13 +53,19 @@ import { TripChatPanel } from '../itinerary/trip-chat-panel/trip-chat-panel';
     WeatherBanner,
     InteractiveMap,
     TripChatPanel,
-  ], // ← أضفنا TripChatPanel
+    GenerationLoader,
+  ],
   templateUrl: './travel-plan.html',
   styleUrl: './travel-plan.css',
+  // NOTE: default change detection is intentional. This page hosts child
+  // components (trip-chat-panel, cards, map) that update internal state from
+  // async callbacks; OnPush here would gate their re-render.
 })
 export class TravelPlanPage implements OnInit {
+  private readonly destroyRef = inject(DestroyRef);
   private readonly route = inject(ActivatedRoute);
   private readonly tripService = inject(TripService);
+  private readonly auth = inject(AuthService);
   private readonly pdfExport = inject(PdfExportService);
   private readonly toast = inject(ToastService);
   private readonly unsplash = inject(UnsplashService);
@@ -51,6 +73,8 @@ export class TravelPlanPage implements OnInit {
 
   readonly trip = signal<UserTrip | null>(null);
   readonly notFound = signal(false);
+  /** True while the itinerary is still being generated (drives the premium loader). */
+  readonly isGenerating = signal(false);
   readonly selectedDayIndex = signal(0);
   readonly isExporting = signal(false);
   readonly isSplitOpen = signal(false); // ← جديد: حالة الـ split view
@@ -68,6 +92,23 @@ export class TravelPlanPage implements OnInit {
     return Math.min(100, Math.round((t.spentBudget / t.totalBudget) * 100));
   });
 
+  /** Number of planned days, for the hero subtitle. */
+  readonly durationDays = computed(() => this.trip()?.days.length ?? 0);
+
+  /** Presentation metadata for the trip status badge (date-derived status). */
+  readonly statusMeta = computed(() => {
+    switch (this.trip()?.status) {
+      case 'upcoming':
+        return { label: 'Upcoming', cls: 'status-upcoming', icon: 'fa-clock' };
+      case 'ongoing':
+        return { label: 'Ongoing', cls: 'status-ongoing', icon: 'fa-plane-departure' };
+      case 'completed':
+        return { label: 'Completed', cls: 'status-completed', icon: 'fa-circle-check' };
+      default:
+        return null;
+    }
+  });
+
   ngOnInit(): void {
     const id = this.route.snapshot.paramMap.get('id');
     if (!id) {
@@ -75,19 +116,94 @@ export class TravelPlanPage implements OnInit {
       return;
     }
 
-    this.tripService.getPlan(id).subscribe({
+    // Arriving straight from trip creation (chat / planner form) — the itinerary
+    // may still be building, so poll behind the premium loader. This is the ONLY
+    // place that waits for generation; the origin pages just navigate here.
+    const generating = this.route.snapshot.queryParamMap.get('generating') === '1';
+    this.loadPlan(id, generating);
+  }
+
+  /**
+   * Load the trip plan. When `poll` is true we wait (via {@link TripService.pollPlan})
+   * for the background generation to finish, showing the generation loader; a slow
+   * generation falls back to a direct fetch so the page still renders.
+   */
+  private loadPlan(id: string, poll: boolean): void {
+    if (poll) this.isGenerating.set(true);
+
+    const source$ = poll ? this.tripService.pollPlan(id) : this.tripService.getPlan(id);
+    source$.pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
       next: async (dto) => {
+<<<<<<< Updated upstream
         const mapped = mapTripPlanDtoToUserTrip(dto);
         const coverImage = await this.unsplash.getDestinationPhoto(dto.destination);
         this.trip.set({ ...mapped, coverImage });
+=======
+        await this.setTripFromDto(dto);
+        this.isGenerating.set(false);
+        this.loadSuggestions(id);
+>>>>>>> Stashed changes
       },
-      error: () => this.notFound.set(true),
+      error: () => {
+        if (poll) {
+          // Generation didn't finish within the poll window — fetch once more so a
+          // partial itinerary still shows instead of a dead end.
+          this.tripService.getPlan(id).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
+            next: async (dto) => {
+              await this.setTripFromDto(dto);
+              this.isGenerating.set(false);
+              this.loadSuggestions(id);
+            },
+            error: () => {
+              this.isGenerating.set(false);
+              this.notFound.set(true);
+            },
+          });
+        } else {
+          this.notFound.set(true);
+        }
+      },
     });
   }
 
+<<<<<<< Updated upstream
   /** فتح الـ split view */
   openSplit(): void {
     this.isSplitOpen.set(true);
+=======
+  /**
+   * Map a plan DTO into the view model and render it immediately, then fetch the
+   * cover image and patch it in without blocking the itinerary (FE-13).
+   */
+  private async setTripFromDto(dto: TripPlanDto): Promise<void> {
+    const mapped = mapTripPlanDtoToUserTrip(dto);
+    this.trip.set(mapped);
+    if (this.selectedDayIndex() >= mapped.days.length) {
+      this.selectedDayIndex.set(0);
+    }
+
+    // Non-blocking: the itinerary is already visible; the hero cover fills in when ready.
+    const coverImage = await this.unsplash.getDestinationPhoto(dto.destination);
+    const current = this.trip();
+    if (current && current.id === mapped.id) {
+      this.trip.set({ ...current, coverImage });
+    }
+  }
+
+  private loadSuggestions(tripId: string): void {
+    this.isSuggestionsLoading.set(true);
+    const headers = this.auth.getAuthHeaders();
+
+    this.http.get<PlaceSuggestion[]>(ENDPOINTS.trip.suggestions(tripId), { headers, params: { limit: '6' } })
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: (data) => {
+          this.suggestions.set(data);
+          this.isSuggestionsLoading.set(false);
+        },
+        error: () => this.isSuggestionsLoading.set(false),
+      });
+>>>>>>> Stashed changes
   }
 
   /** إغلاق الـ split view */
@@ -134,23 +250,11 @@ export class TravelPlanPage implements OnInit {
       this.isExporting.set(false);
     }
   }
-  // onTripUpdated(): void {
-  //   const id = this.route.snapshot.paramMap.get('id');
-  //   if (!id) return;
-
-  //  setTimeout(() => {
-  //    this.tripService.getPlan(id).subscribe({
-  //      next: async (dto) => {
-  //        const mapped = mapTripPlanDtoToUserTrip(dto);
-  //        const coverImage = await this.unsplash.getDestinationPhoto(dto.destination);
-  //        this.trip.set({ ...mapped, coverImage });
-  //      },
-  //    });
-  //  }, 15000);
   onTripUpdated(): void {
   const id = this.route.snapshot.paramMap.get('id');
   if (!id) return;
 
+<<<<<<< Updated upstream
   this.tripService.getPlan(id).subscribe({
     next: async (dto) => {
       const mapped = mapTripPlanDtoToUserTrip(dto);
@@ -159,6 +263,13 @@ export class TravelPlanPage implements OnInit {
     },
   });
 
+=======
+    // The AI panel edits the same trip in-place; re-fetch quietly (no full-page
+    // loader) so the itinerary updates without a jarring reload.
+    this.tripService.getPlan(id).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
+      next: (dto) => this.setTripFromDto(dto),
+    });
+>>>>>>> Stashed changes
   }
 }
 

@@ -10,7 +10,6 @@ export * from './hotel-info';
 export * from './user-trip';
 export * from './trip-data';
 export * from './user-profile';
-export * from './notification-preferences';
 export * from './chat-message';
 export * from './subscription';
 export * from './trip-plan';

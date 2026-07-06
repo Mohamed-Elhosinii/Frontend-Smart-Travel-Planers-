@@ -39,7 +39,6 @@ export const routes: Routes = [
   { path: 'privacy', loadComponent: () => import('./features/legal/privacy/privacy').then((m) => m.PrivacyPage) },
   { path: 'chat', loadComponent: () => import('./features/chat/chat').then((m) => m.ChatPage), canActivate: [authGuard] },
   { path: 'profile', loadComponent: () => import('./features/account/profile/profile').then((m) => m.ProfilePage), canActivate: [authGuard] },
-  { path: 'settings', loadComponent: () => import('./features/account/settings/settings').then((m) => m.SettingsPage) },
   {
     path: 'subscription',
     loadComponent: () => import('./features/account/subscription/subscription').then((m) => m.SubscriptionPage),
@@ -74,5 +73,7 @@ export const routes: Routes = [
 
   // --- Redirects & fallback ---
   { path: 'portfolio', redirectTo: 'profile', pathMatch: 'full' },
-  { path: '**', redirectTo: '' },
+  // Backend Google-OAuth failure redirects to /auth/login?error=… — map it to /login.
+  { path: 'auth/login', redirectTo: 'login', pathMatch: 'full' },
+  { path: '**', loadComponent: () => import('./features/not-found/not-found').then((m) => m.NotFoundPage) },
 ];

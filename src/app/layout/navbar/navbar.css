@@ -131,6 +131,33 @@
   background: var(--primary);
 }
 
+/* ── Plan Your Trip Button (opens the planner modal) ──────────── */
+.btn-plan-nav {
+  padding: 0.55rem 1.4rem;
+  font-size: 0.88rem;
+  color: #fff;
+  background: transparent;
+  border: 1.5px solid rgba(255, 255, 255, 0.55);
+}
+
+.btn-plan-nav:hover {
+  color: #fff;
+  border-color: #fff;
+  background: rgba(255, 255, 255, 0.12);
+}
+
+/* Scrolled / light-background state: brand-tinted outline. */
+.wandr-nav.scrolled .btn-plan-nav {
+  color: var(--primary-orange);
+  border-color: var(--primary-orange);
+}
+
+.wandr-nav.scrolled .btn-plan-nav:hover {
+  color: #fff;
+  background: var(--primary-orange);
+  border-color: var(--primary-orange);
+}
+
 /* ── Sign Up Button ───────────────────────────────────────── */
 .btn-signup {
   padding: 0.55rem 1.6rem;

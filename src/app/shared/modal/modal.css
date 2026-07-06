@@ -1,0 +1,34 @@
+/* Dimmed, scrollable overlay above the navbar but below toasts. */
+.modal-backdrop-custom {
+  z-index: var(--z-modal);
+  background: var(--modal-backdrop);
+  animation: modal-fade var(--transition-fast);
+}
+
+/* Centered white card. */
+.modal-card {
+  animation: modal-pop var(--transition-spring);
+}
+
+/* Circular close button in the card corner. */
+.modal-close {
+  width: 2.25rem;
+  height: 2.25rem;
+  background: var(--body-bg);
+  color: var(--secondary-dark);
+}
+
+.modal-close:hover {
+  background: var(--primary-orange);
+  color: #fff;
+}
+
+@keyframes modal-fade {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+@keyframes modal-pop {
+  from { opacity: 0; transform: translateY(1rem) scale(0.98); }
+  to   { opacity: 1; transform: translateY(0) scale(1); }
+}

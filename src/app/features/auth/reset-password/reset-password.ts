@@ -2,12 +2,16 @@ import { Component, OnInit, inject, ViewChildren, QueryList, ElementRef } from '
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { AuthService, ResetPasswordDto } from '../../../core/services/auth.service';
+import { PASSWORD_RULE_HINT } from '../../../core/validators/password.validator';
+import { extractErrorMessage } from '../../../core/utils/http-error';
+import { APP_ROUTES } from '../../../core/constants/routes';
+import { Logo } from '../../../shared/logo/logo';
 
-/** Password reset page. The user arrives here from the email link with userId & token query params. */
+/** Password reset page. The user arrives here from forgot-password with the email query param. */
 @Component({
   selector: 'app-reset-password',
   standalone: true,
-  imports: [FormsModule, RouterLink],
+  imports: [FormsModule, RouterLink, Logo],
   templateUrl: './reset-password.html',
   styleUrl: './reset-password.css',
 })
@@ -17,7 +21,7 @@ export class ResetPasswordPage implements OnInit {
   private readonly auth = inject(AuthService);
 
   email = '';
-  token = ''; // this is now the OTP
+  token = ''; // the 6-digit OTP
   otpDigits: string[] = ['', '', '', '', '', ''];
   newPassword = '';
   confirmPassword = '';
@@ -26,6 +30,9 @@ export class ResetPasswordPage implements OnInit {
   isLoading = false;
   showNewPassword = false;
   showConfirmPassword = false;
+
+  /** Backend password policy, shown under the field. */
+  readonly passwordHint = PASSWORD_RULE_HINT;
 
   toggleNewPassword(): void {
     this.showNewPassword = !this.showNewPassword;
@@ -40,8 +47,7 @@ export class ResetPasswordPage implements OnInit {
   onOtpInput(event: KeyboardEvent, index: number): void {
     const input = event.target as HTMLInputElement;
     const key = event.key;
-    
-    // Allow navigation
+
     if (key === 'ArrowLeft' && index > 0) {
       this.otpInputs.get(index - 1)?.nativeElement.focus();
       return;
@@ -77,37 +83,48 @@ export class ResetPasswordPage implements OnInit {
         this.otpDigits[i] = digits[i];
       }
     }
-    
+
     const nextIndex = Math.min(digits.length, 5);
     this.otpInputs.get(nextIndex)?.nativeElement.focus();
   }
 
   ngOnInit(): void {
     this.email = this.route.snapshot.queryParams['email'] || '';
-
     if (!this.email) {
       this.errorMessage = 'Invalid password reset request. Please start over.';
     }
   }
 
+  /** Mirrors the backend ResetPasswordDtoValidator complexity rules. */
+  private isPasswordStrong(pw: string): boolean {
+    return (
+      pw.length >= 6 &&
+      /[A-Z]/.test(pw) &&
+      /[a-z]/.test(pw) &&
+      /[0-9]/.test(pw) &&
+      /[^a-zA-Z0-9]/.test(pw)
+    );
+  }
+
   submit(): void {
+    if (this.isLoading) return; // guard against duplicate submissions
     this.errorMessage = '';
     this.token = this.otpDigits.join('');
 
+    if (!this.email) {
+      this.errorMessage = 'Invalid reset request. Please start over.';
+      return;
+    }
     if (!this.token || this.token.length !== 6) {
       this.errorMessage = 'Please enter the 6-digit code sent to your email.';
       return;
     }
-    if (!this.newPassword || this.newPassword.length < 6) {
-      this.errorMessage = 'Password must be at least 6 characters.';
+    if (!this.isPasswordStrong(this.newPassword)) {
+      this.errorMessage = this.passwordHint;
       return;
     }
     if (this.newPassword !== this.confirmPassword) {
       this.errorMessage = 'Passwords do not match.';
-      return;
-    }
-    if (!this.email) {
-      this.errorMessage = 'Invalid reset request. Please start over.';
       return;
     }
 
@@ -124,23 +141,11 @@ export class ResetPasswordPage implements OnInit {
       next: () => {
         this.isSuccess = true;
         this.isLoading = false;
-        setTimeout(() => this.router.navigate(['/login']), 3000);
+        setTimeout(() => this.router.navigate([APP_ROUTES.login]), 3000);
       },
       error: (err) => {
         this.isLoading = false;
-        let errorData = err?.error;
-        if (typeof errorData === 'string') {
-          try {
-            errorData = JSON.parse(errorData);
-          } catch {
-            // Ignore parse failure
-          }
-        }
-        if (errorData?.errors && errorData.errors.length > 0) {
-          this.errorMessage = errorData.errors.join(' ');
-        } else {
-          this.errorMessage = errorData?.message || 'Password reset failed. The link may have expired.';
-        }
+        this.errorMessage = extractErrorMessage(err, 'Password reset failed. The code may have expired.');
       },
     });
   }
