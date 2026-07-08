@@ -18,7 +18,7 @@
       </div>
     </div>
   </div>
-} @else {
+} @else if (isGenerating) {
   <div class="summary-card flight-card loading-card d-flex align-items-start">
     <div class="card-icon-wrap icon-primary skeleton-pulse d-flex align-items-center justify-content-center flex-shrink-0"></div>
     <div class="card-body-wrap w-100">
@@ -26,5 +26,10 @@
       <div class="skeleton-line skeleton-medium skeleton-pulse mb-2"></div>
       <div class="skeleton-line skeleton-long skeleton-pulse"></div>
     </div>
+  </div>
+} @else {
+  <div class="summary-card flight-card d-flex flex-column justify-content-center align-items-center bg-light text-muted p-4 h-100 rounded-4">
+    <i class="fa-solid fa-plane-slash fs-2 mb-2 text-secondary"></i>
+    <span class="fw-bold fs-6 mb-1 text-center">No Flight Found</span>
   </div>
 }

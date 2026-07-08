@@ -13,6 +13,7 @@ import { Weather } from '../../../../core/models';
 })
 export class WeatherBanner {
   @Input() weather: Weather | null | undefined = null;
+  @Input() isGenerating = false;
 
   /** Theme class derived from the weather condition string. */
   getWeatherClass(condition: string): string {

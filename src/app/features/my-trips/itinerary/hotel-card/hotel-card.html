@@ -87,7 +87,7 @@
     </div>
   </div>
 </div>
-} @else {
+} @else if (isGenerating) {
 <div class="summary-card hotel-card loading-card d-flex flex-column p-0">
   <div class="hotel-carousel skeleton-pulse w-100"></div>
   <div class="card-body-wrap p-3 w-100">
@@ -100,5 +100,11 @@
     </div>
     <div class="skeleton-line skeleton-long skeleton-pulse mt-3"></div>
   </div>
+</div>
+} @else {
+<div class="summary-card hotel-card d-flex flex-column justify-content-center align-items-center bg-light text-muted p-4 h-100 rounded-4">
+  <i class="fa-solid fa-hotel fs-1 mb-3 text-secondary"></i>
+  <span class="fw-bold fs-5 mb-1">No Hotel Found</span>
+  <span class="small text-center">We couldn't find a hotel within your budget.</span>
 </div>
 }

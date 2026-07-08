@@ -30,7 +30,7 @@
       <p class="tip-text mb-0 fst-italic">{{ weather.aiTip }}</p>
     </div>
   </div>
-} @else {
+} @else if (isGenerating) {
   <div class="weather-banner weather-default d-flex flex-wrap align-items-center justify-content-between gap-3 loading-banner position-relative overflow-hidden w-100 mb-0">
     <div class="d-flex align-items-center gap-3 weather-left w-100">
       <div class="weather-icon skeleton-circle skeleton-pulse rounded-circle flex-shrink-0"></div>
@@ -40,5 +40,10 @@
       </div>
     </div>
     <div class="weather-tip-box w-100 skeleton-pulse mt-2 d-flex align-items-start" style="height: 60px;"></div>
+  </div>
+} @else {
+  <div class="weather-banner weather-default d-flex flex-wrap align-items-center justify-content-center bg-light text-muted position-relative overflow-hidden w-100 mb-0 py-4 rounded-4 h-100">
+    <i class="fa-solid fa-cloud fs-3 me-2 text-secondary"></i>
+    <span class="fw-bold fs-6">Weather data not available</span>
   </div>
 }

@@ -15,6 +15,7 @@ import { ENDPOINTS } from '../../../../core/config/endpoints';
 })
 export class HotelCard implements OnInit, OnDestroy {
   @Input() hotel: HotelInfo | null | undefined = null;
+  @Input() isGenerating = false;
 
   private readonly http = inject(HttpClient);
   private readonly cdr = inject(ChangeDetectorRef);

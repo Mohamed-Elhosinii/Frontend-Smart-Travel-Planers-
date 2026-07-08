@@ -75,19 +75,17 @@
       <div class="info-cards-grid mb-5">
         <!-- Hotel: widest cell — has image carousel -->
         <div class="info-cell info-cell-hotel">
-          <app-hotel-card [hotel]="t.hotel" class="h-100"></app-hotel-card>
+          <app-hotel-card [hotel]="t.hotel" [isGenerating]="isGenerating()" class="h-100"></app-hotel-card>
         </div>
 
-        <!-- Flight: narrow cell — conditional -->
-        @if (t.flight) {
+        <!-- Flight: narrow cell -->
         <div class="info-cell info-cell-flight">
-          <app-flight-card [flight]="t.flight" class="h-100"></app-flight-card>
+          <app-flight-card [flight]="t.flight" [isGenerating]="isGenerating()" class="h-100"></app-flight-card>
         </div>
-        }
 
         <!-- Weather: stretches to fill remaining space -->
-        <div class="info-cell info-cell-weather" [class.full-width]="!t.flight">
-          <app-weather-banner [weather]="currentDayWeather()" class="h-100"></app-weather-banner>
+        <div class="info-cell info-cell-weather">
+          <app-weather-banner [weather]="currentDayWeather()" [isGenerating]="isGenerating()" class="h-100"></app-weather-banner>
         </div>
       </div>
 
