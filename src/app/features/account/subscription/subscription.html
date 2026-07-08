@@ -146,13 +146,15 @@
             <button
               type="button"
               class="btn btn-plan w-100 fw-bold rounded-3"
-              [disabled]="isCurrentPlan(plan) || subscribingPlanId() === plan.id"
+              [disabled]="isCurrentPlan(plan) || !canSubscribe(plan) || subscribingPlanId() === plan.id"
               (click)="onSubscribe(plan)"
             >
               @if (subscribingPlanId() === plan.id) {
                 <span class="spinner-border spinner-border-sm me-2" role="status"></span>Starting...
               } @else if (isCurrentPlan(plan)) {
                 Current Plan
+              } @else if (!canSubscribe(plan)) {
+                Unavailable
               } @else {
                 Subscribe
               }
@@ -199,7 +201,7 @@
     <div class="sub-modal-content sub-confirm-content" (click)="$event.stopPropagation()">
       <h5 class="fw-bold text-deep mb-3">Cancel your subscription?</h5>
       <p class="text-muted mb-4">
-        You'll lose access to your current plan's limits immediately. This can't be undone from here.
+        If you cancel within 3 days of subscribing, you will get a full refund. Otherwise, your subscription will remain active until the end of the current billing period, but it will not automatically renew.
       </p>
       <div class="d-flex gap-2">
         <button

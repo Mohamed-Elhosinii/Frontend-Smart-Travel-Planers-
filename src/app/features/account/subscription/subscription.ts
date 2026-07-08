@@ -55,6 +55,16 @@ export class SubscriptionPage implements OnInit, OnDestroy {
     return !!sub && sub.status === 'Active' && sub.planName === plan.name;
   }
 
+  canSubscribe(plan: Plan): boolean {
+    const sub = this.mySubscription();
+    if (!sub || sub.status !== 'Active') return true;
+
+    const currentPlan = this.plans().find(p => p.name === sub.planName);
+    if (!currentPlan) return true;
+
+    return plan.priceMonthly > currentPlan.priceMonthly;
+  }
+
   formatPrice(plan: Plan): string {
     return plan.priceMonthly === 0 ? 'Free' : `$${plan.priceMonthly.toFixed(2)}/mo`;
   }
