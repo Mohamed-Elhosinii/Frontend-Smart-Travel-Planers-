@@ -55,15 +55,26 @@
 .trip-filter {
   width: auto;
   min-width: 150px;
-  border-radius: 999px;
+  border-radius: 8px;
   border: 1px solid var(--border-color);
   background-color: #fff;
   color: var(--secondary-dark);
-  font-size: 0.88rem;
-  font-weight: 600;
-  padding: 0.45rem 2.25rem 0.45rem 1rem;
+  font-size: 0.9rem;
+  font-weight: 500;
+  padding: 0.5rem 2.25rem 0.5rem 1rem;
   cursor: pointer;
-  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  transition: all 0.2s ease;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath fill='none' stroke='%233D2B2F' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='m2 5 6 6 6-6'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 0.75rem center;
+  background-size: 16px 12px;
+}
+
+.trip-filter:hover {
+  border-color: var(--primary-orange);
+  box-shadow: 0 4px 12px rgba(181,67,4,0.08);
 }
 
 .trip-filter:focus {
@@ -282,27 +293,28 @@
    ============================================= */
 .btn-remove-trip {
   position: absolute;
-  top: 10px;
-  left: 10px;
+  top: 12px;
+  right: 12px;
   z-index: 10;
-  width: 30px;
-  height: 30px;
+  width: 32px;
+  height: 32px;
   border-radius: 50%;
   border: none;
-  background: rgba(255, 255, 255, 0.9);
-  color: #B54304;
+  background: rgba(255, 255, 255, 0.75);
+  color: #6c757d;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: .8rem;
+  font-size: .85rem;
   cursor: pointer;
-  box-shadow: 0 2px 8px rgba(0,0,0,.15);
+  box-shadow: 0 2px 8px rgba(0,0,0,.1);
   transition: all .2s ease;
-  backdrop-filter: blur(4px);
+  backdrop-filter: blur(8px);
 }
 
 .btn-remove-trip:hover {
-  background: #B54304;
+  background: #dc3545;
   color: #fff;
-  transform: scale(1.1);
+  transform: scale(1.08);
+  box-shadow: 0 4px 12px rgba(220,53,69,.3);
 }

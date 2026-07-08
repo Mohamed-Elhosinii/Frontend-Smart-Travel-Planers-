@@ -1,9 +1,22 @@
+/* ── Google Fonts (served locally via @fontsource — no CDN at runtime) ──── */
+@import '@fontsource/playfair-display/400.css';
+@import '@fontsource/playfair-display/700.css';
+@import '@fontsource/playfair-display/800.css';
+@import '@fontsource/plus-jakarta-sans/400.css';
+@import '@fontsource/plus-jakarta-sans/500.css';
+@import '@fontsource/plus-jakarta-sans/600.css';
+@import '@fontsource/plus-jakarta-sans/700.css';
+@import '@fontsource/sora/600.css';
+@import '@fontsource/sora/700.css';
+@import '@fontsource/sora/800.css';
+
 /* ═══════════════════════════════════════════════════════════════════
    TRIPMIND — GLOBAL DESIGN SYSTEM & STYLES
    ─────────────────────────────────────────────────────────────────
    Centralized design tokens, universal transitions, hover states,
    typography, focus rings, and mobile-first responsiveness guards.
    ═══════════════════════════════════════════════════════════════════ */
+
 
 /* ── Design Tokens ─────────────────────────────────────────────── */
 :root {

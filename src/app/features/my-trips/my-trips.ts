@@ -33,24 +33,12 @@ export class MyTripsPage implements OnInit {
   readonly tripPendingDelete = signal<UserTrip | null>(null);
 
   /** Filter + sort state for the controls above the grid. */
-  readonly statusFilter = signal<string>('all');
   readonly sortOrder = signal<string>('newest');
 
-  /** Distinct statuses present in the loaded trips (for the filter dropdown). */
-  readonly statuses = computed(() => {
-    const set = new Set(this.trips().map((t) => t.status).filter(Boolean));
-    return Array.from(set);
-  });
-
-  /** Trips after applying the active status filter and sort order. */
+  /** Trips after applying the active sort order. */
   readonly visibleTrips = computed(() => {
-    const status = this.statusFilter();
     const order = this.sortOrder();
-    let list = this.trips();
-
-    if (status !== 'all') {
-      list = list.filter((t) => t.status === status);
-    }
+    const list = this.trips();
 
     const byDate = (t: UserTrip) => new Date(t.departureDate).getTime() || 0;
     const sorted = [...list].sort((a, b) => byDate(b) - byDate(a));
@@ -127,14 +115,7 @@ export class MyTripsPage implements OnInit {
     return stored ? JSON.parse(stored) : [];
   }
 
-  getStatusClass(status: string): string {
-    switch (status) {
-      case 'upcoming': return 'badge-upcoming';
-      case 'ongoing': return 'badge-ongoing';
-      case 'completed': return 'badge-completed';
-      default: return '';
-    }
-  }
+
 
   getBudgetPercent(trip: UserTrip): number {
     if (trip.totalBudget === 0) return 0;

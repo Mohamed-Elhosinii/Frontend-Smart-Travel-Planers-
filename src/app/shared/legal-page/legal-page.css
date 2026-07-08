@@ -30,3 +30,24 @@
 .btn-back-home:active {
   transform: translateY(0);
 }
+
+/* ── Sub-section heading used in Privacy & Terms ─────────────── */
+.legal-card h3 {
+  font-family: 'Plus Jakarta Sans', sans-serif;
+}
+
+/* ── AI Limitation callout block (Terms of Service) ──────────── */
+.legal-callout {
+  background: rgba(181, 67, 4, 0.06);
+  border: 1px solid rgba(181, 67, 4, 0.22);
+  border-left: 4px solid var(--primary-orange, #B54304);
+}
+
+/* ── Inline code within legal docs ───────────────────────────── */
+.legal-card code {
+  font-size: 0.82rem;
+  background: rgba(61, 43, 47, 0.06);
+  padding: 1px 5px;
+  border-radius: 4px;
+  color: var(--primary-brand, #74341b);
+}

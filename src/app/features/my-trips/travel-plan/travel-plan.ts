@@ -105,19 +105,7 @@ export class TravelPlanPage implements OnInit {
   /** Number of planned days, for the hero subtitle. */
   readonly durationDays = computed(() => this.trip()?.days.length ?? 0);
 
-  /** Presentation metadata for the trip status badge (date-derived status). */
-  readonly statusMeta = computed(() => {
-    switch (this.trip()?.status) {
-      case 'upcoming':
-        return { label: 'Upcoming', cls: 'status-upcoming', icon: 'fa-clock' };
-      case 'ongoing':
-        return { label: 'Ongoing', cls: 'status-ongoing', icon: 'fa-plane-departure' };
-      case 'completed':
-        return { label: 'Completed', cls: 'status-completed', icon: 'fa-circle-check' };
-      default:
-        return null;
-    }
-  });
+
 
   ngOnInit(): void {
     const id = this.route.snapshot.paramMap.get('id');

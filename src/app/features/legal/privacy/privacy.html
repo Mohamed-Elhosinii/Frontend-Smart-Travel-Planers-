@@ -1,58 +1,135 @@
-<app-legal-page heading="Privacy Policy" lastUpdated="June 18, 2026">
+<app-legal-page heading="Privacy Policy" lastUpdated="July 8, 2026">
+
+  <!-- Intro Lead -->
   <p class="lead text-deep leading-relaxed mb-4">
-    Your privacy is vital to us. This Privacy Policy details how Vantio collects, stores, uses, and
-    protects your information when you use our smart travel solutions.
+    At <strong>Vantio</strong>, your privacy is not an afterthought — it is a design principle.
+    This Privacy Policy explains in clear, plain language exactly what personal information we collect,
+    why we collect it, how we protect it, and the choices you have over your own data. By using Vantio,
+    you agree to the practices described below.
   </p>
 
   <hr class="opacity-10 mb-4" />
 
+  <!-- Section 1 -->
   <section class="mb-4">
     <h2 class="fw-bold text-deep font-serif mb-3 mt-0 fs-5">1. Information We Collect</h2>
-    <p class="text-muted leading-relaxed">
-      To orchestrate customised travel experiences, we collect elements including:
+    <p class="text-muted leading-relaxed mb-2">
+      To generate personalized travel itineraries and operate our platform, we collect the following categories of data:
     </p>
-    <ul class="text-muted ps-3 leading-relaxed">
-      <li><strong>Account Credentials:</strong> Your full name, email address, and password.</li>
-      <li><strong>Travel Preferences:</strong> Budget limits, dates, preferred style indicators, and interactive chat prompts.</li>
-      <li><strong>Local Caching Data:</strong> Your email address stored via local storage when "Remember Me" is enabled.</li>
+
+    <h3 class="fw-semibold text-deep mb-2 mt-3" style="font-size: 0.95rem;">a) Account Credentials</h3>
+    <ul class="text-muted ps-3 leading-relaxed mb-3">
+      <li><strong>Full Name & Email Address:</strong> Required to create and manage your Vantio account.</li>
+      <li><strong>Password:</strong> Stored using industry-standard one-way hashing (bcrypt). We never store your password in plain text.</li>
+      <li><strong>Google OAuth Token:</strong> If you sign in via Google, we receive a secure, limited-scope token — we do not access your Google password or other Google data.</li>
     </ul>
+
+    <h3 class="fw-semibold text-deep mb-2 mt-3" style="font-size: 0.95rem;">b) Travel Preferences & Planning Data</h3>
+    <ul class="text-muted ps-3 leading-relaxed mb-3">
+      <li><strong>Destination & Dates:</strong> The travel locations and date ranges you submit for planning.</li>
+      <li><strong>Budget Limits:</strong> The spending boundaries you define to shape your itinerary.</li>
+      <li><strong>Travel Style Indicators:</strong> Preferences such as adventure, cultural, luxury, or budget travel modes.</li>
+      <li><strong>Conversational Prompts:</strong> Messages exchanged with our AI planning assistant to refine your itinerary.</li>
+    </ul>
+
+    <h3 class="fw-semibold text-deep mb-2 mt-3" style="font-size: 0.95rem;">c) Technical & Device Data</h3>
+    <ul class="text-muted ps-3 leading-relaxed mb-3">
+      <li><strong>Browser Local Storage:</strong> If you select "Remember Me," your email address is cached in your browser's <code>localStorage</code> solely to pre-fill the login form on your next visit.</li>
+      <li><strong>Session Tokens:</strong> JWT authentication tokens stored for the duration of your login session to secure API requests.</li>
+    </ul>
+
+    <p class="text-muted leading-relaxed small">
+      <strong>We do not collect:</strong> precise geolocation (GPS), payment card numbers, passport or government ID information, or any sensitive personal data as defined by applicable data protection regulations.
+    </p>
   </section>
 
+  <!-- Section 2 -->
   <section class="mb-4">
     <h2 class="fw-bold text-deep font-serif mb-3 mt-4 fs-5">2. How We Use Your Data</h2>
-    <p class="text-muted leading-relaxed">
-      We use your data strictly to refine planning tools and provide requested services:
+    <p class="text-muted leading-relaxed mb-2">
+      We operate on a strict <strong>"minimum necessary" principle</strong>. Your data is used exclusively for the following purposes:
     </p>
     <ul class="text-muted ps-3 leading-relaxed">
-      <li>Synthesising and routing itineraries through our backend planning engine.</li>
-      <li>Generating PDF files of your schedule and rendering interactive maps.</li>
-      <li>Sending password-retrieval alerts and confirming account status changes.</li>
+      <li><strong>Itinerary Generation:</strong> Passing your travel preferences and constraints to our AI planning engine to synthesize a personalized trip plan.</li>
+      <li><strong>Map & Location Rendering:</strong> Displaying your planned route and points of interest on an interactive map within your itinerary.</li>
+      <li><strong>Document Export:</strong> Generating downloadable PDF copies of your completed itinerary.</li>
+      <li><strong>Account Management:</strong> Sending password-reset emails, email confirmation links, and essential service notifications.</li>
+      <li><strong>Trip History:</strong> Storing previously generated plans under "My Trips" so you can revisit or share them.</li>
+      <li><strong>Service Improvement:</strong> Aggregated and anonymized usage patterns may be analyzed to improve AI performance and user experience. This data cannot be traced back to any individual user.</li>
     </ul>
-  </section>
-
-  <section class="mb-4">
-    <h2 class="fw-bold text-deep font-serif mb-3 mt-4 fs-5">3. Caching and Storage Security</h2>
-    <p class="text-muted leading-relaxed">
-      If you check "Remember me on this device", we store your email inside your browser's
-      <code>localStorage</code> to expedite login. We advise caution, as no storage mechanism is 100%
-      secure.
+    <p class="text-muted leading-relaxed mt-3 small">
+      We <strong>do not</strong> use your data for advertising profiling, behavioral tracking, or selling to data brokers.
     </p>
   </section>
 
+  <!-- Section 3 -->
   <section class="mb-4">
-    <h2 class="fw-bold text-deep font-serif mb-3 mt-4 fs-5">4. Third-Party Services &amp; APIs</h2>
-    <p class="text-muted leading-relaxed">
-      We integrate open mapping layers (Leaflet / OpenStreetMap) and photo catalogues (Unsplash).
-      These external modules operate under separate privacy frameworks, and we encourage you to review
-      their specific policies.
+    <h2 class="fw-bold text-deep font-serif mb-3 mt-4 fs-5">3. Data Storage & Security</h2>
+    <p class="text-muted leading-relaxed mb-3">
+      We implement multiple layers of protection to safeguard your information:
+    </p>
+    <ul class="text-muted ps-3 leading-relaxed">
+      <li><strong>Encryption in Transit:</strong> All data exchanged between your browser and our servers is encrypted using TLS (Transport Layer Security).</li>
+      <li><strong>Password Hashing:</strong> Passwords are hashed with bcrypt before storage. Even Vantio engineers cannot read your password.</li>
+      <li><strong>JWT Authentication:</strong> Session tokens are short-lived and scoped to minimize exposure in the event of interception.</li>
+      <li><strong>Local Storage Advisory:</strong> The "Remember Me" feature stores your email in your browser's <code>localStorage</code>. While convenient, we advise against using this feature on shared or public devices, as <code>localStorage</code> is accessible to other scripts on the same domain.</li>
+    </ul>
+    <p class="text-muted leading-relaxed mt-3 small">
+      No security system is infallible. While we strive to protect your data, we cannot guarantee absolute security against all possible threats. In the event of a data breach affecting your account, we will notify you via email in accordance with applicable regulations.
     </p>
   </section>
 
+  <!-- Section 4 -->
+  <section class="mb-4">
+    <h2 class="fw-bold text-deep font-serif mb-3 mt-4 fs-5">4. Third-Party Services & API Integrations</h2>
+    <p class="text-muted leading-relaxed mb-2">
+      Vantio integrates with the following third-party services to deliver core features. Each operates under its own independent privacy policy:
+    </p>
+    <ul class="text-muted ps-3 leading-relaxed mb-3">
+      <li>
+        <strong>OpenStreetMap & Leaflet.js:</strong> Used to render interactive maps within your itinerary.
+        Map tile requests are routed through OpenStreetMap servers, which may log IP addresses per their
+        <a href="https://wiki.osmfoundation.org/wiki/Privacy_Policy" target="_blank" rel="noopener noreferrer" class="text-decoration-none" style="color: var(--primary, #B54304);">privacy policy</a>.
+      </li>
+      <li>
+        <strong>Unsplash API:</strong> Used to source contextual travel photography for destination displays. No personal data is shared with Unsplash.
+      </li>
+      <li>
+        <strong>Google OAuth (Optional):</strong> If you choose to sign in with Google, authentication is handled directly by Google. We receive only a limited-scope token confirming your identity and email address.
+      </li>
+      <li>
+        <strong>AI Language Model Providers:</strong> Your travel prompts and preferences are transmitted to an AI language model API to generate itinerary content. These requests contain only the information necessary for planning and are governed by the provider's data handling policies.
+      </li>
+    </ul>
+    <p class="text-muted leading-relaxed small">
+      We do not sell, rent, or trade your personal data to any third party for commercial purposes. Data shared with the above services is the minimum required for their functionality.
+    </p>
+  </section>
+
+  <!-- Section 5 -->
+  <section class="mb-4">
+    <h2 class="fw-bold text-deep font-serif mb-3 mt-4 fs-5">5. Data Retention</h2>
+    <p class="text-muted leading-relaxed">
+      Your account data and saved itineraries are retained for as long as your account remains active. If you delete your account, we will permanently erase your personal information and stored trips within <strong>30 days</strong>, except where retention is required by applicable law. Anonymized usage analytics derived from your activity may be retained indefinitely.
+    </p>
+  </section>
+
+  <!-- Section 6 -->
   <section class="mb-0">
-    <h2 class="fw-bold text-deep font-serif mb-3 mt-4 fs-5">5. Your Controls</h2>
-    <p class="text-muted leading-relaxed mb-0">
-      You can request account deletion, clear cached credentials from your local storage at any time,
-      or modify your travel styles. Your preferences are adjustable directly in your settings.
+    <h2 class="fw-bold text-deep font-serif mb-3 mt-4 fs-5">6. Your Rights & Controls</h2>
+    <p class="text-muted leading-relaxed mb-2">
+      You have meaningful control over your personal data at all times:
+    </p>
+    <ul class="text-muted ps-3 leading-relaxed mb-3">
+      <li><strong>Access & Portability:</strong> Request a copy of the personal data we hold about you.</li>
+      <li><strong>Correction:</strong> Update your name, email, or travel preferences at any time in your account settings.</li>
+      <li><strong>Deletion:</strong> Request full account deletion and permanent erasure of your personal data.</li>
+      <li><strong>Local Data Removal:</strong> Clear your browser's <code>localStorage</code> at any time to remove cached credentials from your device.</li>
+      <li><strong>Opt-Out:</strong> You may discontinue use of the platform at any time. We do not engage in targeted advertising, so there is no ad-tracking to opt out of.</li>
+    </ul>
+    <p class="text-muted leading-relaxed mb-0 small">
+      To exercise any of the above rights, contact us at <strong>privacy&#64;vantio.app</strong>. We will respond to all valid requests within <strong>30 days</strong>.
     </p>
   </section>
+
 </app-legal-page>

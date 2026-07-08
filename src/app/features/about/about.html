@@ -1,19 +1,23 @@
 <app-navbar [lightBg]="true"></app-navbar>
 
 <div class="about-wrapper">
-  <!-- Hero Section -->
+
+  <!-- ═══ Hero Section ═══ -->
   <section class="about-hero text-center text-white d-flex align-items-center justify-content-center position-relative">
     <div class="hero-overlay position-absolute top-0 start-0 w-100 h-100"></div>
     <div class="container position-relative z-1 px-3">
       <span class="hero-badge d-inline-block mb-3 rounded-pill py-1 px-3 text-uppercase fw-bold">
-        <i class="fa-solid fa-compass"></i>&nbsp; OUR MISSION
+        <i class="fa-solid fa-compass"></i>&nbsp; Our Mission
       </span>
-      <h1 class="hero-title mb-3">About Vantio</h1>
-      <p class="hero-sub mx-auto mb-0 fw-medium">Reimagining travel experiences through artificial intelligence and multi-agent orchestration.</p>
+      <h1 class="hero-title mb-3">Redefining How the World Travels</h1>
+      <p class="hero-sub mx-auto mb-0 fw-medium">
+        Vantio harnesses the power of multi-agent AI orchestration to eliminate travel planning stress —
+        delivering one perfect, personalized itinerary crafted just for you.
+      </p>
     </div>
   </section>
 
-  <!-- Mission & Vision Details -->
+  <!-- ═══ Mission & Core Philosophy ═══ -->
   <section class="mission-section py-5 container">
     <div class="row align-items-center g-5 py-4">
       <div class="col-lg-6">
@@ -21,20 +25,25 @@
           <div class="gradient-accent-bg"></div>
           <div class="mission-text-overlay position-relative z-2 w-100">
             <span class="brand-text d-block text-uppercase mb-2 fw-bold">Vantio</span>
-            <h3 class="mb-0 fw-bold">Simplifying journeys, maximizing discovery.</h3>
+            <h3 class="mb-0 fw-bold">Simplifying journeys,<br>maximizing discovery.</h3>
           </div>
         </div>
       </div>
       <div class="col-lg-6">
         <h2 class="section-title mb-3">Our Core Philosophy</h2>
         <p class="text-muted leading-relaxed mb-3">
-          Planning a trip shouldn't feel like a second job. In today's digital era, we are overwhelmed by endless flight options, hotel listings, and scattered blog posts. <strong>Vantio</strong> is designed to unify this workflow. We leverage state-of-the-art AI orchestration to synthesize custom-tailored itineraries in seconds.
+          Planning a trip shouldn't feel like a second job. In today's digital era, we're overwhelmed by
+          endless flight comparisons, hotel listings, conflicting blog opinions, and scattered itineraries.
+          <strong>Vantio</strong> was built to cut through that noise. Instead of giving you a thousand options,
+          we give you one — the <em>right</em> one.
         </p>
         <p class="text-muted leading-relaxed mb-4">
-          By analyzing your travel preferences, budget limits, and style parameters, our platform creates a cohesive plan complete with hotels, flights, and optimal geographic routing.
+          Our platform analyzes your travel preferences, budget, travel style, and dates through a
+          collaborative network of specialized AI agents. The result is a single, cohesive, day-by-day
+          itinerary — with hotels, activities, and optimal geographic routing — delivered in seconds, not hours.
         </p>
-        
-        <!-- Badges Grid -->
+
+        <!-- Feature Badges -->
         <div class="row g-3">
           <div class="col-sm-6">
             <div class="feature-badge-card d-flex align-items-center gap-3 p-3 rounded-4">
@@ -43,18 +52,18 @@
               </div>
               <div>
                 <h3 class="mb-0 fs-6 fw-bold">AI Orchestration</h3>
-                <p class="small text-muted mb-0">Dynamic real-time schedules.</p>
+                <p class="small text-muted mb-0">Multi-agent intelligence at work.</p>
               </div>
             </div>
           </div>
           <div class="col-sm-6">
             <div class="feature-badge-card d-flex align-items-center gap-3 p-3 rounded-4">
               <div class="badge-icon rounded-3 d-flex align-items-center justify-content-center flex-shrink-0">
-                <i class="fa-solid fa-network-wired"></i>
+                <i class="fa-solid fa-sliders"></i>
               </div>
               <div>
-                <h3 class="mb-0 fs-6 fw-bold">Multi-Agent Planning</h3>
-                <p class="small text-muted mb-0">Collaborative intelligence solvers.</p>
+                <h3 class="mb-0 fs-6 fw-bold">Deep Personalization</h3>
+                <p class="small text-muted mb-0">Plans tailored to your exact style.</p>
               </div>
             </div>
           </div>
@@ -65,7 +74,7 @@
               </div>
               <div>
                 <h3 class="mb-0 fs-6 fw-bold">Smart Mapping</h3>
-                <p class="small text-muted mb-0">Optimized geographic routes.</p>
+                <p class="small text-muted mb-0">Geographically optimized routes.</p>
               </div>
             </div>
           </div>
@@ -76,71 +85,267 @@
               </div>
               <div>
                 <h3 class="mb-0 fs-6 fw-bold">Budget Balancing</h3>
-                <p class="small text-muted mb-0">Auto-allocated cost tracking.</p>
+                <p class="small text-muted mb-0">Every detail within your spend limit.</p>
               </div>
             </div>
           </div>
         </div>
-
       </div>
     </div>
   </section>
 
-  <!-- Team Section -->
+  <!-- ═══ How It Works ═══ -->
+  <section class="how-section py-5 border-top">
+    <div class="container py-4 text-center">
+      <span class="section-eyebrow d-inline-block mb-2 text-uppercase fw-bold">Simple Process</span>
+      <h2 class="section-title mb-2">Your Perfect Trip in Three Steps</h2>
+      <p class="text-muted col-md-6 mx-auto mb-5">
+        No endless scrolling. No comparison paralysis. Just intelligent planning that works for you.
+      </p>
+      <div class="row g-4 justify-content-center">
+        <div class="col-md-4">
+          <div class="how-card p-4 rounded-4 h-100">
+            <div class="how-step-num mb-3">01</div>
+            <div class="how-icon mb-3 d-flex align-items-center justify-content-center mx-auto">
+              <i class="fa-solid fa-pen-to-square"></i>
+            </div>
+            <h3 class="fs-5 fw-bold mb-2">Tell Us Your Vision</h3>
+            <p class="text-muted small mb-0">
+              Share your destination, travel dates, budget, and style preferences through our guided planning form or
+              conversational AI chat.
+            </p>
+          </div>
+        </div>
+        <div class="col-md-4">
+          <div class="how-card p-4 rounded-4 h-100 how-card--featured">
+            <div class="how-step-num mb-3">02</div>
+            <div class="how-icon mb-3 d-flex align-items-center justify-content-center mx-auto">
+              <i class="fa-solid fa-network-wired"></i>
+            </div>
+            <h3 class="fs-5 fw-bold mb-2">AI Does the Heavy Lifting</h3>
+            <p class="small mb-0">
+              Our multi-agent system collaborates in real time — researching, routing, and synthesizing every detail of
+              your journey into a single coherent plan.
+            </p>
+          </div>
+        </div>
+        <div class="col-md-4">
+          <div class="how-card p-4 rounded-4 h-100">
+            <div class="how-step-num mb-3">03</div>
+            <div class="how-icon mb-3 d-flex align-items-center justify-content-center mx-auto">
+              <i class="fa-solid fa-map-location-dot"></i>
+            </div>
+            <h3 class="fs-5 fw-bold mb-2">Explore Your Itinerary</h3>
+            <p class="text-muted small mb-0">
+              Receive a polished, day-by-day travel plan with an interactive map, hotel picks, and activity schedule —
+              ready to download as a PDF.
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══ Values Section ═══ -->
+  <section class="values-section py-5 border-top">
+    <div class="container py-4">
+      <div class="text-center mb-5">
+        <span class="section-eyebrow d-inline-block mb-2 text-uppercase fw-bold">What Drives Us</span>
+        <h2 class="section-title mb-2">Built on Principles That Matter</h2>
+        <p class="text-muted col-md-6 mx-auto">
+          Every design decision and engineering choice reflects our core beliefs about technology and travel.
+        </p>
+      </div>
+      <div class="row g-4">
+        <div class="col-md-6 col-lg-3">
+          <div class="value-card p-4 rounded-4 h-100">
+            <i class="fa-solid fa-user-shield value-icon mb-3"></i>
+            <h3 class="fs-6 fw-bold mb-2">User First, Always</h3>
+            <p class="text-muted small mb-0">
+              Every feature starts with a single question: does this make the traveler's life easier? If not, we don't
+              ship it.
+            </p>
+          </div>
+        </div>
+        <div class="col-md-6 col-lg-3">
+          <div class="value-card p-4 rounded-4 h-100">
+            <i class="fa-solid fa-lock value-icon mb-3"></i>
+            <h3 class="fs-6 fw-bold mb-2">Privacy by Design</h3>
+            <p class="text-muted small mb-0">
+              Your travel data belongs to you. We collect only what's necessary and never sell your information to third
+              parties.
+            </p>
+          </div>
+        </div>
+        <div class="col-md-6 col-lg-3">
+          <div class="value-card p-4 rounded-4 h-100">
+            <i class="fa-solid fa-bolt value-icon mb-3"></i>
+            <h3 class="fs-6 fw-bold mb-2">Speed & Precision</h3>
+            <p class="text-muted small mb-0">
+              We believe great planning shouldn't take long. Our AI delivers actionable itineraries in seconds, not
+              days.
+            </p>
+          </div>
+        </div>
+        <div class="col-md-6 col-lg-3">
+          <div class="value-card p-4 rounded-4 h-100">
+            <i class="fa-solid fa-globe value-icon mb-3"></i>
+            <h3 class="fs-6 fw-bold mb-2">Globally Curious</h3>
+            <p class="text-muted small mb-0">
+              From weekend getaways to cross-continental adventures, Vantio is designed for every traveler, every
+              destination.
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══ Team Section ═══ -->
   <section class="team-section py-5 bg-cream-base border-top">
     <div class="container text-center py-4">
+      <span class="section-eyebrow d-inline-block mb-2 text-uppercase fw-bold">The People Behind It</span>
       <h2 class="section-title mb-2">Meet Our Creators</h2>
-      <p class="text-muted col-md-6 mx-auto mb-5">The engineers and designers behind the next generation of smart travel planners.</p>
+      <p class="text-muted col-md-6 mx-auto mb-5">
+        A passionate team of engineers united by a shared belief: travel planning should inspire, not stress.
+      </p>
 
       <div class="row g-4 justify-content-center">
-        <!-- Team Member 1 -->
-        <div class="col-sm-6 col-md-4 col-lg-3">
-          <div class="team-card p-4 rounded-4 h-100">
-            <div class="avatar-circle rounded-circle d-flex align-items-center justify-content-center mx-auto mb-4">
-              <i class="fa-solid fa-user-tie"></i>
-            </div>
-            <h3 class="member-name fs-5 mb-1 fw-bold">Mohamed Elhosinii</h3>
-            <span class="member-role text-uppercase d-block mb-3 fw-semibold">Lead Architect & DevOps</span>
-            <div class="social-links d-flex justify-content-center gap-2">
-              <a href="#" class="social-icon rounded-circle d-flex align-items-center justify-content-center text-decoration-none"><i class="fa-brands fa-github"></i></a>
-              <a href="#" class="social-icon rounded-circle d-flex align-items-center justify-content-center text-decoration-none"><i class="fa-brands fa-linkedin-in"></i></a>
-            </div>
-          </div>
-        </div>
 
-        <!-- Team Member 2 -->
-        <div class="col-sm-6 col-md-4 col-lg-3">
-          <div class="team-card p-4 rounded-4 h-100">
-            <div class="avatar-circle rounded-circle d-flex align-items-center justify-content-center mx-auto mb-4">
-              <i class="fa-solid fa-user-gear"></i>
-            </div>
-            <h3 class="member-name fs-5 mb-1 fw-bold">Sarah Jenkins</h3>
-            <span class="member-role text-uppercase d-block mb-3 fw-semibold">UI/UX Lead Designer</span>
-            <div class="social-links d-flex justify-content-center gap-2">
-              <a href="#" class="social-icon rounded-circle d-flex align-items-center justify-content-center text-decoration-none"><i class="fa-brands fa-dribbble"></i></a>
-              <a href="#" class="social-icon rounded-circle d-flex align-items-center justify-content-center text-decoration-none"><i class="fa-brands fa-linkedin-in"></i></a>
-            </div>
-          </div>
-        </div>
-
-        <!-- Team Member 3 -->
-        <div class="col-sm-6 col-md-4 col-lg-3">
+        <!-- Mohamed Elhoseny -->
+        <div class="col-sm-6 col-md-4 col-lg-4">
           <div class="team-card p-4 rounded-4 h-100">
             <div class="avatar-circle rounded-circle d-flex align-items-center justify-content-center mx-auto mb-4">
               <i class="fa-solid fa-code"></i>
             </div>
-            <h3 class="member-name fs-5 mb-1 fw-bold">Alex Rivera</h3>
-            <span class="member-role text-uppercase d-block mb-3 fw-semibold">Full-Stack Engineer</span>
+            <h3 class="member-name fs-5 mb-1 fw-bold">Mohamed Elhoseny</h3>
+            <span class="member-role text-uppercase d-block mb-3 fw-semibold">Full-Stack Developer</span>
             <div class="social-links d-flex justify-content-center gap-2">
-              <a href="#" class="social-icon rounded-circle d-flex align-items-center justify-content-center text-decoration-none"><i class="fa-brands fa-github"></i></a>
-              <a href="#" class="social-icon rounded-circle d-flex align-items-center justify-content-center text-decoration-none"><i class="fa-brands fa-linkedin-in"></i></a>
+              <a target="_blank" href="https://github.com/Mohamed-Elhosinii"
+                class="social-icon rounded-circle d-flex align-items-center justify-content-center text-decoration-none"
+                aria-label="Mohamed Elhoseny GitHub">
+                <i class="fa-brands fa-github"></i>
+              </a>
+              <a target="_blank" href="https://linkedin.com/in/mohamed-mostafa-655917273"
+                class="social-icon rounded-circle d-flex align-items-center justify-content-center text-decoration-none"
+                aria-label="Mohamed Elhoseny LinkedIn">
+                <i class="fa-brands fa-linkedin-in"></i>
+              </a>
             </div>
           </div>
         </div>
-      </div>
 
+        <!-- Hesham -->
+        <div class="col-sm-6 col-md-4 col-lg-4">
+          <div class="team-card p-4 rounded-4 h-100">
+            <div class="avatar-circle rounded-circle d-flex align-items-center justify-content-center mx-auto mb-4">
+              <i class="fa-solid fa-code"></i>
+            </div>
+            <h3 class="member-name fs-5 mb-1 fw-bold">Hesham</h3>
+            <span class="member-role text-uppercase d-block mb-3 fw-semibold">Full-Stack Developer</span>
+            <div class="social-links d-flex justify-content-center gap-2">
+              <a target="_blank" href="https://github.com/Mohamed-Elhosinii"
+                class="social-icon rounded-circle d-flex align-items-center justify-content-center text-decoration-none"
+                aria-label="Hesham GitHub">
+                <i class="fa-brands fa-github"></i>
+              </a>
+              <a target="_blank" href="https://linkedin.com/in/mohamed-mostafa-655917273"
+                class="social-icon rounded-circle d-flex align-items-center justify-content-center text-decoration-none"
+                aria-label="Hesham LinkedIn">
+                <i class="fa-brands fa-linkedin-in"></i>
+              </a>
+            </div>
+          </div>
+        </div>
+
+        <!-- Nourien -->
+        <div class="col-sm-6 col-md-4 col-lg-4">
+          <div class="team-card p-4 rounded-4 h-100">
+            <div class="avatar-circle rounded-circle d-flex align-items-center justify-content-center mx-auto mb-4">
+              <i class="fa-solid fa-code"></i>
+            </div>
+            <h3 class="member-name fs-5 mb-1 fw-bold">Nourien</h3>
+            <span class="member-role text-uppercase d-block mb-3 fw-semibold">Full-Stack Developer</span>
+            <div class="social-links d-flex justify-content-center gap-2">
+              <a target="_blank" href="https://github.com/Mohamed-Elhosinii"
+                class="social-icon rounded-circle d-flex align-items-center justify-content-center text-decoration-none"
+                aria-label="Nourien GitHub">
+                <i class="fa-brands fa-github"></i>
+              </a>
+              <a target="_blank" href="https://linkedin.com/in/mohamed-mostafa-655917273"
+                class="social-icon rounded-circle d-flex align-items-center justify-content-center text-decoration-none"
+                aria-label="Nourien LinkedIn">
+                <i class="fa-brands fa-linkedin-in"></i>
+              </a>
+            </div>
+          </div>
+        </div>
+
+        <!-- Mariem -->
+        <div class="col-sm-6 col-md-4 col-lg-4">
+          <div class="team-card p-4 rounded-4 h-100">
+            <div class="avatar-circle rounded-circle d-flex align-items-center justify-content-center mx-auto mb-4">
+              <i class="fa-solid fa-code"></i>
+            </div>
+            <h3 class="member-name fs-5 mb-1 fw-bold">Mariem</h3>
+            <span class="member-role text-uppercase d-block mb-3 fw-semibold">Full-Stack Developer</span>
+            <div class="social-links d-flex justify-content-center gap-2">
+              <a target="_blank" href="https://github.com/Mohamed-Elhosinii"
+                class="social-icon rounded-circle d-flex align-items-center justify-content-center text-decoration-none"
+                aria-label="Mariem GitHub">
+                <i class="fa-brands fa-github"></i>
+              </a>
+              <a target="_blank" href="https://linkedin.com/in/mohamed-mostafa-655917273"
+                class="social-icon rounded-circle d-flex align-items-center justify-content-center text-decoration-none"
+                aria-label="Mariem LinkedIn">
+                <i class="fa-brands fa-linkedin-in"></i>
+              </a>
+            </div>
+          </div>
+        </div>
+
+        <!-- Basma -->
+        <div class="col-sm-6 col-md-4 col-lg-4">
+          <div class="team-card p-4 rounded-4 h-100">
+            <div class="avatar-circle rounded-circle d-flex align-items-center justify-content-center mx-auto mb-4">
+              <i class="fa-solid fa-code"></i>
+            </div>
+            <h3 class="member-name fs-5 mb-1 fw-bold">Basma</h3>
+            <span class="member-role text-uppercase d-block mb-3 fw-semibold">Full-Stack Developer</span>
+            <div class="social-links d-flex justify-content-center gap-2">
+              <a target="_blank" href="https://github.com/Mohamed-Elhosinii"
+                class="social-icon rounded-circle d-flex align-items-center justify-content-center text-decoration-none"
+                aria-label="Basma GitHub">
+                <i class="fa-brands fa-github"></i>
+              </a>
+              <a target="_blank" href="https://linkedin.com/in/mohamed-mostafa-655917273"
+                class="social-icon rounded-circle d-flex align-items-center justify-content-center text-decoration-none"
+                aria-label="Basma LinkedIn">
+                <i class="fa-brands fa-linkedin-in"></i>
+              </a>
+            </div>
+          </div>
+        </div>
+
+      </div>
     </div>
   </section>
+
+  <!-- ═══ CTA Banner ═══ -->
+  <section class="cta-section py-5">
+    <div class="container py-3">
+      <div class="cta-card rounded-4 p-5 text-center text-white">
+        <h2 class="cta-title fw-bold mb-3">Ready to Travel Smarter?</h2>
+        <p class="cta-sub mb-4 mx-auto">
+          Stop spending hours planning. Let Vantio's AI craft the perfect trip for you — in seconds.
+        </p>
+        <a routerLink="/plan" class="btn cta-btn px-5 py-3 fw-bold">
+          <i class="fa-solid fa-wand-magic-sparkles me-2"></i>Plan My Trip
+        </a>
+      </div>
+    </div>
+  </section>
+
 </div>
 
 <app-footer></app-footer>
