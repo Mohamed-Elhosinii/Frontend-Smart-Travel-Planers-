@@ -11,6 +11,22 @@
   min-height: 3.25rem;
 }
 
+/* Tighten padding and font size so placeholders fit in narrow columns */
+.planner-field .form-control,
+.planner-trigger {
+  font-size: 0.9rem;
+  padding-left: 0.25rem !important;
+  padding-right: 0.25rem !important;
+}
+
+.planner-trigger i:first-child {
+  margin-left: 0.25rem;
+}
+
+.planner-field .input-group-text {
+  padding-right: 0 !important;
+}
+
 .planner-field:hover,
 .planner-field:focus-within {
   border-color: var(--primary-orange) !important;

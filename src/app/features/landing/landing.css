@@ -1,4 +1,5 @@
-@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Plus+Jakarta+Sans:wght@400;500;600&display=swap');
+/* Fonts loaded globally via @fontsource in styles.css — no CDN import needed here. */
+
 
 /* ===== HERO ===== */
 .hero-section {
@@ -67,6 +68,12 @@
   background: #FDFBF7;
 }
 
+.features-eyebrow {
+  font-size: 0.72rem;
+  letter-spacing: 0.18em;
+  color: var(--primary-orange, #B54304);
+}
+
 .features-header h2 {
   font-family: 'Playfair Display', serif;
   font-size: clamp(1.8rem, 3.5vw, 2.6rem);
@@ -97,8 +104,9 @@
 
 .feature-card-map {
   background: linear-gradient(135deg, #fdf3ee, #f5e6de);
+  text-align: center;
 }
-.feature-card-map i { opacity: .4; }
+.feature-card-map i { opacity: .4; font-size: 2.5rem; }
 
 /* ===== HOW IT WORKS ===== */
 .how-steps h2 {

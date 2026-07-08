@@ -1,4 +1,5 @@
 import { Component } from '@angular/core';
+import { RouterLink } from '@angular/router';
 import { Navbar } from '../../layout/navbar/navbar';
 import { Footer } from '../../layout/footer/footer';
 
@@ -6,8 +7,8 @@ import { Footer } from '../../layout/footer/footer';
 @Component({
   selector: 'app-about',
   standalone: true,
-  imports: [Navbar, Footer],
+  imports: [Navbar, Footer, RouterLink],
   templateUrl: './about.html',
   styleUrl: './about.css',
 })
-export class AboutPage {}
+export class AboutPage { }

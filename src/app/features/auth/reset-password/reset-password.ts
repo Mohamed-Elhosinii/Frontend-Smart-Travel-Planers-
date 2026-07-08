@@ -30,6 +30,8 @@ export class ResetPasswordPage implements OnInit {
   isLoading = false;
   showNewPassword = false;
   showConfirmPassword = false;
+  isResending = false;
+  resendMessage = '';
 
   /** Backend password policy, shown under the field. */
   readonly passwordHint = PASSWORD_RULE_HINT;
@@ -109,6 +111,7 @@ export class ResetPasswordPage implements OnInit {
   submit(): void {
     if (this.isLoading) return; // guard against duplicate submissions
     this.errorMessage = '';
+    this.resendMessage = '';
     this.token = this.otpDigits.join('');
 
     if (!this.email) {
@@ -146,6 +149,24 @@ export class ResetPasswordPage implements OnInit {
       error: (err) => {
         this.isLoading = false;
         this.errorMessage = extractErrorMessage(err, 'Password reset failed. The code may have expired.');
+      },
+    });
+  }
+
+  resendCode(): void {
+    if (!this.email || this.isResending) return;
+    this.isResending = true;
+    this.errorMessage = '';
+    this.resendMessage = '';
+
+    this.auth.forgotPassword(this.email).subscribe({
+      next: () => {
+        this.isResending = false;
+        this.resendMessage = 'A new code has been sent to your email.';
+      },
+      error: () => {
+        this.isResending = false;
+        this.errorMessage = 'Failed to resend the code. Please try again later.';
       },
     });
   }

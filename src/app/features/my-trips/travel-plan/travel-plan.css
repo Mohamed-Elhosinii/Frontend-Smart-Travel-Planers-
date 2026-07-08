@@ -1,6 +1,64 @@
 /* ══════════════════════════════════════════════════════════════════════════════
    DASHBOARD HERO BANNER & BASIC STYLES
    ══════════════════════════════════════════════════════════════════════════════ */
+
+/* ── Info Cards Grid ──────────────────────────────────────────────────────────
+   Three-column CSS Grid: Hotel (wide, has image) | Flight (narrow) | Weather
+   All cells stretch to equal height so the row always looks balanced.
+   ──────────────────────────────────────────────────────────────────────────── */
+.info-cards-grid {
+  display: grid;
+  /* Hotel ~38% | Flight ~24% | Weather fills the rest */
+  grid-template-columns: 2fr 1.2fr 2fr;
+  grid-template-rows: 1fr;
+  gap: 1.25rem;
+  align-items: stretch;
+  width: 100%;
+}
+
+/* Each cell is a flex container so the Angular host + inner card both stretch */
+.info-cell {
+  display: flex;
+  flex-direction: column;
+  min-width: 0; /* prevent overflow blowout in grid */
+}
+
+/* When flight is absent, weather spans the right two columns */
+.info-cell-weather.full-width {
+  grid-column: 2 / -1;
+}
+
+/* Tablet: stack hotel + flight side-by-side, weather below full-width */
+@media (max-width: 1024px) {
+  .info-cards-grid {
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: auto auto;
+  }
+
+  .info-cell-hotel  { grid-column: 1; grid-row: 1; }
+  .info-cell-flight { grid-column: 2; grid-row: 1; }
+  .info-cell-weather {
+    grid-column: 1 / -1; /* full width on second row */
+    grid-row: 2;
+  }
+}
+
+/* Mobile: single column, everything stacks */
+@media (max-width: 640px) {
+  .info-cards-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .info-cell-hotel,
+  .info-cell-flight,
+  .info-cell-weather,
+  .info-cell-weather.full-width {
+    grid-column: 1;
+    grid-row: auto;
+  }
+}
+
+
 .hero-banner {
   background-size: cover;
   background-position: center top;   /* ← كانت center بس، دلوقتي top عشان الصورة متزومش */

@@ -2,7 +2,10 @@
   border-radius: var(--radius-card, 14px);
   padding: 18px 22px;
   border: 1px solid rgba(181, 67, 4, .15);
+  height: 100%;         /* fills grid cell height to match hotel card */
+  box-sizing: border-box;
 }
+
 
 /* Weather type backgrounds */
 .weather-sunny {

@@ -37,9 +37,6 @@ export const TRAVEL_STYLES = [
   'Family',
 ] as const;
 
-/** Minimum spend (per the budget validator) before a trip can be generated. */
-const MIN_BUDGET = 1000;
-
 const STEP_MINIMUMS: Record<string, number> = { adults: 1, children: 0, rooms: 1 };
 
 /** Destination suggestion returned when a query needs user confirmation. */
@@ -102,7 +99,7 @@ export class TripPlannerForm {
         children: [0],
         rooms: [1],
         travelStyle: [[] as string[]],
-        budget: ['', [Validators.required, Validators.min(MIN_BUDGET)]],
+        budget: ['', [Validators.required]],
         specialRequests: [''],
       },
       { validators: dateRangeValidator },
@@ -146,15 +143,27 @@ export class TripPlannerForm {
     this.openPanel = this.openPanel === panel ? null : panel;
   }
 
-  @HostListener('document:click', ['$event'])
-  onDocumentClick(event: MouseEvent): void {
+  /**
+   * Captures every click that bubbles up through the form host element and
+   * stops it from reaching the document listener below — so only genuine
+   * clicks *outside* the form component close the panel via onDocumentClick.
+   * Also closes the panel immediately when the user clicks inside the form
+   * on any element that is not a dropdown trigger or an open panel.
+   */
+  @HostListener('click', ['$event'])
+  onHostClick(event: MouseEvent): void {
+    event.stopPropagation();
     if (this.openPanel === null) return;
-    // Close whenever the click lands outside a dropdown trigger or its panel —
-    // including on the form's own inputs (From/To/Budget) elsewhere in the host.
     const target = event.target as HTMLElement;
     if (!target.closest('.planner-trigger') && !target.closest('.planner-panel')) {
       this.openPanel = null;
     }
+  }
+
+  /** Closes any open panel when the user clicks anywhere outside the form. */
+  @HostListener('document:click')
+  onDocumentClick(): void {
+    this.openPanel = null;
   }
 
   get travelersSummary(): string {
@@ -210,23 +219,23 @@ export class TripPlannerForm {
       this.tripService.resolveDestination(destination)
         .pipe(takeUntilDestroyed(this.destroyRef))
         .subscribe({
-        next: (res) => {
-          this.isResolving = false;
-          if (res.status === 0 || res.status === 'Resolved') {
-            this.resolvedDestId = res.destId;
-            this.resolvedDestType = res.destType;
-            this.createPlan();
-          } else if (res.status === 1 || res.status === 'NeedsConfirmation') {
-            this.confirmationSuggestion = res.suggestion;
-          } else {
-            this.toast.danger(MESSAGES.destinationNotFound);
-          }
-        },
-        error: () => {
-          this.isResolving = false;
-          this.toast.danger(MESSAGES.destinationResolveFailed);
-        },
-      });
+          next: (res) => {
+            this.isResolving = false;
+            if (res.status === 0 || res.status === 'Resolved') {
+              this.resolvedDestId = res.destId;
+              this.resolvedDestType = res.destType;
+              this.createPlan();
+            } else if (res.status === 1 || res.status === 'NeedsConfirmation') {
+              this.confirmationSuggestion = res.suggestion;
+            } else {
+              this.toast.danger(MESSAGES.destinationNotFound);
+            }
+          },
+          error: () => {
+            this.isResolving = false;
+            this.toast.danger(MESSAGES.destinationResolveFailed);
+          },
+        });
     } else {
       this.createPlan();
     }
@@ -273,24 +282,24 @@ export class TripPlannerForm {
     this.tripService.createQuickPlan(dto)
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
-      next: (res) => {
-        if (!res.tripId) {
+        next: (res) => {
+          if (!res.tripId) {
+            this.isCreatingPlan = false;
+            this.toast.danger(res.message ?? MESSAGES.tripCreateFailed);
+            return;
+          }
+          // Hand off to the trip page immediately; it owns the single generation
+          // loader and polls for the itinerary (no duplicate loader / re-fetch here).
+          this.isRedirecting = true;
+          this.submitted.emit();
+          this.router.navigate([APP_ROUTES.myTrips, res.tripId], {
+            queryParams: { generating: 1 },
+          });
+        },
+        error: () => {
           this.isCreatingPlan = false;
-          this.toast.danger(res.message ?? MESSAGES.tripCreateFailed);
-          return;
-        }
-        // Hand off to the trip page immediately; it owns the single generation
-        // loader and polls for the itinerary (no duplicate loader / re-fetch here).
-        this.isRedirecting = true;
-        this.submitted.emit();
-        this.router.navigate([APP_ROUTES.myTrips, res.tripId], {
-          queryParams: { generating: 1 },
-        });
-      },
-      error: () => {
-        this.isCreatingPlan = false;
-        this.toast.danger(MESSAGES.tripCreateFailed);
-      },
-    });
+          this.toast.danger(MESSAGES.tripCreateFailed);
+        },
+      });
   }
 }

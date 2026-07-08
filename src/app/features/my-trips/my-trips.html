@@ -19,12 +19,6 @@
     @if (!isLoading() && trips().length > 0) {
       <div class="trips-toolbar d-flex flex-wrap align-items-center justify-content-between gap-3 mb-4">
         <div class="d-flex flex-wrap align-items-center gap-2">
-          <select class="form-select trip-filter" [ngModel]="statusFilter()" (ngModelChange)="statusFilter.set($event)" aria-label="Filter by status">
-            <option value="all">All Statuses</option>
-            @for (s of statuses(); track s) {
-              <option [value]="s">{{ s | titlecase }}</option>
-            }
-          </select>
           <select class="form-select trip-filter" [ngModel]="sortOrder()" (ngModelChange)="sortOrder.set($event)" aria-label="Sort trips">
             <option value="newest">Newest First</option>
             <option value="oldest">Oldest First</option>
@@ -71,12 +65,7 @@
       </div>
     }
 
-    <!-- NO MATCHES (filtered) -->
-    @if (!isLoading() && trips().length > 0 && visibleTrips().length === 0) {
-      <div class="text-center py-5">
-        <p class="text-muted mb-0">No trips match the selected filter.</p>
-      </div>
-    }
+
 
     <!-- TRIPS GRID -->
     @if (!isLoading() && visibleTrips().length > 0) {
@@ -105,10 +94,6 @@
                   decoding="async"
                   class="card-img-top w-100 h-100 object-fit-cover"
                 />
-                <span class="position-absolute top-0 end-0 m-3 badge rounded-pill"
-                      [ngClass]="getStatusClass(trip.status)">
-                  {{ trip.status | titlecase }}
-                </span>
               </div>
 
               <!-- بودي الكارد -->
