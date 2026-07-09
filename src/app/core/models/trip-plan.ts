@@ -127,4 +127,5 @@ export interface TripCreateDto {
   numTravelers: number;
   budgetTotal: number;
   preferences: string[];
+  isRoundTrip?: boolean;
 }

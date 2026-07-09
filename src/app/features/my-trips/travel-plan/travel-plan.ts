@@ -393,6 +393,9 @@ export function mapTripPlanDtoToUserTrip(dto: TripPlanDto): UserTrip {
     status: deriveStatus(dto.startDate, dto.endDate),
     flight,
     hotel,
-    weather: (dto.weather ?? []).map(mapWeather).filter((w): w is Weather => !!w),
+    weather: (dto.weather ?? [])
+      .map(mapWeather)
+      .filter((w): w is Weather => !!w)
+      .sort((a, b) => a.date.localeCompare(b.date)),
   };
 }

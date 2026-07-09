@@ -18,6 +18,7 @@ import {
 } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
+import { forkJoin, of } from 'rxjs';
 import { dateRangeValidator } from '../../core/validators/date-range.validator';
 import { ToastService } from '../../core/services/toast.service';
 import { TripCreateDto } from '../../core/models';
@@ -48,6 +49,12 @@ interface DestinationSuggestion {
 
 /** Which inline dropdown panel is currently expanded. */
 type PlannerPanel = 'travelers' | 'style' | null;
+
+interface UnverifiedWarning {
+  places: string[];
+  toRes: any;
+  fromRes: any;
+}
 
 /**
  * Reusable trip-planner form.
@@ -87,12 +94,13 @@ export class TripPlannerForm {
   confirmationSuggestion: DestinationSuggestion | null = null;
   resolvedDestId: string | null = null;
   resolvedDestType: string | null = null;
+  unverifiedWarning: UnverifiedWarning | null = null;
 
   constructor() {
     this.form = this.fb.group(
       {
-        from: ['', Validators.required],
-        to: ['', Validators.required],
+        from: ['', [Validators.required, this.cityCountryValidator.bind(this)]],
+        to: ['', [Validators.required, this.cityCountryValidator.bind(this)]],
         departureDate: ['', [Validators.required, this.pastDateValidator]],
         returnDate: ['', [Validators.required, this.pastDateValidator]],
         adults: [1, [Validators.required, Validators.min(1)]],
@@ -101,6 +109,7 @@ export class TripPlannerForm {
         travelStyle: [[] as string[]],
         budget: ['', [Validators.required]],
         specialRequests: [''],
+        isRoundTrip: [true],
       },
       { validators: dateRangeValidator },
     );
@@ -112,7 +121,25 @@ export class TripPlannerForm {
         this.confirmationSuggestion = null;
         this.resolvedDestId = null;
         this.resolvedDestType = null;
+        this.unverifiedWarning = null;
       });
+
+    // Reset unverified warning when the user edits the departure city.
+    this.form.get('from')?.valueChanges
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe(() => {
+        this.unverifiedWarning = null;
+      });
+  }
+
+  cityCountryValidator(control: AbstractControl): ValidationErrors | null {
+    const value = (control.value || '').trim();
+    if (!value) return null;
+    const parts = value.split(',');
+    if (parts.length < 2 || parts[0].trim().length < 2 || parts[1].trim().length < 2) {
+      return { cityCountryFormat: true };
+    }
+    return null;
   }
 
   pastDateValidator(control: AbstractControl): ValidationErrors | null {
@@ -213,32 +240,81 @@ export class TripPlannerForm {
     }
 
     const destination = ((this.form.getRawValue().to as string) ?? '').trim();
+    const origin = ((this.form.getRawValue().from as string) ?? '').trim();
 
-    if (!this.resolvedDestId && !this.confirmationSuggestion) {
-      this.isResolving = true;
-      this.tripService.resolveDestination(destination)
-        .pipe(takeUntilDestroyed(this.destroyRef))
-        .subscribe({
-          next: (res) => {
-            this.isResolving = false;
-            if (res.status === 0 || res.status === 'Resolved') {
-              this.resolvedDestId = res.destId;
-              this.resolvedDestType = res.destType;
-              this.createPlan();
-            } else if (res.status === 1 || res.status === 'NeedsConfirmation') {
-              this.confirmationSuggestion = res.suggestion;
-            } else {
-              this.toast.danger(MESSAGES.destinationNotFound);
-            }
-          },
-          error: () => {
-            this.isResolving = false;
-            this.toast.danger(MESSAGES.destinationResolveFailed);
-          },
-        });
-    } else {
+    if (this.resolvedDestId || this.confirmationSuggestion) {
       this.createPlan();
+      return;
     }
+
+    this.isResolving = true;
+    forkJoin({
+      toRes: this.tripService.resolveDestination(destination),
+      fromRes: origin ? this.tripService.resolveDestination(origin) : of(null),
+    })
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: ({ toRes, fromRes }) => {
+          this.isResolving = false;
+
+          // Check if destination was not found
+          if (toRes.status === 'NotFound' || toRes.status === 2) {
+            this.toast.danger(MESSAGES.destinationNotFound);
+            return;
+          }
+
+          // Check if destination needs confirmation
+          if (toRes.status === 'NeedsConfirmation' || toRes.status === 1) {
+            this.confirmationSuggestion = toRes.suggestion;
+            return;
+          }
+
+          // Check if origin was not found
+          if (fromRes && (fromRes.status === 'NotFound' || fromRes.status === 2)) {
+            this.toast.danger(`Departure city "${origin}" was not found.`);
+            return;
+          }
+
+          // Check for fallback (unverified) source on either destination or origin
+          const unverifiedList: string[] = [];
+          if (toRes.source === 'fallback') {
+            unverifiedList.push(`Destination (${destination})`);
+          }
+          if (fromRes && fromRes.source === 'fallback') {
+            unverifiedList.push(`Departure (${origin})`);
+          }
+
+          if (unverifiedList.length > 0) {
+            this.unverifiedWarning = {
+              places: unverifiedList,
+              toRes,
+              fromRes,
+            };
+          } else {
+            // Both are verified places! Proceed to create plan.
+            this.resolvedDestId = toRes.destId;
+            this.resolvedDestType = toRes.destType;
+            this.createPlan();
+          }
+        },
+        error: () => {
+          this.isResolving = false;
+          this.toast.danger(MESSAGES.destinationResolveFailed);
+        },
+      });
+  }
+
+  proceedWithUnverified(): void {
+    if (!this.unverifiedWarning) return;
+    const toRes = this.unverifiedWarning.toRes;
+    this.resolvedDestId = toRes.destId;
+    this.resolvedDestType = toRes.destType;
+    this.unverifiedWarning = null;
+    this.createPlan();
+  }
+
+  cancelUnverified(): void {
+    this.unverifiedWarning = null;
   }
 
   acceptSuggestion(): void {
@@ -276,6 +352,7 @@ export class TripPlannerForm {
       numTravelers: (Number(v.adults) || 0) + (Number(v.children) || 0),
       budgetTotal: parseFloat(v.budget),
       preferences: (v.travelStyle as string[]) ?? [],
+      isRoundTrip: v.isRoundTrip,
     };
 
     this.isCreatingPlan = true;

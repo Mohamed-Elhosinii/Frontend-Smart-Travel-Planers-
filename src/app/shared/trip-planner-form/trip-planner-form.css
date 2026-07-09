@@ -125,3 +125,9 @@ input[type='date']::-webkit-calendar-picker-indicator {
   height: 100%;
   cursor: pointer;
 }
+
+/* Custom styling for checked radio/checkbox controls to match brand orange */
+.form-check-input:checked {
+  background-color: var(--primary-orange) !important;
+  border-color: var(--primary-orange) !important;
+}

@@ -1,29 +1,62 @@
 <form class="planner-form" [formGroup]="form" (ngSubmit)="submit()">
-  <!-- ROW 1: FROM / TO / DEPART / RETURN -->
+  <!-- Trip Type Selector (One Way vs Round Trip) -->
+  <div class="mb-3">
+    <label class="planner-label form-label text-uppercase fw-semibold small mb-1">Trip Type</label>
+    <div class="d-flex gap-4 px-1 align-items-center mt-1">
+      <div class="form-check">
+        <input class="form-check-input shadow-none" type="radio" formControlName="isRoundTrip" [value]="true"
+          id="roundTripRadio" />
+        <label class="form-check-label fw-bold small text-uppercase" for="roundTripRadio"
+          style="color: var(--secondary-dark, #2b2b2b); cursor: pointer; letter-spacing: 0.04em;">
+          Round Trip
+        </label>
+      </div>
+      <div class="form-check">
+        <input class="form-check-input shadow-none" type="radio" formControlName="isRoundTrip" [value]="false"
+          id="oneWayRadio" />
+        <label class="form-check-label fw-bold small text-uppercase" for="oneWayRadio"
+          style="color: var(--secondary-dark, #2b2b2b); cursor: pointer; letter-spacing: 0.04em;">
+          One Way
+        </label>
+      </div>
+    </div>
+  </div>
+
+  <!-- ROW 1: FROM / TO -->
   <div class="row g-3">
     <!-- FROM -->
-    <div class="col-12 col-md-6 col-lg-3">
+    <div class="col-12 col-md-6">
       <label class="planner-label form-label text-uppercase fw-semibold small mb-1">From</label>
       <div class="planner-field input-group border rounded-3 px-2">
         <span class="input-group-text bg-transparent border-0 px-1"><i class="fa-solid fa-plane-departure"></i></span>
-        <input type="text" formControlName="from" placeholder="Cairo,Egypt"
+        <input type="text" formControlName="from" placeholder="Cairo, Egypt"
           class="form-control border-0 bg-transparent shadow-none fw-medium" />
       </div>
       @if (form.get('from')?.touched && form.get('from')?.invalid) {
+      @if (form.get('from')?.errors?.['required']) {
       <div class="text-danger small mt-1">Please enter your departure city</div>
+      }
+      @if (form.get('from')?.errors?.['cityCountryFormat']) {
+      <div class="text-danger small mt-1">Enter city/province and country (e.g. Cairo, Egypt)</div>
+      }
       }
     </div>
 
     <!-- TO -->
-    <div class="col-12 col-md-6 col-lg-3">
+    <div class="col-12 col-md-6">
       <label class="planner-label form-label text-uppercase fw-semibold small mb-1">To</label>
       <div class="planner-field input-group border rounded-3 px-2">
         <span class="input-group-text bg-transparent border-0 px-1"><i class="fa-solid fa-plane-arrival"></i></span>
-        <input type="text" formControlName="to" placeholder="Paris,France"
+        <input type="text" formControlName="to" placeholder="Paris, France"
           class="form-control border-0 bg-transparent shadow-none fw-medium" style="min-width:0" />
       </div>
       @if (form.get('to')?.touched && form.get('to')?.invalid) {
+      @if (form.get('to')?.errors?.['required']) {
       <div class="text-danger small mt-1">Tell us your destination to plan your trip</div>
+      }
+      @if (form.get('to')?.errors?.['cityCountryFormat']) {
+      <div class="text-danger small mt-1">Enter city/province and country (e.g. Paris, France)</div>
+      }
       }
       @if (confirmationSuggestion) {
       <div class="mt-2 p-2 bg-light rounded border border-warning d-flex flex-column gap-2">
@@ -36,9 +69,12 @@
       </div>
       }
     </div>
+  </div>
 
+  <!-- ROW 2: DEPART / RETURN -->
+  <div class="row g-3 mt-1">
     <!-- DEPART -->
-    <div class="col-12 col-md-6 col-lg-3">
+    <div class="col-12 col-md-6">
       <label class="planner-label form-label text-uppercase fw-semibold small mb-1">Depart</label>
       <div class="planner-field planner-field-date input-group border rounded-3 px-2"
         (click)="openDatePicker(depInput)">
@@ -55,7 +91,7 @@
     </div>
 
     <!-- RETURN -->
-    <div class="col-12 col-md-6 col-lg-3">
+    <div class="col-12 col-md-6">
       <label class="planner-label form-label text-uppercase fw-semibold small mb-1">Return</label>
       <div class="planner-field planner-field-date input-group border rounded-3 px-2"
         (click)="openDatePicker(retInput)">
@@ -75,10 +111,10 @@
   <div class="text-danger small mt-1">Return date must be after departure date</div>
   }
 
-  <!-- ROW 2: TRAVELERS & ROOMS / TRAVEL STYLE / BUDGET -->
+  <!-- ROW 3: TRAVELERS & ROOMS / TRAVEL STYLE -->
   <div class="row g-3 mt-1">
     <!-- TRAVELERS & ROOMS -->
-    <div class="col-12 col-md-6 col-lg-4 position-relative">
+    <div class="col-12 col-md-6 position-relative">
       <label class="planner-label form-label text-uppercase fw-semibold small mb-1">Travelers &amp; Rooms</label>
       <button type="button"
         class="planner-field planner-trigger border rounded-3 w-100 d-flex align-items-center gap-2 px-3 text-start"
@@ -108,7 +144,7 @@
     </div>
 
     <!-- TRAVEL STYLE -->
-    <div class="col-12 col-md-6 col-lg-4 position-relative">
+    <div class="col-12 col-md-6 position-relative">
       <label class="planner-label form-label text-uppercase fw-semibold small mb-1">Travel Style</label>
       <button type="button"
         class="planner-field planner-trigger border rounded-3 w-100 d-flex align-items-center gap-2 px-3 text-start"
@@ -131,9 +167,12 @@
       </div>
       }
     </div>
+  </div>
 
+  <!-- ROW 4: BUDGET / SPECIAL REQUESTS -->
+  <div class="row g-3 mt-1">
     <!-- BUDGET -->
-    <div class="col-12 col-lg-4">
+    <div class="col-12 col-md-6">
       <label class="planner-label form-label text-uppercase fw-semibold small mb-1">Budget</label>
       <div class="planner-field input-group border rounded-3 px-2">
         <span class="input-group-text bg-transparent border-0 px-1"><i class="fa-solid fa-money-bill"></i></span>
@@ -144,11 +183,9 @@
       <div class="text-danger small mt-1">Please enter a budget amount to continue.</div>
       }
     </div>
-  </div>
 
-  <!-- ROW 3: SPECIAL REQUESTS -->
-  <div class="row g-3 mt-1">
-    <div class="col-12">
+    <!-- SPECIAL REQUESTS -->
+    <div class="col-12 col-md-6">
       <label class="planner-label form-label text-uppercase fw-semibold small mb-1">Special Requests</label>
       <div class="planner-field input-group border rounded-3 px-2">
         <span class="input-group-text bg-transparent border-0 px-1"><i class="fa-solid fa-pen-to-square"></i></span>
@@ -157,6 +194,20 @@
       </div>
     </div>
   </div>
+
+  <!-- UNVERIFIED PLACES WARNING -->
+  @if (unverifiedWarning) {
+  <div class="mt-3 p-3 bg-light rounded-3 border border-warning d-flex flex-column gap-2">
+    <span class="small fw-semibold text-warning-emphasis">
+      <i class="fa-solid fa-triangle-exclamation me-1 text-warning"></i>
+      We couldn't verify: <strong>{{ unverifiedWarning.places.join(' & ') }}</strong>. Proceed anyway?
+    </span>
+    <div class="d-flex gap-2">
+      <button type="button" class="btn btn-sm btn-success text-white fw-bold px-3" (click)="proceedWithUnverified()">Yes, proceed</button>
+      <button type="button" class="btn btn-sm btn-outline-secondary px-3" (click)="cancelUnverified()">No, correct it</button>
+    </div>
+  </div>
+  }
 
   <!-- SUBMIT -->
   <div class="mt-4">

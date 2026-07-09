@@ -16,7 +16,7 @@ const DAY_MS = 1000 * 60 * 60 * 24;
 @Component({
   selector: 'app-my-trips',
   standalone: true,
-  imports: [RouterLink, FormsModule, NgClass, TitleCasePipe, DecimalPipe, Modal],
+  imports: [RouterLink, FormsModule, DecimalPipe, Modal],
   templateUrl: './my-trips.html',
   styleUrl: './my-trips.css',
 })
