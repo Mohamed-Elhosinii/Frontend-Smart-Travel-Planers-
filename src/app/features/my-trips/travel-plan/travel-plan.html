@@ -81,8 +81,7 @@
           ></app-weather-banner>
         </div>
 
-        <!-- Budget Card: stand-alone next to Flight on Row 2 -->
-        <div class="info-cell info-cell-budget">
+        <ng-template #budgetCardTemplate let-t>
           <div class="budget-card p-4 d-flex flex-column h-100 position-relative overflow-hidden justify-content-between">
             <div class="d-flex flex-column">
               <div class="d-flex align-items-center justify-content-between mb-3">
@@ -120,12 +119,29 @@
               </div>
             </div>
           </div>
-        </div>
+        </ng-template>
 
-        <!-- Flight: side-by-side on Row 2 -->
-        <div class="info-cell info-cell-flight">
-          <app-flight-card [flight]="t.flight" [isGenerating]="isGenerating()" class="h-100"></app-flight-card>
-        </div>
+        @if (t.returnFlight) {
+          <!-- Two flights side-by-side -->
+          <div class="info-cell info-cell-flight">
+            <app-flight-card [flight]="t.flight" [isGenerating]="isGenerating()" label="Outbound Flight" class="h-100"></app-flight-card>
+          </div>
+          <div class="info-cell info-cell-flight">
+            <app-flight-card [flight]="t.returnFlight" [isGenerating]="isGenerating()" label="Return Flight" class="h-100"></app-flight-card>
+          </div>
+          <!-- Budget card full width below them -->
+          <div class="info-cell info-cell-budget" style="grid-column: 1 / -1;">
+            <ng-container *ngTemplateOutlet="budgetCardTemplate; context: {$implicit: t}"></ng-container>
+          </div>
+        } @else {
+          <!-- Budget Card: stand-alone next to Flight on Row 2 -->
+          <div class="info-cell info-cell-budget">
+            <ng-container *ngTemplateOutlet="budgetCardTemplate; context: {$implicit: t}"></ng-container>
+          </div>
+          <div class="info-cell info-cell-flight">
+            <app-flight-card [flight]="t.flight" [isGenerating]="isGenerating()" label="Flight" class="h-100"></app-flight-card>
+          </div>
+        }
       </div>
 
       <!-- Main Dashboard Grid Layout -->

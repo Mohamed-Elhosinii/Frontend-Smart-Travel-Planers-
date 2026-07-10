@@ -3,8 +3,8 @@
     <div class="card-bg-accent"></div>
 
     <div class="card-body-wrap w-100 position-relative z-1">
-      <div class="d-flex justify-content-between align-items-center mb-3">
-        <div class="d-flex align-items-center gap-3">
+      <div class="d-flex justify-content-between align-items-start mb-3">
+        <div class="d-flex align-items-center gap-3 ms-3 mt-2">
           <img [src]="'https://images.kiwi.com/airlines/64/' + flight.airlineCode + '.png'" 
                alt="{{ flight.airline }} logo" 
                class="airline-logo rounded-circle shadow-sm border"
@@ -14,8 +14,8 @@
             <div class="card-sub text-muted fw-semibold small">{{ flight.flightNumber }}</div>
           </div>
         </div>
-        <div class="badge px-3 py-2 rounded-pill fw-bold border me-3" style="color: var(--primary, #B54304); background-color: rgba(181, 67, 4, 0.1); border-color: rgba(181, 67, 4, 0.25) !important;">
-          <i class="fa-solid fa-plane-departure me-1"></i> Flight
+        <div class="badge px-3 py-2 rounded-pill fw-bold border me-3 mt-2" style="color: var(--primary, #B54304); background-color: rgba(181, 67, 4, 0.1); border-color: rgba(181, 67, 4, 0.25) !important;">
+          <i class="fa-solid fa-plane me-1"></i> {{ label }}
         </div>
       </div>
 

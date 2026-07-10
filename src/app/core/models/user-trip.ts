@@ -20,6 +20,7 @@ export interface UserTrip {
   days: DayPlan[];
   status: TripStatus;
   flight?: FlightInfo;
+  returnFlight?: FlightInfo;
   hotel?: HotelInfo;
   weather?: Weather[];
 }

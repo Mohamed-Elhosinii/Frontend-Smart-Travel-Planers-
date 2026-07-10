@@ -13,6 +13,7 @@ import { FlightInfo } from '../../../../core/models';
 export class FlightCard {
   @Input() flight: FlightInfo | null | undefined = null;
   @Input() isGenerating = false;
+  @Input() label: string = 'Flight';
 
   formatTime(isoString: string): string {
     if (!isoString) return '';

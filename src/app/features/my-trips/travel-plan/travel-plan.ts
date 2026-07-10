@@ -8,7 +8,7 @@ import {
   signal,
 } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { NgClass, isPlatformBrowser } from '@angular/common';
+import { NgClass, isPlatformBrowser, NgTemplateOutlet } from '@angular/common';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
 import {
@@ -54,6 +54,7 @@ export interface PlaceSuggestion {
   standalone: true,
   imports: [
     NgClass,
+    NgTemplateOutlet,
     RouterLink,
     FlightCard,
     HotelCard,
@@ -370,6 +371,21 @@ export function mapTripPlanDtoToUserTrip(dto: TripPlanDto): UserTrip {
     }
     : undefined;
 
+  const returnFlight: FlightInfo | undefined = dto.returnFlight
+    ? {
+      airline: dto.returnFlight.airlineName,
+      flightNumber: dto.returnFlight.flightNumber,
+      departure: dto.returnFlight.departureAirport,
+      arrival: dto.returnFlight.arrivalAirport,
+      departureTime: dto.returnFlight.departureTime,
+      arrivalTime: dto.returnFlight.arrivalTime,
+      airlineCode: dto.returnFlight.airlineCode,
+      departureTerminal: dto.returnFlight.departureTerminal,
+      arrivalTerminal: dto.returnFlight.arrivalTerminal,
+      flightDuration: dto.returnFlight.flightDuration,
+    }
+    : undefined;
+
   const hotel: HotelInfo | undefined = dto.hotel
     ? {
       name: dto.hotel.name,
@@ -396,6 +412,7 @@ export function mapTripPlanDtoToUserTrip(dto: TripPlanDto): UserTrip {
     days: (dto.days ?? []).map(mapDay),
     status: deriveStatus(dto.startDate, dto.endDate),
     flight,
+    returnFlight,
     hotel,
     weather: (dto.weather ?? [])
       .map(mapWeather)

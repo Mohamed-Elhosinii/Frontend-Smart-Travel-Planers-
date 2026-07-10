@@ -84,6 +84,7 @@ export interface TripPlanDto {
   estimatedTotalCost: number;
   hotel: TripHotelDto | null;
   flight: TripFlightDto | null;
+  returnFlight: TripFlightDto | null;
   days: DayPlanDto[];
   weather: DayWeatherDto[];
   summary: string;
