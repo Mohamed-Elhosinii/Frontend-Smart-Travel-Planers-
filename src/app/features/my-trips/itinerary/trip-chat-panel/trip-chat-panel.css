@@ -69,6 +69,8 @@
   font-size: 0.84rem;
   color: #261814;
   line-height: 1.6;
+  word-break: break-word;
+  white-space: pre-wrap;
 }
 
 .panel-bubble-user {
