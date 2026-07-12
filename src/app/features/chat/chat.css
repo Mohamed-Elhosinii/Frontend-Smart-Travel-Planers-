@@ -19,8 +19,10 @@
 
 /* ── Full-Height Shell ────────────────────────────────────── */
 .assistant-shell {
-  height: calc(100vh - 56px);
-  margin-top: 56px;
+  height: 100dvh;
+  padding-top: 72px;
+  margin-top: 0;
+  box-sizing: border-box;
   background: var(--chat-bg);
   color: var(--chat-text);
   font-family: 'Plus Jakarta Sans', sans-serif;
