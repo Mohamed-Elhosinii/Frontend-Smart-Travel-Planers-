@@ -51,28 +51,50 @@
       }
     </div>
 
-    <div class="card-sub fw-semibold">
-      @for (s of getStars(hotel.stars); track $index) {
-      <i class="fa-solid fa-star star-icon"></i>
-      }
-      <span class="ms-1">· {{ hotel.reviewScore || hotel.rating }}/10</span>
+    <div class="card-sub fw-semibold d-flex align-items-center flex-wrap gap-1">
+      <div class="d-inline-flex align-items-center">
+        @for (star of getStarsFromRating(); track $index) {
+          @if (star === 'full') {
+            <i class="fa-solid fa-star star-icon"></i>
+          } @else if (star === 'half') {
+            <i class="fa-solid fa-star-half-stroke star-icon"></i>
+          } @else {
+            <i class="fa-regular fa-star star-icon"></i>
+          }
+        }
+      </div>
+      <span class="rating-text">· {{ getRatingOutOfFive() }} / 5</span>
       @if (hotel.reviewCount) {
-      <span class="ms-1 fw-normal text-muted small">({{ hotel.reviewCount }} reviews)</span>
+      <span class="fw-normal text-muted small ms-1">({{ hotel.reviewCount }} reviews)</span>
       }
     </div>
 
-    <div class="card-dates mt-3 d-flex flex-column gap-1">
-      <div class="date-row d-flex align-items-center gap-2">
-        <span class="date-badge check-in">Check-in</span>
-        <span class="date-val">{{ formatDate(hotel.checkIn) }}</span>
+    <div class="booking-timeline-box mt-3 p-3 rounded-3 d-flex align-items-center justify-content-between border">
+      <!-- Check-in section -->
+      <div class="booking-date-col d-flex align-items-center gap-2">
+        <i class="fa-regular fa-calendar date-icon text-primary-accent"></i>
+        <div class="d-flex flex-column">
+          <span class="date-title-lbl text-uppercase text-muted">Check-in</span>
+          <span class="date-value-lbl fw-bold text-deep">{{ formatDate(hotel.checkIn) }}</span>
+        </div>
       </div>
-      <div class="date-row d-flex align-items-center gap-2">
-        <span class="date-badge check-out">Check-out</span>
-        <span class="date-val">{{ formatDate(hotel.checkOut) }}</span>
+
+      <!-- Directional Arrow -->
+      <div class="booking-arrow-col px-2 text-muted">
+        <i class="fa-solid fa-arrow-right"></i>
+      </div>
+
+      <!-- Check-out section -->
+      <div class="booking-date-col d-flex align-items-center gap-2">
+        <i class="fa-regular fa-calendar date-icon text-danger-accent"></i>
+        <div class="d-flex flex-column">
+          <span class="date-title-lbl text-uppercase text-muted">Check-out</span>
+          <span class="date-value-lbl fw-bold text-deep">{{ formatDate(hotel.checkOut) }}</span>
+        </div>
       </div>
     </div>
 
-    <div class="mt-3 mt-auto">
+    <div class="booking-btn-wrap">
       <button class="btn btn-sm btn-primary fw-bold w-100 py-2" (click)="loadBookingLinks()"
         [disabled]="isLoadingLinks">
         @if (isLoadingLinks) {

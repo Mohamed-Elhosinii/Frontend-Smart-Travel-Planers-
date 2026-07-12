@@ -408,10 +408,22 @@
   </a>
 </div>
 } @else if (!isGenerating()) {
-<div class="d-flex flex-column align-items-center justify-content-center min-vh-100 bg-cream-base text-center">
-  <div class="spinner-border text-primary mb-3" role="status" style="width: 3rem; height: 3rem;">
-    <span class="visually-hidden">Loading plan…</span>
+<div class="d-flex flex-column align-items-center justify-content-center min-vh-100 text-center px-4 itinerary-loader-container">
+  <!-- Redesigned Orbiting Plane Globe Loader -->
+  <div class="loader-globe-wrap mb-4 position-relative">
+    <div class="loader-pulse-ring" aria-hidden="true"></div>
+    <div class="loader-globe-core d-flex align-items-center justify-content-center rounded-circle" aria-hidden="true">
+      <i class="fa-solid fa-earth-americas globe-icon"></i>
+      <i class="fa-solid fa-plane plane-orbit"></i>
+    </div>
   </div>
-  <h3 class="text-deep font-serif">Preparing your itinerary…</h3>
+
+  <h2 class="loader-title fw-bold font-serif mb-2">Preparing your itinerary</h2>
+  <p class="loader-subtitle text-muted mb-0">Mapping routes, fetching accommodations, and securing flight details…</p>
+
+  <!-- Sleek loading bar -->
+  <div class="loader-bar-wrap mt-4 rounded-pill overflow-hidden" aria-hidden="true">
+    <div class="loader-bar-fill h-100 rounded-pill"></div>
+  </div>
 </div>
 }

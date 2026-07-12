@@ -1,6 +1,7 @@
-<app-navbar [lightBg]="true"></app-navbar>
+<div class="sub-layout-wrapper">
+  <app-navbar [lightBg]="true"></app-navbar>
 
-<div class="container sub-page-container">
+  <div class="container sub-page-container">
 
   <!-- Page Heading -->
   <div class="sub-hero-banner text-center mb-5">
@@ -9,7 +10,7 @@
   </div>
 
   @if (loading()) {
-    <div class="text-center py-5">
+    <div class="text-center py-5 d-flex align-items-center justify-content-center flex-grow-1">
       <div class="spinner-border" style="color: var(--primary-orange);" role="status">
         <span class="visually-hidden">Loading...</span>
       </div>
@@ -229,3 +230,4 @@
 }
 
 <app-footer></app-footer>
+</div>

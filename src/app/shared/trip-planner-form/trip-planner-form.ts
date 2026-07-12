@@ -144,11 +144,18 @@ export class TripPlannerForm {
   cityCountryValidator(control: AbstractControl): ValidationErrors | null {
     const value = (control.value || '').trim();
     if (!value) return null;
-    const parts = value.split(',');
-    if (parts.length < 2 || parts[0].trim().length < 2 || parts[1].trim().length < 2) {
+    
+    // Split and filter out empty segments with explicit string type annotations
+    const parts = value.split(',').map((p: string) => p.trim()).filter((p: string) => p.length > 0);
+    
+    if (parts.length === 0) {
       return { cityCountryFormat: true };
     }
-    return null;
+    if (parts.length === 1) {
+      return parts[0].length < 2 ? { cityCountryFormat: true } : null;
+    }
+    // If they entered both city and country (e.g. Cairo, Egypt)
+    return (parts[0].length < 2 || parts[1].length < 2) ? { cityCountryFormat: true } : null;
   }
 
   pastDateValidator(control: AbstractControl): ValidationErrors | null {
@@ -288,27 +295,10 @@ export class TripPlannerForm {
             return;
           }
 
-          // Check for fallback (unverified) source on either destination or origin
-          const unverifiedList: string[] = [];
-          if (toRes.source === 'fallback') {
-            unverifiedList.push(`Destination (${destination})`);
-          }
-          if (fromRes && fromRes.source === 'fallback') {
-            unverifiedList.push(`Departure (${origin})`);
-          }
-
-          if (unverifiedList.length > 0) {
-            this.unverifiedWarning = {
-              places: unverifiedList,
-              toRes,
-              fromRes,
-            };
-          } else {
-            // Both are verified places! Proceed to create plan.
-            this.resolvedDestId = toRes.destId;
-            this.resolvedDestType = toRes.destType;
-            this.createPlan();
-          }
+          // Proceed to create plan directly, bypassing unverified/fallback warnings
+          this.resolvedDestId = toRes.destId;
+          this.resolvedDestType = toRes.destType;
+          this.createPlan();
         },
         error: () => {
           this.isResolving = false;
