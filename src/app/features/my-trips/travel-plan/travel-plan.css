@@ -630,14 +630,19 @@
   }
 
   .split-shell.split-active .split-chat-panel {
-    flex: 0 0 45vh;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
     width: 100% !important;
     max-width: 100% !important;
-    height: 45vh;
-    position: relative;
-    top: 0;
+    height: 85vh;
+    z-index: 1050;
+    border-top: 1px solid #e8ddd6;
     border-left: none;
-    border-top: 1px solid #e8ddd6;   /* ← على موبايل يبقي تحت الرحلة */
+    border-top-left-radius: 1.5rem;
+    border-top-right-radius: 1.5rem;
+    box-shadow: 0 -10px 40px rgba(0, 0, 0, 0.15);
     order: 2;
   }
 
