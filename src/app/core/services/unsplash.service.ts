@@ -19,7 +19,9 @@ export class UnsplashService {
     }
 
     try {
-      const query = encodeURIComponent(`${destination} city travel landmark`);
+      const isArabic = /[\u0600-\u06FF]/.test(destination);
+      const queryStr = isArabic ? destination.trim() : `${destination} city travel landmark`;
+      const query = encodeURIComponent(queryStr);
       const url = `${UNSPLASH_CONFIG.searchUrl}?query=${query}&per_page=1&orientation=landscape&client_id=${this.accessKey}`;
 
       const response = await fetch(url);

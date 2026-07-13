@@ -1,7 +1,16 @@
 /* ── Current Plan Card ───────────────────────────────────────────── */
+.sub-layout-wrapper {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
 .sub-page-container {
   padding-top: 85px;
   font-family: 'Plus Jakarta Sans', sans-serif;
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
 }
 
 /* Empty / failed plans state */
@@ -10,6 +19,7 @@
   backdrop-filter: blur(10px);
   border: 1px dashed var(--border-color);
 }
+
 .sub-empty i {
   font-size: 2rem;
   color: var(--text-muted);
@@ -28,8 +38,11 @@
 .sub-hero-banner::after {
   content: '';
   position: absolute;
-  top: 0; left: 0; right: 0; bottom: 0;
-  background: linear-gradient(135deg, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0) 100%);
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0) 100%);
   pointer-events: none;
 }
 
@@ -51,7 +64,8 @@
 }
 
 .usage-progress {
-  background-color: rgba(181, 67, 4, 0.08); /* primary-orange with 8% opacity */
+  background-color: rgba(181, 67, 4, 0.08);
+  /* primary-orange with 8% opacity */
   border-radius: 999px;
   overflow: hidden;
 }
@@ -70,7 +84,7 @@
   font-weight: 700;
   letter-spacing: .03em;
   padding: .4rem .85rem;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.03);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);
 }
 
 .badge-sub-active {
@@ -195,7 +209,8 @@
 .sub-modal-overlay {
   position: fixed;
   inset: 0;
-  background: rgba(38, 24, 20, .55); /* text-deep with 55% opacity */
+  background: rgba(38, 24, 20, .55);
+  /* text-deep with 55% opacity */
   display: flex;
   align-items: center;
   justify-content: center;
@@ -214,7 +229,7 @@
   box-shadow: var(--shadow-lg);
 }
 
-.sub-modal-content > .d-flex {
+.sub-modal-content>.d-flex {
   margin-bottom: 0.5rem;
 }
 

@@ -37,7 +37,7 @@
       <div class="text-danger small mt-1">Please enter your departure city</div>
       }
       @if (form.get('from')?.errors?.['cityCountryFormat']) {
-      <div class="text-danger small mt-1">Enter city/province and country (e.g. Cairo, Egypt)</div>
+      <div class="text-danger small mt-1">Enter a valid city/province name (e.g. Cairo)</div>
       }
       }
     </div>
@@ -55,7 +55,7 @@
       <div class="text-danger small mt-1">Tell us your destination to plan your trip</div>
       }
       @if (form.get('to')?.errors?.['cityCountryFormat']) {
-      <div class="text-danger small mt-1">Enter city/province and country (e.g. Paris, France)</div>
+      <div class="text-danger small mt-1">Enter a valid city/province name (e.g. Paris)</div>
       }
       }
       @if (confirmationSuggestion) {

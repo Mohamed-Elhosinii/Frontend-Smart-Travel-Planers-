@@ -89,9 +89,32 @@ export class HotelCard implements OnInit, OnDestroy {
     }
   }
 
-  /** Array sized to the (0–5 clamped) star rating, for rendering star icons. */
-  getStars(count: number): number[] {
-    return Array.from({ length: Math.min(5, Math.max(0, count || 0)) });
+  /** Returns array of star types (full, half, empty) representing the review rating out of 5. */
+  getStarsFromRating(): ('full' | 'half' | 'empty')[] {
+    if (!this.hotel) return Array(5).fill('empty');
+    const score = this.hotel.reviewScore ?? this.hotel.rating ?? 0;
+    const ratingOutOfFive = score / 2;
+    
+    const stars: ('full' | 'half' | 'empty')[] = [];
+    const rounded = Math.round(ratingOutOfFive * 2) / 2;
+    
+    for (let i = 1; i <= 5; i++) {
+      if (rounded >= i) {
+        stars.push('full');
+      } else if (rounded === i - 0.5) {
+        stars.push('half');
+      } else {
+        stars.push('empty');
+      }
+    }
+    return stars;
+  }
+
+  /** Scaled review score from base 10 to base 5, formatted to 1 decimal place. */
+  getRatingOutOfFive(): string {
+    if (!this.hotel) return '0.0';
+    const score = this.hotel.reviewScore ?? this.hotel.rating ?? 0;
+    return (score / 2).toFixed(1);
   }
 
   /** Format ISO/date string to readable format e.g. "Aug 10, 2026" */
