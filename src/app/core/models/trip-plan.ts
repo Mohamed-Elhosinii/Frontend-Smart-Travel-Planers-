@@ -9,6 +9,7 @@ export interface TripHotelDto {
   name: string;
   pricePerNight?: number | null;
   rating?: number | null;
+  stars?: number | null;
   address?: string | null;
   images: string[];
 }

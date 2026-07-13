@@ -447,7 +447,7 @@ export function mapTripPlanDtoToUserTrip(dto: TripPlanDto): UserTrip {
     ? {
       name: dto.hotel.name,
       address: dto.hotel.address ?? '',
-      stars: Math.round(dto.hotel.rating ?? 0),
+      stars: dto.hotel.stars ?? Math.round(dto.hotel.rating ?? 0),
       checkIn: dto.startDate,
       checkOut: dto.endDate,
       rating: dto.hotel.rating ?? 0,
