@@ -1,139 +1,71 @@
-# TripMind — Documentation
+# Vantio — Frontend Application
 
-**TripMind** is an AI-powered travel-planning single-page application (SPA) built with
-Angular 20. It turns a few trip parameters into a polished, day-by-day itinerary —
-complete with smart budgets, weather tips, an interactive map, and a conversational
-AI co-pilot.
+**Vantio** is an enterprise-grade, AI-powered travel-planning Single-Page Application (SPA) built with **Angular**. It transforms user preferences into polished, day-by-day itineraries—complete with smart budgets, real-time weather forecasts, interactive mapping, and seamless offline PDF exports.
 
-This folder is the documentation hub. Start here, then follow the table of contents
-to the topic you need.
+🌐 **Live Demo:** [Check out the live application here](https://frontend-smart-travel-planers.vercel.app/)
+
+This repository contains the frontend codebase. For the backend API (.NET Core Web API & AI Orchestration), please refer to the backend repository.
 
 ---
 
-## What TripMind does
+## 🌟 What Vantio Does
 
-TripMind is organised around a handful of user-facing journeys:
+Vantio is organized around seamless, user-centric journeys:
 
 | Area | Route | What it offers |
 | --- | --- | --- |
 | **Landing** | `/` | Marketing hero, feature highlights, and the entry point into planning. |
-| **Authentication** | `/login`, `/signup`, `/forgot-password` | Mock sign-in, registration, and password-recovery flows. |
-| **Trip planner** | `/plan` | A form that captures the trip brief (origin, destination, dates, party size, budget, travel style). |
-| **AI chat** | `/chat` | A conversational co-pilot that drafts itineraries from natural-language prompts. |
-| **My Trips** | `/my-trips` | A list of the user's planned trips, each opening into a full itinerary view. |
-| **Itinerary view** | `/my-trips/plan/:id` | Day-by-day timeline, flight & hotel cards, weather banner, interactive map, and one-click PDF export. |
-| **Account** | `/profile`, `/settings` | Profile editing, password form, and notification preferences. |
-| **About & legal** | `/about`, `/terms`, `/privacy` | Static informational pages. |
+| **Authentication** | `/login`, `/signup` | Secure login, registration, password recovery, and Google OAuth 2.0 flows. |
+| **Trip Planner** | `/plan` | Captures the trip brief (destinations, dates, budget, preferences) to generate AI-driven itineraries. |
+| **My Trips** | `/my-trips` | A personalized dashboard listing the user's planned and saved trips. |
+| **Itinerary View** | `/itinerary/:id` | Day-by-day timeline, flight & hotel details, interactive map, and 1-click PDF export. |
+| **Admin Dashboard**| `/admin` | Comprehensive analytics for managing user roles, subscription tiers, and transaction metrics. |
 
-> **No backend.** TripMind runs entirely in the browser. Data is served from in-memory
-> mock datasets and persisted to `localStorage`. The AI is a deterministic, keyword-based
-> demo planner. Every service is written so its method bodies can be swapped for real
-> HTTP calls without touching a single component — see the
-> [mock-to-backend seam](./architecture.md#the-mock-to-backend-seam).
-
-> **Auth policy.** Every page is publicly browsable — there are no route guards.
-> Authentication is enforced at a single action: **saving a chat-generated itinerary**
-> (`ChatPage.savePlan()`), which sends logged-out users to `/login?returnUrl=/chat`. See
-> [Routing & the auth policy](./architecture.md#routing--the-auth-policy).
+> **Backend Integration:** Vantio's frontend is fully integrated with a robust **ASP.NET Core Web API**. All complex operations—including AI orchestration via Semantic Kernel, payment processing via Paymob, and data fetching from third-party APIs (AirLabs, StayAPI, Foursquare, Visual Crossing)—are securely handled by the backend and seamlessly consumed by this Angular client via RESTful endpoints.
 
 ---
 
-## Tech stack
+## 🛠️ Tech Stack
 
-| Concern | Choice |
+| Concern | Technology |
 | --- | --- |
-| Framework | **Angular 20.3** (standalone components, no `NgModule`s) |
-| Reactivity / state | **Angular signals** in `providedIn: 'root'` services — no NgRx/Redux |
-| Change detection | Zone-based, with **`OnPush`** on leaf components |
-| Styling | **Bootstrap 5** + a custom CSS design-token system (`src/styles.css`) |
-| Icons | **Font Awesome 6** (CDN, loaded in `index.html`) |
-| Fonts | Playfair Display + Plus Jakarta Sans (Google Fonts, CDN) |
-| Maps | **Leaflet** (interactive itinerary map) |
-| PDF export | **jsPDF** (dynamically imported) |
-| Testing | Karma + Jasmine |
-| Tooling | Angular CLI, Prettier, TypeScript 5.9 |
+| Framework | **Angular** (TypeScript, RxJS) |
+| Styling | **Bootstrap 5**, HTML5, CSS3 |
+| State & APIs | **RxJS Observables**, Angular HTTP Client |
+| Interactive Maps | **Leaflet.js** & OpenStreetMap |
+| Document Export | **jsPDF** |
+| Authentication | **JWT** (Access/Refresh Token Rotation) |
+| Tooling | Angular CLI, Git, GitHub |
 
 ---
 
-## Architecture at a glance
+## 🏗️ Architecture at a Glance
 
-TripMind uses a **layered, feature-first architecture**. A thin root shell
-(`App`) hosts a `<router-outlet>` and a single global toast outlet. Routed **feature**
-components compose presentational pieces and inject **core** services to read and mutate
-state. All shared application state lives in singleton, signal-based services
-(`providedIn: 'root'`): components call methods on a service, the service updates a
-`signal`, and any template reading that signal re-renders automatically. Cross-cutting
-building blocks are split into four layers — **core** (models, services, guards,
-validators, mock data), **layout** (navbar, footer), **shared** (reusable UI such as the
-toast and the legal-page chrome), and **features** (the routed screens). Because every
-data access funnels through a service, the in-memory mock data is the only thing that has
-to change to connect a real API. See [architecture.md](./architecture.md) for the full
-picture.
+The frontend is built with a strong focus on modularity, performance, and clean code principles. It utilizes a layered, feature-first architecture:
+*   **Core Module:** Houses singleton services for HTTP API calls, JWT interceptors, auth guards, and global error handling.
+*   **Shared Module:** Contains reusable UI components (custom buttons, modals, loaders) and pipes used across the application.
+*   **Feature Modules:** Lazy-loaded modules (e.g., Auth, Itinerary, Admin) to ensure optimal bundle sizes and fast initial load times.
+*   **Dynamic UI Integrations:** Complex DOM manipulations for rendering interactive maps (Leaflet) and generating downloadable client-side PDFs (jsPDF) are encapsulated within dedicated services.
 
 ---
 
-## Table of contents
-
-| Document | Contents |
-| --- | --- |
-| [architecture.md](./architecture.md) | Layered design, data flow, routing & the auth policy (save-time, not route guards), the mock-to-backend seam, rendering strategy, diagrams. |
-| [project-structure.md](./project-structure.md) | Annotated folder & file tree with one-line descriptions. |
-| [state-management.md](./state-management.md) | The signals-in-services approach, per-service signal surface, the read-only pattern, and the rationale. |
-| [ui-ux-guidelines.md](./ui-ux-guidelines.md) | Design tokens, component conventions, and accessibility notes. |
-| [contributing.md](./contributing.md) | Branching, naming conventions, and PR workflow. |
-| [features/](./features/) | Per-feature deep-dives (landing, auth, planner, chat, my-trips, account, legal, about). |
-| [api/](./api/) | Service & model API reference and the future HTTP contract. |
-| [bootstrap-migration-report.md](./bootstrap-migration-report.md) | CSS → Bootstrap utility migration: per-component metrics and what remains custom. |
-
-> All documents above are complete and kept in sync with the codebase.
-
----
-
-## Getting started
+## 🚀 Getting Started
 
 ### Prerequisites
 
-- **Node.js** 18.19+ or 20.11+ (per Angular 20 requirements)
-- **npm** 9+
+- **Node.js** (v18.x or higher)
+- **npm** (v9.x or higher)
+- **Angular CLI**
 
-### Install & run
+### Install & Run
 
 ```bash
-# 1. Install dependencies
+# 1. Clone the repository
+git clone [https://github.com/YourUsername/Frontend-Smart-Travel-Planers.git](https://github.com/YourUsername/Frontend-Smart-Travel-Planers.git)
+cd Frontend-Smart-Travel-Planers
+
+# 2. Install dependencies
 npm install
 
-# 2. Start the dev server (with live reload)
+# 3. Start the development server
 npm start
-# → the app is served at http://localhost:4200
-```
-
-`npm start` is an alias for `ng serve`. The app reloads automatically whenever you edit a
-source file.
-
-### Build for production
-
-```bash
-npm run build
-```
-
-Compiled assets are emitted to `dist/`. A development watch build is also available via
-`npm run watch`.
-
-### Run unit tests
-
-```bash
-npm test
-```
-
-This runs the Karma + Jasmine suite (`ng test`) in watch mode. Spec files live next to the
-code they cover (for example `auth.service.spec.ts`, `auth-guard.spec.ts`,
-`email.validator.spec.ts`).
-
-### Useful npm scripts
-
-| Script | Command | Purpose |
-| --- | --- | --- |
-| `npm start` | `ng serve` | Dev server at `http://localhost:4200`. |
-| `npm run build` | `ng build` | Production build to `dist/`. |
-| `npm run watch` | `ng build --watch --configuration development` | Continuous development build. |
-| `npm test` | `ng test` | Unit tests (Karma + Jasmine). |
